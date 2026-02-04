@@ -1,7 +1,7 @@
 {
-  "name": "server",
+  "name": "shift-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "SHIFT Game Server - Express + Socket.io + Prisma",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

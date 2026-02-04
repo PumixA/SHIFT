@@ -1,0 +1,29 @@
+# CODEOWNERS - Defines code ownership for automatic review requests
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for everything
+* @PumixA
+
+# Client-specific files
+/client/ @PumixA
+
+# Server-specific files
+/server/ @PumixA
+
+# Game engine (critical component)
+/server/src/engine/ @PumixA
+
+# Database schema (requires careful review)
+/server/prisma/ @PumixA
+
+# CI/CD configuration
+/.github/ @PumixA
+
+# Project documentation
+/.agent/ @PumixA
+/CLAUDE.md @PumixA
+/README.md @PumixA
+
+# Configuration files
+/VERSION @PumixA
+/CHANGELOG.md @PumixA
