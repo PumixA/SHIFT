@@ -4,8 +4,19 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-    ArrowLeft, UserPlus, Users, Clock, X, Check, Search, UserX,
-    MessageCircle, Gamepad2, Copy, ExternalLink, Sparkles
+    ArrowLeft,
+    UserPlus,
+    Users,
+    Clock,
+    X,
+    Check,
+    Search,
+    UserX,
+    MessageCircle,
+    Gamepad2,
+    Copy,
+    ExternalLink,
+    Sparkles,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -54,13 +65,13 @@ const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
         opacity: 1,
-        transition: { staggerChildren: 0.05 }
-    }
+        transition: { staggerChildren: 0.05 },
+    },
 }
 
 const itemVariants = {
     hidden: { opacity: 0, y: 10 },
-    visible: { opacity: 1, y: 0 }
+    visible: { opacity: 1, y: 0 },
 }
 
 // Friend Card Component
@@ -80,31 +91,33 @@ function FriendCard({
     return (
         <>
             <motion.div variants={itemVariants}>
-                <GameCard className="hover:bg-white/10 transition-colors">
+                <GameCard className="transition-colors hover:bg-white/10">
                     <div className="flex items-center gap-4">
                         <div className="relative">
                             <Avatar className="h-12 w-12 border-2 border-white/10">
-                                <AvatarImage src={friend.avatarPreset ? `/avatars/${friend.avatarPreset}.png` : undefined} />
-                                <AvatarFallback className="bg-gradient-to-br from-cyan-500 to-violet-500 text-white font-bold">
+                                <AvatarImage
+                                    src={friend.avatarPreset ? `/avatars/${friend.avatarPreset}.png` : undefined}
+                                />
+                                <AvatarFallback className="bg-gradient-to-br from-cyan-500 to-violet-500 font-bold text-white">
                                     {friend.username.charAt(0).toUpperCase()}
                                 </AvatarFallback>
                             </Avatar>
                             <span
-                                className={`absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full border-2 border-background ${
+                                className={`border-background absolute -right-0.5 -bottom-0.5 h-4 w-4 rounded-full border-2 ${
                                     friend.currentGame
-                                        ? 'bg-orange-500'
+                                        ? "bg-orange-500"
                                         : friend.isOnline
-                                            ? 'bg-green-500'
-                                            : 'bg-gray-500'
+                                          ? "bg-green-500"
+                                          : "bg-gray-500"
                                 }`}
                             />
                         </div>
 
-                        <div className="flex-1 min-w-0">
-                            <p className="font-bold text-white truncate">{friend.username}</p>
-                            <p className="text-sm text-muted-foreground">
+                        <div className="min-w-0 flex-1">
+                            <p className="truncate font-bold text-white">{friend.username}</p>
+                            <p className="text-muted-foreground text-sm">
                                 {friend.currentGame ? (
-                                    <span className="text-orange-400 flex items-center gap-1">
+                                    <span className="flex items-center gap-1 text-orange-400">
                                         <Gamepad2 className="h-3 w-3" />
                                         En partie
                                     </span>
@@ -117,27 +130,27 @@ function FriendCard({
                         </div>
 
                         <div className="flex gap-1">
-                            {friend.isOnline && !friend.currentGame && (
+                            {friend.isOnline && !friend.currentGame ? (
                                 <Button
                                     size="icon"
                                     variant="ghost"
                                     onClick={onInvite}
-                                    className="h-9 w-9 text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/20"
+                                    className="h-9 w-9 text-cyan-400 hover:bg-cyan-500/20 hover:text-cyan-300"
                                     title="Inviter à jouer"
                                 >
                                     <Gamepad2 className="h-4 w-4" />
                                 </Button>
-                            )}
-                            {friend.currentGame && (
+                            ) : null}
+                            {friend.currentGame ? (
                                 <Button
                                     size="icon"
                                     variant="ghost"
-                                    className="h-9 w-9 text-orange-400 hover:text-orange-300 hover:bg-orange-500/20"
+                                    className="h-9 w-9 text-orange-400 hover:bg-orange-500/20 hover:text-orange-300"
                                     title="Rejoindre la partie"
                                 >
                                     <ExternalLink className="h-4 w-4" />
                                 </Button>
-                            )}
+                            ) : null}
                             <Button
                                 size="icon"
                                 variant="ghost"
@@ -151,7 +164,7 @@ function FriendCard({
                                 size="icon"
                                 variant="ghost"
                                 onClick={() => setConfirmRemove(true)}
-                                className="h-9 w-9 text-red-400 hover:text-red-300 hover:bg-red-500/20"
+                                className="h-9 w-9 text-red-400 hover:bg-red-500/20 hover:text-red-300"
                                 title="Retirer"
                             >
                                 <UserX className="h-4 w-4" />
@@ -166,15 +179,13 @@ function FriendCard({
                     <AlertDialogHeader>
                         <AlertDialogTitle>Retirer {friend.username} ?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Cette personne sera retirée de votre liste d'amis. Vous pourrez l'ajouter à nouveau plus tard.
+                            Cette personne sera retirée de votre liste d'amis. Vous pourrez l'ajouter à nouveau plus
+                            tard.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Annuler</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={onRemove}
-                            className="bg-red-500 hover:bg-red-600"
-                        >
+                        <AlertDialogAction onClick={onRemove} className="bg-red-500 hover:bg-red-600">
                             Retirer
                         </AlertDialogAction>
                     </AlertDialogFooter>
@@ -194,7 +205,7 @@ function RequestCard({
     request: FriendRequest
     onAccept?: () => void
     onDecline?: () => void
-    type: 'pending' | 'sent'
+    type: "pending" | "sent"
 }) {
     return (
         <motion.div variants={itemVariants}>
@@ -202,29 +213,25 @@ function RequestCard({
                 <div className="flex items-center gap-4">
                     <Avatar className="h-12 w-12">
                         <AvatarImage src={request.avatarPreset ? `/avatars/${request.avatarPreset}.png` : undefined} />
-                        <AvatarFallback className="bg-gradient-to-br from-violet-500 to-purple-500 text-white font-bold">
+                        <AvatarFallback className="bg-gradient-to-br from-violet-500 to-purple-500 font-bold text-white">
                             {request.username.charAt(0).toUpperCase()}
                         </AvatarFallback>
                     </Avatar>
 
                     <div className="flex-1">
                         <p className="font-bold text-white">{request.username}</p>
-                        <p className="text-sm text-muted-foreground">
-                            {new Date(request.createdAt).toLocaleDateString('fr-FR', {
-                                day: 'numeric',
-                                month: 'short',
+                        <p className="text-muted-foreground text-sm">
+                            {new Date(request.createdAt).toLocaleDateString("fr-FR", {
+                                day: "numeric",
+                                month: "short",
                             })}
                         </p>
                     </div>
 
-                    {type === 'pending' ? (
+                    {type === "pending" ? (
                         <div className="flex gap-2">
-                            <Button
-                                size="sm"
-                                onClick={onAccept}
-                                className="bg-green-500 hover:bg-green-600"
-                            >
-                                <Check className="h-4 w-4 mr-1" /> Accepter
+                            <Button size="sm" onClick={onAccept} className="bg-green-500 hover:bg-green-600">
+                                <Check className="mr-1 h-4 w-4" /> Accepter
                             </Button>
                             <Button
                                 size="icon"
@@ -237,7 +244,7 @@ function RequestCard({
                         </div>
                     ) : (
                         <Badge variant="outline" className="text-muted-foreground border-white/20">
-                            <Clock className="h-3 w-3 mr-1" />
+                            <Clock className="mr-1 h-3 w-3" />
                             En attente
                         </Badge>
                     )}
@@ -251,7 +258,7 @@ function RequestCard({
 function EmptyState({ icon: Icon, message }: { icon: React.ElementType; message: string }) {
     return (
         <div className="py-16 text-center">
-            <Icon className="h-16 w-16 mx-auto text-muted-foreground/30 mb-4" />
+            <Icon className="text-muted-foreground/30 mx-auto mb-4 h-16 w-16" />
             <p className="text-muted-foreground">{message}</p>
         </div>
     )
@@ -359,18 +366,16 @@ export default function FriendsPage() {
         }
     }
 
-    const filteredFriends = friends.filter(f =>
-        f.username.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    const filteredFriends = friends.filter((f) => f.username.toLowerCase().includes(searchQuery.toLowerCase()))
 
-    const onlineFriends = filteredFriends.filter(f => f.isOnline)
-    const offlineFriends = filteredFriends.filter(f => !f.isOnline)
+    const onlineFriends = filteredFriends.filter((f) => f.isOnline)
+    const offlineFriends = filteredFriends.filter((f) => !f.isOnline)
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-background flex items-center justify-center">
+            <div className="bg-background flex min-h-screen items-center justify-center">
                 <div className="text-center">
-                    <div className="h-12 w-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                    <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-cyan-500 border-t-transparent" />
                     <p className="text-muted-foreground">Chargement...</p>
                 </div>
             </div>
@@ -378,15 +383,15 @@ export default function FriendsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="bg-background min-h-screen">
             {/* Background Effect */}
-            <div className="fixed inset-0 pointer-events-none">
+            <div className="pointer-events-none fixed inset-0">
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(6,182,212,0.1),transparent_50%)]" />
             </div>
 
             {/* Header */}
-            <header className="relative z-10 border-b border-white/5 bg-background/80 backdrop-blur-xl sticky top-0">
-                <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+            <header className="bg-background/80 relative sticky top-0 z-10 border-b border-white/5 backdrop-blur-xl">
+                <div className="container mx-auto flex items-center justify-between px-4 py-4">
                     <div className="flex items-center gap-4">
                         <Button
                             variant="ghost"
@@ -399,7 +404,7 @@ export default function FriendsPage() {
                         <PageHeader
                             icon={Users}
                             title="AMIS"
-                            subtitle={`${friends.length} ami${friends.length !== 1 ? 's' : ''} • ${onlineFriends.length} en ligne`}
+                            subtitle={`${friends.length} ami${friends.length !== 1 ? "s" : ""} • ${onlineFriends.length} en ligne`}
                             gradient="from-cyan-500 to-blue-600"
                         />
                     </div>
@@ -410,9 +415,9 @@ export default function FriendsPage() {
                             variant="outline"
                             size="sm"
                             onClick={copyUserId}
-                            className="text-xs border-white/10 hover:bg-white/5"
+                            className="border-white/10 text-xs hover:bg-white/5"
                         >
-                            <Copy className="h-3 w-3 mr-2" />
+                            <Copy className="mr-2 h-3 w-3" />
                             Mon ID: {userId?.slice(0, 8)}...
                         </Button>
 
@@ -420,7 +425,7 @@ export default function FriendsPage() {
                         <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
                             <DialogTrigger asChild>
                                 <Button className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500">
-                                    <UserPlus className="h-4 w-4 mr-2" /> Ajouter
+                                    <UserPlus className="mr-2 h-4 w-4" /> Ajouter
                                 </Button>
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-md">
@@ -439,17 +444,14 @@ export default function FriendsPage() {
                                             placeholder="ID de l'utilisateur (ex: abc123...)"
                                             value={addFriendId}
                                             onChange={(e) => setAddFriendId(e.target.value)}
-                                            onKeyDown={(e) => e.key === 'Enter' && sendFriendRequest()}
+                                            onKeyDown={(e) => e.key === "Enter" && sendFriendRequest()}
                                             className="font-mono"
                                         />
-                                        <Button
-                                            onClick={sendFriendRequest}
-                                            disabled={!addFriendId.trim()}
-                                        >
+                                        <Button onClick={sendFriendRequest} disabled={!addFriendId.trim()}>
                                             Envoyer
                                         </Button>
                                     </div>
-                                    <p className="text-sm text-muted-foreground">
+                                    <p className="text-muted-foreground text-sm">
                                         Votre ami peut trouver son ID depuis cette page en cliquant sur "Mon ID"
                                     </p>
                                 </div>
@@ -459,7 +461,7 @@ export default function FriendsPage() {
                 </div>
             </header>
 
-            <main className="relative z-10 container mx-auto px-4 py-8 max-w-3xl">
+            <main className="relative z-10 container mx-auto max-w-3xl px-4 py-8">
                 <Tabs defaultValue="friends" className="space-y-6">
                     <TabsList className="grid w-full grid-cols-3 bg-white/5 p-1">
                         <TabsTrigger
@@ -474,7 +476,7 @@ export default function FriendsPage() {
                         >
                             <Clock className="h-4 w-4" /> Reçues
                             {pendingRequests.length > 0 && (
-                                <Badge className="ml-1 h-5 min-w-[20px] p-0 flex items-center justify-center bg-green-500 text-white">
+                                <Badge className="ml-1 flex h-5 min-w-[20px] items-center justify-center bg-green-500 p-0 text-white">
                                     {pendingRequests.length}
                                 </Badge>
                             )}
@@ -490,10 +492,10 @@ export default function FriendsPage() {
                     <TabsContent value="friends" className="space-y-6">
                         {/* Search */}
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                             <Input
                                 placeholder="Rechercher un ami..."
-                                className="pl-10 bg-white/5 border-white/10"
+                                className="border-white/10 bg-white/5 pl-10"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
@@ -502,14 +504,18 @@ export default function FriendsPage() {
                         {filteredFriends.length === 0 ? (
                             <EmptyState
                                 icon={Users}
-                                message={searchQuery ? "Aucun ami trouvé" : "Vous n'avez pas encore d'amis. Ajoutez des amis pour jouer ensemble !"}
+                                message={
+                                    searchQuery
+                                        ? "Aucun ami trouvé"
+                                        : "Vous n'avez pas encore d'amis. Ajoutez des amis pour jouer ensemble !"
+                                }
                             />
                         ) : (
                             <>
                                 {/* Online Friends */}
                                 {onlineFriends.length > 0 && (
                                     <div className="space-y-3">
-                                        <h3 className="text-xs font-bold uppercase tracking-wider text-green-400 flex items-center gap-2">
+                                        <h3 className="flex items-center gap-2 text-xs font-bold tracking-wider text-green-400 uppercase">
                                             <span className="h-2 w-2 rounded-full bg-green-500" />
                                             En ligne ({onlineFriends.length})
                                         </h3>
@@ -535,7 +541,7 @@ export default function FriendsPage() {
                                 {/* Offline Friends */}
                                 {offlineFriends.length > 0 && (
                                     <div className="space-y-3">
-                                        <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                                        <h3 className="text-muted-foreground flex items-center gap-2 text-xs font-bold tracking-wider uppercase">
                                             <span className="h-2 w-2 rounded-full bg-gray-500" />
                                             Hors ligne ({offlineFriends.length})
                                         </h3>
@@ -563,10 +569,7 @@ export default function FriendsPage() {
 
                     <TabsContent value="pending">
                         {pendingRequests.length === 0 ? (
-                            <EmptyState
-                                icon={Clock}
-                                message="Aucune demande en attente"
-                            />
+                            <EmptyState icon={Clock} message="Aucune demande en attente" />
                         ) : (
                             <motion.div
                                 variants={containerVariants}
@@ -589,10 +592,7 @@ export default function FriendsPage() {
 
                     <TabsContent value="sent">
                         {sentRequests.length === 0 ? (
-                            <EmptyState
-                                icon={UserPlus}
-                                message="Aucune demande envoyée"
-                            />
+                            <EmptyState icon={UserPlus} message="Aucune demande envoyée" />
                         ) : (
                             <motion.div
                                 variants={containerVariants}
@@ -601,11 +601,7 @@ export default function FriendsPage() {
                                 className="space-y-2"
                             >
                                 {sentRequests.map((request) => (
-                                    <RequestCard
-                                        key={request.id}
-                                        request={request}
-                                        type="sent"
-                                    />
+                                    <RequestCard key={request.id} request={request} type="sent" />
                                 ))}
                             </motion.div>
                         )}

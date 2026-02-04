@@ -2,8 +2,24 @@
 
 import { useState } from "react"
 import {
-    Settings, LogOut, UserX, Crown, Users, Volume2, VolumeX, Gamepad2, Save, Keyboard,
-    Pencil, LayoutGrid, Shield, AlertTriangle, Focus, Eye, EyeOff, HelpCircle
+    Settings,
+    LogOut,
+    UserX,
+    Crown,
+    Users,
+    Volume2,
+    VolumeX,
+    Gamepad2,
+    Save,
+    Keyboard,
+    Pencil,
+    LayoutGrid,
+    Shield,
+    AlertTriangle,
+    Focus,
+    Eye,
+    EyeOff,
+    HelpCircle,
 } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -108,21 +124,26 @@ export function SettingsModal({
 
     const getColorClass = (color: string) => {
         switch (color) {
-            case 'cyan': return 'bg-cyan-500'
-            case 'violet': return 'bg-violet-500'
-            case 'orange': return 'bg-orange-500'
-            case 'green': return 'bg-green-500'
-            default: return 'bg-gray-500'
+            case "cyan":
+                return "bg-cyan-500"
+            case "violet":
+                return "bg-violet-500"
+            case "orange":
+                return "bg-orange-500"
+            case "green":
+                return "bg-green-500"
+            default:
+                return "bg-gray-500"
         }
     }
 
     return (
         <>
             <Dialog open={open} onOpenChange={onOpenChange}>
-                <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto bg-background/95 backdrop-blur-xl border-white/10">
+                <DialogContent className="bg-background/95 max-h-[90vh] overflow-y-auto border-white/10 backdrop-blur-xl sm:max-w-[550px]">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2 text-xl font-black">
-                            <Settings className="h-5 w-5 text-muted-foreground" />
+                            <Settings className="text-muted-foreground h-5 w-5" />
                             Paramètres de la partie
                         </DialogTitle>
                     </DialogHeader>
@@ -130,34 +151,34 @@ export function SettingsModal({
                     <Tabs defaultValue="game" className="mt-4">
                         <TabsList className="grid w-full grid-cols-5">
                             <TabsTrigger value="game" className="text-xs">
-                                <Settings className="h-4 w-4 mr-1" />
+                                <Settings className="mr-1 h-4 w-4" />
                                 Partie
                             </TabsTrigger>
                             <TabsTrigger value="players" className="text-xs">
-                                <Users className="h-4 w-4 mr-1" />
+                                <Users className="mr-1 h-4 w-4" />
                                 Joueurs
                             </TabsTrigger>
                             <TabsTrigger value="gamepad" className="text-xs">
-                                <Gamepad2 className="h-4 w-4 mr-1" />
+                                <Gamepad2 className="mr-1 h-4 w-4" />
                                 Manettes
                             </TabsTrigger>
                             <TabsTrigger value="shortcuts" className="text-xs">
-                                <Keyboard className="h-4 w-4 mr-1" />
+                                <Keyboard className="mr-1 h-4 w-4" />
                                 Touches
                             </TabsTrigger>
                             <TabsTrigger value="help" className="text-xs">
-                                <HelpCircle className="h-4 w-4 mr-1" />
+                                <HelpCircle className="mr-1 h-4 w-4" />
                                 Aide
                             </TabsTrigger>
                         </TabsList>
 
                         {/* Onglet Partie */}
-                        <TabsContent value="game" className="space-y-4 mt-4">
+                        <TabsContent value="game" className="mt-4 space-y-4">
                             {/* Paramètres du créateur */}
-                            {isHost && (
-                                <Card className="bg-yellow-500/10 border-yellow-500/30">
+                            {isHost ? (
+                                <Card className="border-yellow-500/30 bg-yellow-500/10">
                                     <CardHeader className="pb-2">
-                                        <CardTitle className="text-sm flex items-center gap-2">
+                                        <CardTitle className="flex items-center gap-2 text-sm">
                                             <Crown className="h-4 w-4 text-yellow-400" />
                                             Paramètres de l'hôte
                                         </CardTitle>
@@ -167,15 +188,18 @@ export function SettingsModal({
                                     </CardHeader>
                                     <CardContent className="space-y-3">
                                         {/* Édition de règles */}
-                                        {onToggleRuleEdit && (
-                                            <div className="flex items-center justify-between p-3 rounded-lg bg-white/5">
+                                        {onToggleRuleEdit ? (
+                                            <div className="flex items-center justify-between rounded-lg bg-white/5 p-3">
                                                 <div className="flex items-center gap-3">
                                                     <Pencil className="h-5 w-5 text-cyan-400" />
                                                     <div>
-                                                        <Label htmlFor="rule-edit" className="cursor-pointer font-medium">
+                                                        <Label
+                                                            htmlFor="rule-edit"
+                                                            className="cursor-pointer font-medium"
+                                                        >
                                                             Édition de règles
                                                         </Label>
-                                                        <p className="text-xs text-muted-foreground">
+                                                        <p className="text-muted-foreground text-xs">
                                                             Permettre aux joueurs de créer/modifier des règles
                                                         </p>
                                                     </div>
@@ -186,18 +210,21 @@ export function SettingsModal({
                                                     onCheckedChange={onToggleRuleEdit}
                                                 />
                                             </div>
-                                        )}
+                                        ) : null}
 
                                         {/* Modification du plateau */}
-                                        {onToggleTileEdit && (
-                                            <div className="flex items-center justify-between p-3 rounded-lg bg-white/5">
+                                        {onToggleTileEdit ? (
+                                            <div className="flex items-center justify-between rounded-lg bg-white/5 p-3">
                                                 <div className="flex items-center gap-3">
                                                     <LayoutGrid className="h-5 w-5 text-violet-400" />
                                                     <div>
-                                                        <Label htmlFor="tile-edit" className="cursor-pointer font-medium">
+                                                        <Label
+                                                            htmlFor="tile-edit"
+                                                            className="cursor-pointer font-medium"
+                                                        >
                                                             Modification du plateau
                                                         </Label>
-                                                        <p className="text-xs text-muted-foreground">
+                                                        <p className="text-muted-foreground text-xs">
                                                             Permettre d'ajouter/supprimer des cases
                                                         </p>
                                                     </div>
@@ -208,39 +235,39 @@ export function SettingsModal({
                                                     onCheckedChange={onToggleTileEdit}
                                                 />
                                             </div>
-                                        )}
+                                        ) : null}
                                     </CardContent>
                                 </Card>
-                            )}
+                            ) : null}
 
                             {/* Paramètres audio */}
                             <div className="space-y-3">
-                                <Label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+                                <Label className="text-muted-foreground text-sm font-bold tracking-wider uppercase">
                                     Audio
                                 </Label>
 
-                                <div className="flex items-center justify-between p-3 rounded-lg bg-white/5">
+                                <div className="flex items-center justify-between rounded-lg bg-white/5 p-3">
                                     <div className="flex items-center gap-3">
                                         {soundEnabled ? (
-                                            <Volume2 className="h-5 w-5 text-muted-foreground" />
+                                            <Volume2 className="text-muted-foreground h-5 w-5" />
                                         ) : (
-                                            <VolumeX className="h-5 w-5 text-muted-foreground" />
+                                            <VolumeX className="text-muted-foreground h-5 w-5" />
                                         )}
-                                        <Label htmlFor="sound" className="cursor-pointer">Effets sonores</Label>
+                                        <Label htmlFor="sound" className="cursor-pointer">
+                                            Effets sonores
+                                        </Label>
                                     </div>
-                                    <Switch
-                                        id="sound"
-                                        checked={soundEnabled}
-                                        onCheckedChange={setSoundEnabled}
-                                    />
+                                    <Switch id="sound" checked={soundEnabled} onCheckedChange={setSoundEnabled} />
                                 </div>
 
-                                <div className="flex items-center justify-between p-3 rounded-lg bg-white/5">
+                                <div className="flex items-center justify-between rounded-lg bg-white/5 p-3">
                                     <div className="flex items-center gap-3">
-                                        <Gamepad2 className="h-5 w-5 text-muted-foreground" />
+                                        <Gamepad2 className="text-muted-foreground h-5 w-5" />
                                         <div>
-                                            <Label htmlFor="vibration" className="cursor-pointer">Vibrations</Label>
-                                            <p className="text-xs text-muted-foreground">Retour haptique manette</p>
+                                            <Label htmlFor="vibration" className="cursor-pointer">
+                                                Vibrations
+                                            </Label>
+                                            <p className="text-muted-foreground text-xs">Retour haptique manette</p>
                                         </div>
                                     </div>
                                     <Switch
@@ -252,22 +279,24 @@ export function SettingsModal({
                             </div>
 
                             {/* Mode Focus */}
-                            {onToggleFocusMode && (
+                            {onToggleFocusMode ? (
                                 <div className="space-y-3">
-                                    <Label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+                                    <Label className="text-muted-foreground text-sm font-bold tracking-wider uppercase">
                                         Affichage
                                     </Label>
 
-                                    <div className="flex items-center justify-between p-3 rounded-lg bg-white/5">
+                                    <div className="flex items-center justify-between rounded-lg bg-white/5 p-3">
                                         <div className="flex items-center gap-3">
                                             {focusMode ? (
                                                 <Eye className="h-5 w-5 text-cyan-400" />
                                             ) : (
-                                                <EyeOff className="h-5 w-5 text-muted-foreground" />
+                                                <EyeOff className="text-muted-foreground h-5 w-5" />
                                             )}
                                             <div>
-                                                <Label htmlFor="focus-mode" className="cursor-pointer">Mode Focus</Label>
-                                                <p className="text-xs text-muted-foreground">
+                                                <Label htmlFor="focus-mode" className="cursor-pointer">
+                                                    Mode Focus
+                                                </Label>
+                                                <p className="text-muted-foreground text-xs">
                                                     Masquer les éléments secondaires pour se concentrer sur le plateau
                                                 </p>
                                             </div>
@@ -279,35 +308,27 @@ export function SettingsModal({
                                         />
                                     </div>
                                 </div>
-                            )}
+                            ) : null}
 
                             <Separator />
 
                             {/* Sauvegarder */}
-                            {onSaveGame && (
-                                <Button
-                                    variant="outline"
-                                    className="w-full"
-                                    onClick={onSaveGame}
-                                >
-                                    <Save className="h-4 w-4 mr-2" />
+                            {onSaveGame ? (
+                                <Button variant="outline" className="w-full" onClick={onSaveGame}>
+                                    <Save className="mr-2 h-4 w-4" />
                                     Sauvegarder la partie
                                 </Button>
-                            )}
+                            ) : null}
 
                             {/* Quitter */}
-                            <Button
-                                variant="destructive"
-                                className="w-full"
-                                onClick={onLeaveGame}
-                            >
-                                <LogOut className="h-4 w-4 mr-2" />
+                            <Button variant="destructive" className="w-full" onClick={onLeaveGame}>
+                                <LogOut className="mr-2 h-4 w-4" />
                                 Quitter la partie
                             </Button>
                         </TabsContent>
 
                         {/* Onglet Joueurs */}
-                        <TabsContent value="players" className="space-y-4 mt-4">
+                        <TabsContent value="players" className="mt-4 space-y-4">
                             {players.length > 0 ? (
                                 <div className="space-y-2">
                                     {players.map((player) => {
@@ -316,77 +337,86 @@ export function SettingsModal({
                                         return (
                                             <div
                                                 key={player.id}
-                                                className={`flex items-center justify-between p-4 rounded-xl transition-colors ${
+                                                className={`flex items-center justify-between rounded-xl p-4 transition-colors ${
                                                     isCurrentPlayer
-                                                        ? 'bg-cyan-500/10 border border-cyan-500/30'
-                                                        : 'bg-white/5 hover:bg-white/10'
+                                                        ? "border border-cyan-500/30 bg-cyan-500/10"
+                                                        : "bg-white/5 hover:bg-white/10"
                                                 }`}
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <div className={`w-4 h-4 rounded-full ${getColorClass(player.color)}`} />
+                                                    <div
+                                                        className={`h-4 w-4 rounded-full ${getColorClass(player.color)}`}
+                                                    />
                                                     <div>
                                                         <div className="flex items-center gap-2">
-                                                            <span className={`font-medium ${isCurrentPlayer ? 'text-cyan-400' : ''}`}>
+                                                            <span
+                                                                className={`font-medium ${isCurrentPlayer ? "text-cyan-400" : ""}`}
+                                                            >
                                                                 {player.name}
                                                             </span>
-                                                            {player.isHost && (
-                                                                <Badge variant="outline" className="text-[10px] py-0 border-yellow-500/50">
-                                                                    <Crown className="h-3 w-3 mr-1 text-yellow-400" />
+                                                            {player.isHost ? (
+                                                                <Badge
+                                                                    variant="outline"
+                                                                    className="border-yellow-500/50 py-0 text-[10px]"
+                                                                >
+                                                                    <Crown className="mr-1 h-3 w-3 text-yellow-400" />
                                                                     Hôte
                                                                 </Badge>
-                                                            )}
+                                                            ) : null}
                                                         </div>
-                                                        {isCurrentPlayer && (
-                                                            <span className="text-xs text-muted-foreground">C'est vous</span>
-                                                        )}
+                                                        {isCurrentPlayer ? (
+                                                            <span className="text-muted-foreground text-xs">
+                                                                C'est vous
+                                                            </span>
+                                                        ) : null}
                                                     </div>
                                                 </div>
 
                                                 {/* Bouton kick (pour l'hôte uniquement) */}
-                                                {isHost && !isCurrentPlayer && onKickPlayer && !isLocalMode && (
+                                                {isHost && !isCurrentPlayer && onKickPlayer && !isLocalMode ? (
                                                     <Button
                                                         variant="ghost"
                                                         size="sm"
-                                                        className="h-9 px-3 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                                        className="h-9 px-3 text-red-400 hover:bg-red-500/10 hover:text-red-300"
                                                         onClick={() => handleKickClick(player)}
                                                     >
-                                                        <UserX className="h-4 w-4 mr-2" />
+                                                        <UserX className="mr-2 h-4 w-4" />
                                                         Exclure
                                                     </Button>
-                                                )}
+                                                ) : null}
                                             </div>
                                         )
                                     })}
                                 </div>
                             ) : (
-                                <div className="text-center py-8 text-muted-foreground">
-                                    <Users className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                                <div className="text-muted-foreground py-8 text-center">
+                                    <Users className="mx-auto mb-3 h-12 w-12 opacity-50" />
                                     <p>Aucun joueur dans la partie</p>
                                 </div>
                             )}
 
-                            {isHost && !isLocalMode && (
-                                <Card className="bg-orange-500/10 border-orange-500/30">
+                            {isHost && !isLocalMode ? (
+                                <Card className="border-orange-500/30 bg-orange-500/10">
                                     <CardContent className="p-4">
                                         <div className="flex items-start gap-3">
-                                            <Shield className="h-5 w-5 text-orange-400 mt-0.5" />
+                                            <Shield className="mt-0.5 h-5 w-5 text-orange-400" />
                                             <div className="text-sm">
                                                 <p className="font-medium text-orange-400">Vous êtes l'hôte</p>
-                                                <p className="text-xs text-muted-foreground mt-1">
-                                                    Vous pouvez exclure n'importe quel joueur de la partie.
-                                                    Les joueurs exclus seront redirigés vers le menu principal.
+                                                <p className="text-muted-foreground mt-1 text-xs">
+                                                    Vous pouvez exclure n'importe quel joueur de la partie. Les joueurs
+                                                    exclus seront redirigés vers le menu principal.
                                                 </p>
                                             </div>
                                         </div>
                                     </CardContent>
                                 </Card>
-                            )}
+                            ) : null}
                         </TabsContent>
 
                         {/* Onglet Manettes */}
                         <TabsContent value="gamepad" className="mt-4">
                             <GamepadSettings
-                                players={players.map(p => ({ id: String(p.id), name: p.name, color: p.color }))}
+                                players={players.map((p) => ({ id: String(p.id), name: p.name, color: p.color }))}
                                 gamepadAssignments={gamepadAssignments}
                                 onAssignGamepad={onAssignGamepad || (() => {})}
                             />
@@ -395,7 +425,7 @@ export function SettingsModal({
                         {/* Onglet Raccourcis */}
                         <TabsContent value="shortcuts" className="mt-4">
                             <div className="space-y-4">
-                                <p className="text-sm text-muted-foreground">
+                                <p className="text-muted-foreground text-sm">
                                     Raccourcis clavier disponibles pendant le jeu.
                                 </p>
 
@@ -403,14 +433,14 @@ export function SettingsModal({
                                     {Object.entries(GAME_SHORTCUTS).map(([key, shortcut]) => (
                                         <div
                                             key={key}
-                                            className="flex items-center justify-between p-2 rounded-lg bg-white/5"
+                                            className="flex items-center justify-between rounded-lg bg-white/5 p-2"
                                         >
                                             <span className="text-sm">{shortcut.description}</span>
-                                            <kbd className="px-2 py-1 text-xs font-mono bg-black/30 rounded border border-white/20">
-                                                {shortcut.ctrl && "Ctrl+"}
-                                                {shortcut.shift && "Maj+"}
-                                                {shortcut.alt && "Alt+"}
-                                                {shortcut.key === ' ' ? 'Espace' : shortcut.key.toUpperCase()}
+                                            <kbd className="rounded border border-white/20 bg-black/30 px-2 py-1 font-mono text-xs">
+                                                {"ctrl" in shortcut && shortcut.ctrl ? "Ctrl+" : null}
+                                                {"shift" in shortcut && shortcut.shift ? "Maj+" : null}
+                                                {"alt" in shortcut && shortcut.alt ? "Alt+" : null}
+                                                {shortcut.key === " " ? "Espace" : shortcut.key.toUpperCase()}
                                             </kbd>
                                         </div>
                                     ))}
@@ -418,9 +448,9 @@ export function SettingsModal({
 
                                 <Separator />
 
-                                <div className="p-3 rounded-lg bg-cyan-500/10 border border-cyan-500/30">
-                                    <h4 className="font-medium text-sm mb-2">Navigation</h4>
-                                    <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                                <div className="rounded-lg border border-cyan-500/30 bg-cyan-500/10 p-3">
+                                    <h4 className="mb-2 text-sm font-medium">Navigation</h4>
+                                    <div className="text-muted-foreground grid grid-cols-2 gap-2 text-xs">
                                         <div>↑ ↓ ← → : Déplacer la vue</div>
                                         <div>Molette : Zoomer</div>
                                         <div>Glisser : Panoramique</div>
@@ -460,17 +490,14 @@ export function SettingsModal({
                             Exclure {playerToKick?.name} ?
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            Ce joueur sera immédiatement retiré de la partie et redirigé vers le menu principal.
-                            Cette action est irréversible.
+                            Ce joueur sera immédiatement retiré de la partie et redirigé vers le menu principal. Cette
+                            action est irréversible.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Annuler</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={confirmKick}
-                            className="bg-red-500 hover:bg-red-600"
-                        >
-                            <UserX className="h-4 w-4 mr-2" />
+                        <AlertDialogAction onClick={confirmKick} className="bg-red-500 hover:bg-red-600">
+                            <UserX className="mr-2 h-4 w-4" />
                             Exclure
                         </AlertDialogAction>
                     </AlertDialogFooter>

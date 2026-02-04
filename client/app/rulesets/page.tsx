@@ -377,7 +377,7 @@ function PackCard({
             <GameCard className="h-full transition-colors hover:bg-white/10">
                 <div className="mb-3 flex items-start justify-between">
                     <div className="flex items-center gap-2">
-                        {pack.isDefault && <Sparkles className="h-4 w-4 text-yellow-400" />}
+                        {pack.isDefault ? <Sparkles className="h-4 w-4 text-yellow-400" /> : null}
                         <h3 className="text-lg font-bold text-white">{pack.name}</h3>
                     </div>
                     <div className="flex items-center gap-1">
@@ -390,7 +390,7 @@ function PackCard({
                         >
                             <Copy className="h-4 w-4" />
                         </Button>
-                        {!pack.isDefault && onEdit && (
+                        {!pack.isDefault && onEdit ? (
                             <Button
                                 variant="ghost"
                                 size="icon"
@@ -400,8 +400,8 @@ function PackCard({
                             >
                                 <Edit className="h-4 w-4" />
                             </Button>
-                        )}
-                        {!pack.isDefault && onDelete && (
+                        ) : null}
+                        {!pack.isDefault && onDelete ? (
                             <Button
                                 variant="ghost"
                                 size="icon"
@@ -411,11 +411,11 @@ function PackCard({
                             >
                                 <Trash2 className="h-4 w-4" />
                             </Button>
-                        )}
+                        ) : null}
                     </div>
                 </div>
 
-                {pack.description && <p className="text-muted-foreground mb-3 text-sm">{pack.description}</p>}
+                {pack.description ? <p className="text-muted-foreground mb-3 text-sm">{pack.description}</p> : null}
 
                 <div className="mb-3 flex flex-wrap items-center gap-2">
                     <Badge
