@@ -51,57 +51,66 @@ export function useRuleManagement({
     const [draftRule, setDraftRule] = useState<Partial<Rule> | null>(null)
     const [isSelectingTile, setIsSelectingTile] = useState(false)
 
-    const handleSaveRule = useCallback((rule: Rule) => {
-        if (!canModifyRulesNow) {
-            toast.error("Vous ne pouvez pas modifier les règles maintenant")
-            return
-        }
-
-        if (isLocalMode) {
-            if (editingRule) {
-                setRules(prev => prev.map(r => r.id === editingRule.id ? rule : r))
-                toast.success(`Règle "${rule.title}" modifiée !`)
-            } else {
-                setRules(prev => [...prev, rule])
-                toast.success(`Règle "${rule.title}" créée !`)
+    const handleSaveRule = useCallback(
+        (rule: Rule) => {
+            if (!canModifyRulesNow) {
+                toast.error("Vous ne pouvez pas modifier les règles maintenant")
+                return
             }
-            markModificationDone()
-        } else if (activeRoom) {
-            socket.emit('create_rule', rule)
-        }
 
-        setEditingRule(null)
-        setDraftRule(null)
-        setRuleBuilderOpen(false)
-    }, [canModifyRulesNow, isLocalMode, activeRoom, editingRule, markModificationDone, setRules])
+            if (isLocalMode) {
+                if (editingRule) {
+                    setRules((prev) => prev.map((r) => (r.id === editingRule.id ? rule : r)))
+                    toast.success(`Règle "${rule.title}" modifiée !`)
+                } else {
+                    setRules((prev) => [...prev, rule])
+                    toast.success(`Règle "${rule.title}" créée !`)
+                }
+                markModificationDone()
+            } else if (activeRoom) {
+                socket.emit("create_rule", rule)
+            }
 
-    const handleDeleteRule = useCallback((ruleId: string) => {
-        if (!canModifyRulesNow) {
-            toast.error("Vous ne pouvez pas supprimer de règle maintenant")
-            return
-        }
+            setEditingRule(null)
+            setDraftRule(null)
+            setRuleBuilderOpen(false)
+        },
+        [canModifyRulesNow, isLocalMode, activeRoom, editingRule, markModificationDone, setRules]
+    )
 
-        if (isLocalMode) {
-            setRules(prev => prev.filter(r => r.id !== ruleId))
-            toast.info("Règle supprimée")
-            markModificationDone()
-        } else if (activeRoom) {
-            socket.emit('delete_rule', { ruleId })
-        }
-    }, [canModifyRulesNow, isLocalMode, activeRoom, markModificationDone, setRules])
+    const handleDeleteRule = useCallback(
+        (ruleId: string) => {
+            if (!canModifyRulesNow) {
+                toast.error("Vous ne pouvez pas supprimer de règle maintenant")
+                return
+            }
 
-    const handleEditRule = useCallback((rule: Rule) => {
-        if (!canModifyRulesNow) {
-            toast.error("Vous ne pouvez pas modifier les règles maintenant")
-            return
-        }
-        setEditingRule(rule)
-        setRuleBuilderOpen(true)
-    }, [canModifyRulesNow])
+            if (isLocalMode) {
+                setRules((prev) => prev.filter((r) => r.id !== ruleId))
+                toast.info("Règle supprimée")
+                markModificationDone()
+            } else if (activeRoom) {
+                socket.emit("delete_rule", { ruleId })
+            }
+        },
+        [canModifyRulesNow, isLocalMode, activeRoom, markModificationDone, setRules]
+    )
+
+    const handleEditRule = useCallback(
+        (rule: Rule) => {
+            if (!canModifyRulesNow) {
+                toast.error("Vous ne pouvez pas modifier les règles maintenant")
+                return
+            }
+            setEditingRule(rule)
+            setRuleBuilderOpen(true)
+        },
+        [canModifyRulesNow]
+    )
 
     const handleAddRule = useCallback(() => {
         if (!canModifyRulesNow) {
-            if (turnPhase === 'ROLL') {
+            if (turnPhase === "ROLL") {
                 toast.warning("Lancez le dé d'abord")
             } else {
                 toast.error("Vous ne pouvez pas ajouter de règle maintenant")
@@ -113,15 +122,18 @@ export function useRuleManagement({
         setRuleBuilderOpen(true)
     }, [canModifyRulesNow, turnPhase])
 
-    const handleAddRuleFromTemplate = useCallback((rule: Rule) => {
-        if (!canModifyRulesNow) {
-            toast.warning(turnPhase === 'ROLL' ? "Lancez le dé d'abord" : "Modification impossible")
-            return
-        }
-        setRules(prev => [...prev, rule])
-        toast.success(`Règle "${rule.title}" ajoutée !`)
-        markModificationDone()
-    }, [canModifyRulesNow, turnPhase, markModificationDone, setRules])
+    const handleAddRuleFromTemplate = useCallback(
+        (rule: Rule) => {
+            if (!canModifyRulesNow) {
+                toast.warning(turnPhase === "ROLL" ? "Lancez le dé d'abord" : "Modification impossible")
+                return
+            }
+            setRules((prev) => [...prev, rule])
+            toast.success(`Règle "${rule.title}" ajoutée !`)
+            markModificationDone()
+        },
+        [canModifyRulesNow, turnPhase, markModificationDone, setRules]
+    )
 
     const handleStartTileSelection = useCallback((currentData: Partial<Rule>) => {
         setDraftRule(currentData)
@@ -130,16 +142,19 @@ export function useRuleManagement({
         toast.info("Cliquez sur une case du plateau", { icon: "🎯" })
     }, [])
 
-    const handleTileClick = useCallback((index: number) => {
-        if (!isSelectingTile) return
-        setDraftRule(prev => ({
-            ...prev,
-            trigger: { type: TriggerType.ON_LAND, value: index }
-        }))
-        setIsSelectingTile(false)
-        setRuleBuilderOpen(true)
-        toast.success(`Case ${index} sélectionnée`)
-    }, [isSelectingTile])
+    const handleTileClick = useCallback(
+        (index: number) => {
+            if (!isSelectingTile) return
+            setDraftRule((prev) => ({
+                ...prev,
+                trigger: { type: TriggerType.ON_LAND, value: index },
+            }))
+            setIsSelectingTile(false)
+            setRuleBuilderOpen(true)
+            toast.success(`Case ${index} sélectionnée`)
+        },
+        [isSelectingTile]
+    )
 
     return {
         ruleBuilderOpen,

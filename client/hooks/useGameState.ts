@@ -21,13 +21,13 @@ export interface Player {
     position: { x: number; y: number }
     isHost?: boolean
     isBot?: boolean
-    botDifficulty?: 'easy' | 'medium' | 'hard'
+    botDifficulty?: "easy" | "medium" | "hard"
 }
 
 export interface GameConfig {
     mode: "local" | "online"
     action?: "create" | "join"
-    players?: { name: string; color: string; isBot?: boolean; botDifficulty?: 'easy' | 'medium' | 'hard' }[]
+    players?: { name: string; color: string; isBot?: boolean; botDifficulty?: "easy" | "medium" | "hard" }[]
     roomName?: string
     roomCode?: string
     password?: string
@@ -41,7 +41,7 @@ export interface GameConfig {
 export interface ServerPlayer {
     id: string
     name?: string
-    color: 'cyan' | 'violet' | 'orange' | 'green'
+    color: "cyan" | "violet" | "orange" | "green"
     position: number
     score: number
     isHost?: boolean
@@ -49,19 +49,17 @@ export interface ServerPlayer {
     hasModifiedThisTurn?: boolean
 }
 
-export type GameStatus = 'waiting' | 'playing' | 'finished'
+export type GameStatus = "waiting" | "playing" | "finished"
 
 // --- Constants ---
-const createInitialTiles = (): Tile[] => Array.from({ length: 20 }, (_, i) => ({
-    id: `tile-${i}`,
-    x: i - 10,
-    y: 0,
-    type: i === 0 ? "start" : "normal" as const,
-    connections: [
-        ...(i > 0 ? [`tile-${i - 1}`] : []),
-        ...(i < 19 ? [`tile-${i + 1}`] : [])
-    ],
-}))
+const createInitialTiles = (): Tile[] =>
+    Array.from({ length: 20 }, (_, i) => ({
+        id: `tile-${i}`,
+        x: i - 10,
+        y: 0,
+        type: i === 0 ? "start" : ("normal" as const),
+        connections: [...(i > 0 ? [`tile-${i - 1}`] : []), ...(i < 19 ? [`tile-${i + 1}`] : [])],
+    }))
 
 export interface UseGameStateReturn {
     // State
@@ -95,38 +93,47 @@ export function useGameState(gameConfig?: GameConfig): UseGameStateReturn {
     const [rules, setRules] = useState<Rule[]>([])
     const [coreRules, setCoreRules] = useState<Rule[]>([])
     const [winner, setWinner] = useState<{ id: string; name: string; color?: string } | null>(null)
-    const [gameStatus, setGameStatus] = useState<GameStatus>('waiting')
+    const [gameStatus, setGameStatus] = useState<GameStatus>("waiting")
 
     // Computed
-    const isLocalMode = gameConfig?.mode === 'local'
+    const isLocalMode = gameConfig?.mode === "local"
     const allRules = useMemo(() => [...rules, ...coreRules], [rules, coreRules])
 
     // Helpers
-    const getCoordinatesFromIndex = useCallback((index: number) => {
-        const tile = tiles[index]
-        if (tile) return { x: tile.x, y: tile.y }
-        return { x: -10, y: 0 }
-    }, [tiles])
+    const getCoordinatesFromIndex = useCallback(
+        (index: number) => {
+            const tile = tiles[index]
+            if (tile) return { x: tile.x, y: tile.y }
+            return { x: -10, y: 0 }
+        },
+        [tiles]
+    )
 
-    const getTileIndexFromCoords = useCallback((x: number, y: number) => {
-        return tiles.findIndex(t => t.x === x && t.y === y)
-    }, [tiles])
+    const getTileIndexFromCoords = useCallback(
+        (x: number, y: number) => {
+            return tiles.findIndex((t) => t.x === x && t.y === y)
+        },
+        [tiles]
+    )
 
-    const mapServerPlayersToClient = useCallback((serverPlayers: ServerPlayer[]): Player[] => {
-        return serverPlayers.map((p, idx) => {
-            const tileIndex = Math.min(p.position, tiles.length - 1)
-            const coords = getCoordinatesFromIndex(tileIndex)
-            return {
-                id: p.id,
-                name: p.name || `Joueur ${idx + 1}`,
-                avatar: `/cyberpunk-avatar-${(idx % 4) + 1}.png`,
-                score: p.score,
-                color: p.color,
-                position: coords,
-                isHost: p.isHost,
-            }
-        })
-    }, [getCoordinatesFromIndex, tiles.length])
+    const mapServerPlayersToClient = useCallback(
+        (serverPlayers: ServerPlayer[]): Player[] => {
+            return serverPlayers.map((p, idx) => {
+                const tileIndex = Math.min(p.position, tiles.length - 1)
+                const coords = getCoordinatesFromIndex(tileIndex)
+                return {
+                    id: p.id,
+                    name: p.name || `Joueur ${idx + 1}`,
+                    avatar: `/cyberpunk-avatar-${(idx % 4) + 1}.png`,
+                    score: p.score,
+                    color: p.color,
+                    position: coords,
+                    isHost: p.isHost,
+                }
+            })
+        },
+        [getCoordinatesFromIndex, tiles.length]
+    )
 
     return {
         tiles,

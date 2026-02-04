@@ -12,7 +12,7 @@ interface ServerGameState {
     tiles: { id: string; type: string; index: number; position?: { x: number; y: number }; connections?: string[] }[]
     players: ServerPlayer[]
     currentTurn: string
-    status: 'waiting' | 'playing' | 'finished'
+    status: "waiting" | "playing" | "finished"
     winnerId?: string | null
     activeRules?: Rule[]
     coreRules?: Rule[]
@@ -26,7 +26,7 @@ interface ServerGameState {
 export interface GameConfig {
     mode: "local" | "online"
     action?: "create" | "join"
-    players?: { name: string; color: string; isBot?: boolean; botDifficulty?: 'easy' | 'medium' | 'hard' }[]
+    players?: { name: string; color: string; isBot?: boolean; botDifficulty?: "easy" | "medium" | "hard" }[]
     roomName?: string
     roomCode?: string
     password?: string
@@ -93,7 +93,7 @@ export function useSocketEvents({
             setIsConnected(true)
             toast.success("Connecté au serveur")
 
-            if (gameConfig?.action === 'create') {
+            if (gameConfig?.action === "create") {
                 const roomId = Math.random().toString(36).substring(2, 8).toUpperCase()
                 socket.emit("create_room", {
                     roomId,
@@ -104,7 +104,7 @@ export function useSocketEvents({
                     rulePackId: gameConfig.rulePackId,
                     playerName: gameConfig.playerName,
                 })
-            } else if (gameConfig?.action === 'join' && gameConfig.roomCode) {
+            } else if (gameConfig?.action === "join" && gameConfig.roomCode) {
                 socket.emit("join_room", gameConfig.roomCode, {
                     password: gameConfig.password,
                     playerName: gameConfig.playerName,
@@ -129,14 +129,14 @@ export function useSocketEvents({
             setGameStatus(gameState.status)
             setAllowRuleEdit(gameState.allowRuleEdit ?? true)
 
-            const me = gameState.players.find(p => p.id === socket.id)
+            const me = gameState.players.find((p) => p.id === socket.id)
             setIsHost(me?.isHost ?? false)
 
             if (me) {
                 if (me.hasPlayedThisTurn) {
-                    setTurnPhase('MODIFY')
+                    setTurnPhase("MODIFY")
                 } else {
-                    setTurnPhase('ROLL')
+                    setTurnPhase("ROLL")
                 }
             }
 
@@ -149,21 +149,23 @@ export function useSocketEvents({
             if (gameState.coreRules) setCoreRules(gameState.coreRules)
 
             if (gameState.tiles?.length > 0 && gameState.tiles[0].position) {
-                setTiles(gameState.tiles.map((t, i) => ({
-                    id: t.id,
-                    x: t.position?.x ?? i - 10,
-                    y: t.position?.y ?? 0,
-                    type: t.type as 'normal' | 'special' | 'start' | 'end',
-                    connections: t.connections || []
-                })))
+                setTiles(
+                    gameState.tiles.map((t, i) => ({
+                        id: t.id,
+                        x: t.position?.x ?? i - 10,
+                        y: t.position?.y ?? 0,
+                        type: t.type as "normal" | "special" | "start" | "end",
+                        connections: t.connections || [],
+                    }))
+                )
             }
 
-            if (gameState.status === 'finished' && gameState.winnerId) {
-                const winningPlayer = gameState.players.find(p => p.id === gameState.winnerId)
+            if (gameState.status === "finished" && gameState.winnerId) {
+                const winningPlayer = gameState.players.find((p) => p.id === gameState.winnerId)
                 if (winningPlayer) {
                     setWinner({
                         id: gameState.winnerId,
-                        name: winningPlayer.name || 'Joueur',
+                        name: winningPlayer.name || "Joueur",
                         color: winningPlayer.color,
                     })
                 }
@@ -182,23 +184,23 @@ export function useSocketEvents({
                     setIsRolling(false)
                     setPlayers(mapServerPlayersToClient(data.players))
                     setCurrentTurnId(data.currentTurn)
-                    setTurnPhase('MODIFY')
+                    setTurnPhase("MODIFY")
                     toast.info(`Résultat : ${data.diceValue}`, { icon: "🎲" })
                 }
             }, 50)
         }
 
         const onGameOver = (data: { winnerId: string; winnerName: string }) => {
-            const winningPlayer = players.find(p => String(p.id) === data.winnerId)
+            const winningPlayer = players.find((p) => String(p.id) === data.winnerId)
             setWinner({ id: data.winnerId, name: data.winnerName, color: winningPlayer?.color })
-            setGameStatus('finished')
+            setGameStatus("finished")
         }
 
         const onRematchStarted = (gameState: ServerGameState) => {
             setPlayers(mapServerPlayersToClient(gameState.players))
             setCurrentTurnId(gameState.currentTurn)
-            setGameStatus('playing')
-            setTurnPhase('ROLL')
+            setGameStatus("playing")
+            setTurnPhase("ROLL")
             setWinner(null)
             setDiceValue(null)
             if (gameState.activeRules) setRules(gameState.activeRules)
