@@ -42,9 +42,9 @@ export default function GamePage() {
 
     if (isLoading || !config) {
         return (
-            <div className="min-h-screen bg-background flex items-center justify-center">
-                <div className="text-center space-y-4">
-                    <div className="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto" />
+            <div className="bg-background flex min-h-screen items-center justify-center">
+                <div className="space-y-4 text-center">
+                    <div className="mx-auto h-16 w-16 animate-spin rounded-full border-4 border-cyan-500 border-t-transparent" />
                     <p className="text-muted-foreground">Chargement de la partie...</p>
                 </div>
             </div>

@@ -3,589 +3,590 @@
 import { Rule, TriggerType, ActionType, ConditionType } from "@/src/types/rules"
 
 export interface RuleCategory {
-  id: string
-  name: string
-  icon: string
-  description: string
-  color: string
+    id: string
+    name: string
+    icon: string
+    description: string
+    color: string
 }
 
 export const RULE_CATEGORIES: RuleCategory[] = [
-  { id: "movement", name: "Déplacement", icon: "🏃", description: "Règles de mouvement", color: "cyan" },
-  { id: "score", name: "Score", icon: "⭐", description: "Points et bonus", color: "yellow" },
-  { id: "power-up", name: "Pouvoirs", icon: "⚡", description: "Pouvoirs spéciaux", color: "violet" },
-  { id: "interaction", name: "Interaction", icon: "👥", description: "Interaction entre joueurs", color: "green" },
-  { id: "dice", name: "Dé", icon: "🎲", description: "Manipulation du dé", color: "orange" },
-  { id: "special", name: "Spécial", icon: "✨", description: "Effets spéciaux", color: "pink" },
-  { id: "penalty", name: "Pénalité", icon: "⛔", description: "Malus et pénalités", color: "red" },
-  { id: "victory", name: "Victoire", icon: "🏆", description: "Conditions de victoire", color: "gold" },
+    { id: "movement", name: "Déplacement", icon: "🏃", description: "Règles de mouvement", color: "cyan" },
+    { id: "score", name: "Score", icon: "⭐", description: "Points et bonus", color: "yellow" },
+    { id: "power-up", name: "Pouvoirs", icon: "⚡", description: "Pouvoirs spéciaux", color: "violet" },
+    { id: "interaction", name: "Interaction", icon: "👥", description: "Interaction entre joueurs", color: "green" },
+    { id: "dice", name: "Dé", icon: "🎲", description: "Manipulation du dé", color: "orange" },
+    { id: "special", name: "Spécial", icon: "✨", description: "Effets spéciaux", color: "pink" },
+    { id: "penalty", name: "Pénalité", icon: "⛔", description: "Malus et pénalités", color: "red" },
+    { id: "victory", name: "Victoire", icon: "🏆", description: "Conditions de victoire", color: "gold" },
 ]
 
 export const RULE_TEMPLATES: Rule[] = [
-  // === DÉPLACEMENT (10 règles) ===
-  {
-    id: "tpl-advance-3",
-    title: "Sprint",
-    description: "Avancer de 3 cases supplémentaires",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.MOVE_RELATIVE, value: 3, target: "self" }],
-    tags: ["movement", "bonus"]
-  },
-  {
-    id: "tpl-retreat-2",
-    title: "Recul",
-    description: "Reculer de 2 cases",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.MOVE_RELATIVE, value: -2, target: "self" }],
-    tags: ["movement", "penalty"]
-  },
-  {
-    id: "tpl-teleport-start",
-    title: "Retour au départ",
-    description: "Renvoie le joueur au départ",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.BACK_TO_START, value: 0, target: "self" }],
-    tags: ["movement", "penalty"]
-  },
-  {
-    id: "tpl-teleport-random",
-    title: "Portail aléatoire",
-    description: "Téléporte vers une case aléatoire",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.MOVE_RANDOM, value: 0, target: "self" }],
-    tags: ["movement", "special"]
-  },
-  {
-    id: "tpl-swap-leader",
-    title: "Échange avec le leader",
-    description: "Échange de position avec le premier",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.SWAP_POSITIONS, value: 0, target: "leader" }],
-    tags: ["movement", "interaction"]
-  },
-  {
-    id: "tpl-move-to-nearest",
-    title: "Vers le plus proche",
-    description: "Rejoint le joueur le plus proche",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.MOVE_TO_NEAREST_PLAYER, value: 0, target: "self" }],
-    tags: ["movement", "interaction"]
-  },
-  {
-    id: "tpl-move-to-furthest",
-    title: "Vers le plus loin",
-    description: "Rejoint le joueur le plus éloigné",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.MOVE_TO_FURTHEST_PLAYER, value: 0, target: "self" }],
-    tags: ["movement", "interaction"]
-  },
-  {
-    id: "tpl-speed-boost",
-    title: "Boost de vitesse",
-    description: "+2 cases pendant 3 tours",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.APPLY_SPEED_BOOST, value: 2, target: "self", duration: 3 }],
-    tags: ["movement", "power-up"]
-  },
-  {
-    id: "tpl-slow-down",
-    title: "Zone de ralentissement",
-    description: "-1 case pendant 2 tours",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.APPLY_SLOW, value: 1, target: "self", duration: 2 }],
-    tags: ["movement", "penalty"]
-  },
-  {
-    id: "tpl-teleport-specific",
-    title: "Téléporteur fixe",
-    description: "Téléporte vers la case 10",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.TELEPORT, value: 10, target: "self" }],
-    tags: ["movement", "special"]
-  },
+    // === DÉPLACEMENT (10 règles) ===
+    {
+        id: "tpl-advance-3",
+        title: "Sprint",
+        description: "Avancer de 3 cases supplémentaires",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.MOVE_RELATIVE, value: 3, target: "self" }],
+        tags: ["movement", "bonus"],
+    },
+    {
+        id: "tpl-retreat-2",
+        title: "Recul",
+        description: "Reculer de 2 cases",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.MOVE_RELATIVE, value: -2, target: "self" }],
+        tags: ["movement", "penalty"],
+    },
+    {
+        id: "tpl-teleport-start",
+        title: "Retour au départ",
+        description: "Renvoie le joueur au départ",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.BACK_TO_START, value: 0, target: "self" }],
+        tags: ["movement", "penalty"],
+    },
+    {
+        id: "tpl-teleport-random",
+        title: "Portail aléatoire",
+        description: "Téléporte vers une case aléatoire",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.MOVE_RANDOM, value: 0, target: "self" }],
+        tags: ["movement", "special"],
+    },
+    {
+        id: "tpl-swap-leader",
+        title: "Échange avec le leader",
+        description: "Échange de position avec le premier",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.SWAP_POSITIONS, value: 0, target: "leader" }],
+        tags: ["movement", "interaction"],
+    },
+    {
+        id: "tpl-move-to-nearest",
+        title: "Vers le plus proche",
+        description: "Rejoint le joueur le plus proche",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.MOVE_TO_NEAREST_PLAYER, value: 0, target: "self" }],
+        tags: ["movement", "interaction"],
+    },
+    {
+        id: "tpl-move-to-furthest",
+        title: "Vers le plus loin",
+        description: "Rejoint le joueur le plus éloigné",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.MOVE_TO_FURTHEST_PLAYER, value: 0, target: "self" }],
+        tags: ["movement", "interaction"],
+    },
+    {
+        id: "tpl-speed-boost",
+        title: "Boost de vitesse",
+        description: "+2 cases pendant 3 tours",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.APPLY_SPEED_BOOST, value: 2, target: "self", duration: 3 }],
+        tags: ["movement", "power-up"],
+    },
+    {
+        id: "tpl-slow-down",
+        title: "Zone de ralentissement",
+        description: "-1 case pendant 2 tours",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.APPLY_SLOW, value: 1, target: "self", duration: 2 }],
+        tags: ["movement", "penalty"],
+    },
+    {
+        id: "tpl-teleport-specific",
+        title: "Téléporteur fixe",
+        description: "Téléporte vers la case 10",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.TELEPORT, value: 10, target: "self" }],
+        tags: ["movement", "special"],
+    },
 
-  // === SCORE (10 règles) ===
-  {
-    id: "tpl-bonus-5",
-    title: "Bonus de points",
-    description: "Gagner 5 points",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.MODIFY_SCORE, value: 5, target: "self" }],
-    tags: ["score", "bonus"]
-  },
-  {
-    id: "tpl-malus-3",
-    title: "Perte de points",
-    description: "Perdre 3 points",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.MODIFY_SCORE, value: -3, target: "self" }],
-    tags: ["score", "penalty"]
-  },
-  {
-    id: "tpl-steal-points",
-    title: "Vol de points",
-    description: "Voler 3 points au leader",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.APPLY_STEAL_POINTS, value: 3, target: "leader" }],
-    tags: ["score", "interaction"]
-  },
-  {
-    id: "tpl-double-score-on-6",
-    title: "Jackpot sur 6",
-    description: "Double les points sur un 6",
-    trigger: { type: TriggerType.ON_DICE_ROLL, value: 6 },
-    conditions: [],
-    effects: [{ type: ActionType.MODIFY_SCORE, value: 10, target: "self" }],
-    tags: ["score", "dice"]
-  },
-  {
-    id: "tpl-bonus-first",
-    title: "Prime du leader",
-    description: "Le premier gagne 2 points par tour",
-    trigger: { type: TriggerType.ON_TURN_END },
-    conditions: [{ type: ConditionType.PLAYER_RANK, operator: "eq", value: 1, target: "self" }],
-    effects: [{ type: ActionType.MODIFY_SCORE, value: 2, target: "self" }],
-    tags: ["score", "bonus"]
-  },
-  {
-    id: "tpl-penalty-last",
-    title: "Malus du dernier",
-    description: "Le dernier perd 1 point par tour",
-    trigger: { type: TriggerType.ON_TURN_END },
-    conditions: [{ type: ConditionType.PLAYER_RANK, operator: "eq", value: -1, target: "self" }],
-    effects: [{ type: ActionType.MODIFY_SCORE, value: -1, target: "self" }],
-    tags: ["score", "penalty"]
-  },
-  {
-    id: "tpl-score-share",
-    title: "Partage des points",
-    description: "Tous gagnent 1 point",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.MODIFY_SCORE, value: 1, target: "all" }],
-    tags: ["score", "interaction"]
-  },
-  {
-    id: "tpl-score-threshold-bonus",
-    title: "Bonus de palier",
-    description: "+10 points en atteignant 20 points",
-    trigger: { type: TriggerType.ON_SCORE_THRESHOLD, value: 20 },
-    conditions: [],
-    effects: [{ type: ActionType.MODIFY_SCORE, value: 10, target: "self" }],
-    tags: ["score", "bonus"]
-  },
-  {
-    id: "tpl-overtake-bonus",
-    title: "Bonus de dépassement",
-    description: "+3 points en dépassant un joueur",
-    trigger: { type: TriggerType.ON_OVERTAKE },
-    conditions: [],
-    effects: [{ type: ActionType.MODIFY_SCORE, value: 3, target: "self" }],
-    tags: ["score", "interaction"]
-  },
-  {
-    id: "tpl-mega-bonus",
-    title: "Méga bonus",
-    description: "Gagner 15 points",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.MODIFY_SCORE, value: 15, target: "self" }],
-    tags: ["score", "bonus"]
-  },
+    // === SCORE (10 règles) ===
+    {
+        id: "tpl-bonus-5",
+        title: "Bonus de points",
+        description: "Gagner 5 points",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.MODIFY_SCORE, value: 5, target: "self" }],
+        tags: ["score", "bonus"],
+    },
+    {
+        id: "tpl-malus-3",
+        title: "Perte de points",
+        description: "Perdre 3 points",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.MODIFY_SCORE, value: -3, target: "self" }],
+        tags: ["score", "penalty"],
+    },
+    {
+        id: "tpl-steal-points",
+        title: "Vol de points",
+        description: "Voler 3 points au leader",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.APPLY_STEAL_POINTS, value: 3, target: "leader" }],
+        tags: ["score", "interaction"],
+    },
+    {
+        id: "tpl-double-score-on-6",
+        title: "Jackpot sur 6",
+        description: "Double les points sur un 6",
+        trigger: { type: TriggerType.ON_DICE_ROLL, value: 6 },
+        conditions: [],
+        effects: [{ type: ActionType.MODIFY_SCORE, value: 10, target: "self" }],
+        tags: ["score", "dice"],
+    },
+    {
+        id: "tpl-bonus-first",
+        title: "Prime du leader",
+        description: "Le premier gagne 2 points par tour",
+        trigger: { type: TriggerType.ON_TURN_END },
+        conditions: [{ type: ConditionType.PLAYER_RANK, operator: "eq", value: 1, target: "self" }],
+        effects: [{ type: ActionType.MODIFY_SCORE, value: 2, target: "self" }],
+        tags: ["score", "bonus"],
+    },
+    {
+        id: "tpl-penalty-last",
+        title: "Malus du dernier",
+        description: "Le dernier perd 1 point par tour",
+        trigger: { type: TriggerType.ON_TURN_END },
+        conditions: [{ type: ConditionType.PLAYER_RANK, operator: "eq", value: -1, target: "self" }],
+        effects: [{ type: ActionType.MODIFY_SCORE, value: -1, target: "self" }],
+        tags: ["score", "penalty"],
+    },
+    {
+        id: "tpl-score-share",
+        title: "Partage des points",
+        description: "Tous gagnent 1 point",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.MODIFY_SCORE, value: 1, target: "all" }],
+        tags: ["score", "interaction"],
+    },
+    {
+        id: "tpl-score-threshold-bonus",
+        title: "Bonus de palier",
+        description: "+10 points en atteignant 20 points",
+        trigger: { type: TriggerType.ON_SCORE_THRESHOLD, value: 20 },
+        conditions: [],
+        effects: [{ type: ActionType.MODIFY_SCORE, value: 10, target: "self" }],
+        tags: ["score", "bonus"],
+    },
+    {
+        id: "tpl-overtake-bonus",
+        title: "Bonus de dépassement",
+        description: "+3 points en dépassant un joueur",
+        trigger: { type: TriggerType.ON_OVERTAKE },
+        conditions: [],
+        effects: [{ type: ActionType.MODIFY_SCORE, value: 3, target: "self" }],
+        tags: ["score", "interaction"],
+    },
+    {
+        id: "tpl-mega-bonus",
+        title: "Méga bonus",
+        description: "Gagner 15 points",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.MODIFY_SCORE, value: 15, target: "self" }],
+        tags: ["score", "bonus"],
+    },
 
-  // === POUVOIRS (10 règles) ===
-  {
-    id: "tpl-shield",
-    title: "Bouclier protecteur",
-    description: "Protection pendant 2 tours",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.APPLY_SHIELD, value: 1, target: "self", duration: 2 }],
-    tags: ["power-up", "defense"]
-  },
-  {
-    id: "tpl-double-dice",
-    title: "Dé doublé",
-    description: "Double le dé pendant 1 tour",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.APPLY_DOUBLE_DICE, value: 1, target: "self", duration: 1 }],
-    tags: ["power-up", "dice"]
-  },
-  {
-    id: "tpl-invisibility",
-    title: "Invisibilité",
-    description: "Impossible à cibler pendant 2 tours",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.APPLY_INVISIBILITY, value: 1, target: "self", duration: 2 }],
-    tags: ["power-up", "defense"]
-  },
-  {
-    id: "tpl-extra-turn",
-    title: "Tour bonus",
-    description: "Gagner un tour supplémentaire",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.EXTRA_TURN, value: 1, target: "self" }],
-    tags: ["power-up", "turn"]
-  },
-  {
-    id: "tpl-skip-others",
-    title: "Gel des adversaires",
-    description: "Les autres passent leur tour",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.SKIP_TURN, value: 1, target: "others" }],
-    tags: ["power-up", "interaction"]
-  },
-  {
-    id: "tpl-copy-effect",
-    title: "Copie d'effet",
-    description: "Copier le dernier effet joué",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.COPY_LAST_EFFECT, value: 0, target: "self" }],
-    tags: ["power-up", "special"]
-  },
-  {
-    id: "tpl-reverse-effect",
-    title: "Inversion d'effet",
-    description: "Inverser le dernier effet",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.REVERSE_LAST_EFFECT, value: 0, target: "self" }],
-    tags: ["power-up", "special"]
-  },
-  {
-    id: "tpl-reroll",
-    title: "Relance du dé",
-    description: "Possibilité de relancer le dé",
-    trigger: { type: TriggerType.ON_DICE_ROLL, value: 1 },
-    conditions: [],
-    effects: [{ type: ActionType.REROLL_DICE, value: 1, target: "self" }],
-    tags: ["power-up", "dice"]
-  },
-  {
-    id: "tpl-dice-min-3",
-    title: "Dé minimum 3",
-    description: "Le dé fait au minimum 3",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.SET_DICE_MIN, value: 3, target: "self", duration: 2 }],
-    tags: ["power-up", "dice"]
-  },
-  {
-    id: "tpl-dice-max-4",
-    title: "Dé limité à 4",
-    description: "Le dé fait au maximum 4",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.SET_DICE_MAX, value: 4, target: "self", duration: 2 }],
-    tags: ["penalty", "dice"]
-  },
+    // === POUVOIRS (10 règles) ===
+    {
+        id: "tpl-shield",
+        title: "Bouclier protecteur",
+        description: "Protection pendant 2 tours",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.APPLY_SHIELD, value: 1, target: "self", duration: 2 }],
+        tags: ["power-up", "defense"],
+    },
+    {
+        id: "tpl-double-dice",
+        title: "Dé doublé",
+        description: "Double le dé pendant 1 tour",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.APPLY_DOUBLE_DICE, value: 1, target: "self", duration: 1 }],
+        tags: ["power-up", "dice"],
+    },
+    {
+        id: "tpl-invisibility",
+        title: "Invisibilité",
+        description: "Impossible à cibler pendant 2 tours",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.APPLY_INVISIBILITY, value: 1, target: "self", duration: 2 }],
+        tags: ["power-up", "defense"],
+    },
+    {
+        id: "tpl-extra-turn",
+        title: "Tour bonus",
+        description: "Gagner un tour supplémentaire",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.EXTRA_TURN, value: 1, target: "self" }],
+        tags: ["power-up", "turn"],
+    },
+    {
+        id: "tpl-skip-others",
+        title: "Gel des adversaires",
+        description: "Les autres passent leur tour",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.SKIP_TURN, value: 1, target: "others" }],
+        tags: ["power-up", "interaction"],
+    },
+    {
+        id: "tpl-copy-effect",
+        title: "Copie d'effet",
+        description: "Copier le dernier effet joué",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.COPY_LAST_EFFECT, value: 0, target: "self" }],
+        tags: ["power-up", "special"],
+    },
+    {
+        id: "tpl-reverse-effect",
+        title: "Inversion d'effet",
+        description: "Inverser le dernier effet",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.REVERSE_LAST_EFFECT, value: 0, target: "self" }],
+        tags: ["power-up", "special"],
+    },
+    {
+        id: "tpl-reroll",
+        title: "Relance du dé",
+        description: "Possibilité de relancer le dé",
+        trigger: { type: TriggerType.ON_DICE_ROLL, value: 1 },
+        conditions: [],
+        effects: [{ type: ActionType.REROLL_DICE, value: 1, target: "self" }],
+        tags: ["power-up", "dice"],
+    },
+    {
+        id: "tpl-dice-min-3",
+        title: "Dé minimum 3",
+        description: "Le dé fait au minimum 3",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.SET_DICE_MIN, value: 3, target: "self", duration: 2 }],
+        tags: ["power-up", "dice"],
+    },
+    {
+        id: "tpl-dice-max-4",
+        title: "Dé limité à 4",
+        description: "Le dé fait au maximum 4",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.SET_DICE_MAX, value: 4, target: "self", duration: 2 }],
+        tags: ["penalty", "dice"],
+    },
 
-  // === INTERACTION (10 règles) ===
-  {
-    id: "tpl-same-tile-swap",
-    title: "Choc de titans",
-    description: "Échange si même case qu'un joueur",
-    trigger: { type: TriggerType.ON_SAME_TILE },
-    conditions: [],
-    effects: [{ type: ActionType.SWAP_POSITIONS, value: 0, target: "random" }],
-    tags: ["interaction", "movement"]
-  },
-  {
-    id: "tpl-bypass-bonus",
-    title: "Bonus de dépassement",
-    description: "+2 cases en dépassant un joueur",
-    trigger: { type: TriggerType.ON_PLAYER_BYPASS },
-    conditions: [],
-    effects: [{ type: ActionType.MOVE_RELATIVE, value: 2, target: "self" }],
-    tags: ["interaction", "movement"]
-  },
-  {
-    id: "tpl-overtaken-penalty",
-    title: "Pénalité de dépassement",
-    description: "Reculer de 1 case si dépassé",
-    trigger: { type: TriggerType.ON_GET_OVERTAKEN },
-    conditions: [],
-    effects: [{ type: ActionType.MOVE_RELATIVE, value: -1, target: "self" }],
-    tags: ["interaction", "penalty"]
-  },
-  {
-    id: "tpl-leader-target",
-    title: "Cible du leader",
-    description: "Le leader recule de 3 cases",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.MOVE_RELATIVE, value: -3, target: "leader" }],
-    tags: ["interaction", "penalty"]
-  },
-  {
-    id: "tpl-last-boost",
-    title: "Coup de pouce",
-    description: "Le dernier avance de 5 cases",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.MOVE_RELATIVE, value: 5, target: "last" }],
-    tags: ["interaction", "bonus"]
-  },
-  {
-    id: "tpl-everyone-back",
-    title: "Recul général",
-    description: "Tous reculent de 2 cases",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.MOVE_RELATIVE, value: -2, target: "all" }],
-    tags: ["interaction", "penalty"]
-  },
-  {
-    id: "tpl-random-swap",
-    title: "Échange aléatoire",
-    description: "Échange avec un joueur au hasard",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.SWAP_POSITIONS, value: 0, target: "random" }],
-    tags: ["interaction", "special"]
-  },
-  {
-    id: "tpl-steal-turn",
-    title: "Vol de tour",
-    description: "Le joueur ciblé passe son tour",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.SKIP_TURN, value: 1, target: "random" }],
-    tags: ["interaction", "penalty"]
-  },
-  {
-    id: "tpl-group-bonus",
-    title: "Bonus de groupe",
-    description: "Si 2+ joueurs sur 5 cases, +3 points",
-    trigger: { type: TriggerType.ON_SAME_TILE },
-    conditions: [],
-    effects: [{ type: ActionType.MODIFY_SCORE, value: 3, target: "self" }],
-    tags: ["interaction", "score"]
-  },
-  {
-    id: "tpl-chain-reaction",
-    title: "Réaction en chaîne",
-    description: "Tous les autres reculent de 1 case",
-    trigger: { type: TriggerType.ON_LAND },
-    conditions: [],
-    effects: [{ type: ActionType.MOVE_RELATIVE, value: -1, target: "others" }],
-    tags: ["interaction", "penalty"]
-  },
+    // === INTERACTION (10 règles) ===
+    {
+        id: "tpl-same-tile-swap",
+        title: "Choc de titans",
+        description: "Échange si même case qu'un joueur",
+        trigger: { type: TriggerType.ON_SAME_TILE },
+        conditions: [],
+        effects: [{ type: ActionType.SWAP_POSITIONS, value: 0, target: "random" }],
+        tags: ["interaction", "movement"],
+    },
+    {
+        id: "tpl-bypass-bonus",
+        title: "Bonus de dépassement",
+        description: "+2 cases en dépassant un joueur",
+        trigger: { type: TriggerType.ON_PLAYER_BYPASS },
+        conditions: [],
+        effects: [{ type: ActionType.MOVE_RELATIVE, value: 2, target: "self" }],
+        tags: ["interaction", "movement"],
+    },
+    {
+        id: "tpl-overtaken-penalty",
+        title: "Pénalité de dépassement",
+        description: "Reculer de 1 case si dépassé",
+        trigger: { type: TriggerType.ON_GET_OVERTAKEN },
+        conditions: [],
+        effects: [{ type: ActionType.MOVE_RELATIVE, value: -1, target: "self" }],
+        tags: ["interaction", "penalty"],
+    },
+    {
+        id: "tpl-leader-target",
+        title: "Cible du leader",
+        description: "Le leader recule de 3 cases",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.MOVE_RELATIVE, value: -3, target: "leader" }],
+        tags: ["interaction", "penalty"],
+    },
+    {
+        id: "tpl-last-boost",
+        title: "Coup de pouce",
+        description: "Le dernier avance de 5 cases",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.MOVE_RELATIVE, value: 5, target: "last" }],
+        tags: ["interaction", "bonus"],
+    },
+    {
+        id: "tpl-everyone-back",
+        title: "Recul général",
+        description: "Tous reculent de 2 cases",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.MOVE_RELATIVE, value: -2, target: "all" }],
+        tags: ["interaction", "penalty"],
+    },
+    {
+        id: "tpl-random-swap",
+        title: "Échange aléatoire",
+        description: "Échange avec un joueur au hasard",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.SWAP_POSITIONS, value: 0, target: "random" }],
+        tags: ["interaction", "special"],
+    },
+    {
+        id: "tpl-steal-turn",
+        title: "Vol de tour",
+        description: "Le joueur ciblé passe son tour",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.SKIP_TURN, value: 1, target: "random" }],
+        tags: ["interaction", "penalty"],
+    },
+    {
+        id: "tpl-group-bonus",
+        title: "Bonus de groupe",
+        description: "Si 2+ joueurs sur 5 cases, +3 points",
+        trigger: { type: TriggerType.ON_SAME_TILE },
+        conditions: [],
+        effects: [{ type: ActionType.MODIFY_SCORE, value: 3, target: "self" }],
+        tags: ["interaction", "score"],
+    },
+    {
+        id: "tpl-chain-reaction",
+        title: "Réaction en chaîne",
+        description: "Tous les autres reculent de 1 case",
+        trigger: { type: TriggerType.ON_LAND },
+        conditions: [],
+        effects: [{ type: ActionType.MOVE_RELATIVE, value: -1, target: "others" }],
+        tags: ["interaction", "penalty"],
+    },
 
-  // === DÉ (8 règles) ===
-  {
-    id: "tpl-lucky-6",
-    title: "6 chanceux",
-    description: "Sur un 6, tour supplémentaire",
-    trigger: { type: TriggerType.ON_DICE_ROLL, value: 6 },
-    conditions: [],
-    effects: [{ type: ActionType.EXTRA_TURN, value: 1, target: "self" }],
-    tags: ["dice", "bonus"]
-  },
-  {
-    id: "tpl-unlucky-1",
-    title: "1 malchanceux",
-    description: "Sur un 1, perdre 5 points",
-    trigger: { type: TriggerType.ON_DICE_ROLL, value: 1 },
-    conditions: [],
-    effects: [{ type: ActionType.MODIFY_SCORE, value: -5, target: "self" }],
-    tags: ["dice", "penalty"]
-  },
-  {
-    id: "tpl-triple-6",
-    title: "Triple 6",
-    description: "3x 6 consécutifs = retour départ",
-    trigger: { type: TriggerType.ON_CONSECUTIVE_SIX, value: 3 },
-    conditions: [],
-    effects: [{ type: ActionType.BACK_TO_START, value: 0, target: "self" }],
-    tags: ["dice", "penalty"]
-  },
-  {
-    id: "tpl-even-bonus",
-    title: "Nombre pair",
-    description: "Dé pair = +2 points",
-    trigger: { type: TriggerType.ON_DICE_ROLL, value: 2 },
-    conditions: [],
-    effects: [{ type: ActionType.MODIFY_SCORE, value: 2, target: "self" }],
-    tags: ["dice", "score"]
-  },
-  {
-    id: "tpl-odd-bonus",
-    title: "Nombre impair",
-    description: "Dé impair = +1 case",
-    trigger: { type: TriggerType.ON_DICE_ROLL, value: 3 },
-    conditions: [],
-    effects: [{ type: ActionType.MOVE_RELATIVE, value: 1, target: "self" }],
-    tags: ["dice", "movement"]
-  },
-  {
-    id: "tpl-perfect-4",
-    title: "4 parfait",
-    description: "Sur un 4, bouclier activé",
-    trigger: { type: TriggerType.ON_DICE_ROLL, value: 4 },
-    conditions: [],
-    effects: [{ type: ActionType.APPLY_SHIELD, value: 1, target: "self", duration: 1 }],
-    tags: ["dice", "power-up"]
-  },
-  {
-    id: "tpl-dice-5-teleport",
-    title: "5 mystique",
-    description: "Sur un 5, téléportation aléatoire",
-    trigger: { type: TriggerType.ON_DICE_ROLL, value: 5 },
-    conditions: [],
-    effects: [{ type: ActionType.MOVE_RANDOM, value: 0, target: "self" }],
-    tags: ["dice", "special"]
-  },
-  {
-    id: "tpl-double-on-2",
-    title: "Double sur 2",
-    description: "Sur un 2, avancer de 4 cases",
-    trigger: { type: TriggerType.ON_DICE_ROLL, value: 2 },
-    conditions: [],
-    effects: [{ type: ActionType.MOVE_RELATIVE, value: 4, target: "self" }],
-    tags: ["dice", "movement"]
-  },
+    // === DÉ (8 règles) ===
+    {
+        id: "tpl-lucky-6",
+        title: "6 chanceux",
+        description: "Sur un 6, tour supplémentaire",
+        trigger: { type: TriggerType.ON_DICE_ROLL, value: 6 },
+        conditions: [],
+        effects: [{ type: ActionType.EXTRA_TURN, value: 1, target: "self" }],
+        tags: ["dice", "bonus"],
+    },
+    {
+        id: "tpl-unlucky-1",
+        title: "1 malchanceux",
+        description: "Sur un 1, perdre 5 points",
+        trigger: { type: TriggerType.ON_DICE_ROLL, value: 1 },
+        conditions: [],
+        effects: [{ type: ActionType.MODIFY_SCORE, value: -5, target: "self" }],
+        tags: ["dice", "penalty"],
+    },
+    {
+        id: "tpl-triple-6",
+        title: "Triple 6",
+        description: "3x 6 consécutifs = retour départ",
+        trigger: { type: TriggerType.ON_CONSECUTIVE_SIX, value: 3 },
+        conditions: [],
+        effects: [{ type: ActionType.BACK_TO_START, value: 0, target: "self" }],
+        tags: ["dice", "penalty"],
+    },
+    {
+        id: "tpl-even-bonus",
+        title: "Nombre pair",
+        description: "Dé pair = +2 points",
+        trigger: { type: TriggerType.ON_DICE_ROLL, value: 2 },
+        conditions: [],
+        effects: [{ type: ActionType.MODIFY_SCORE, value: 2, target: "self" }],
+        tags: ["dice", "score"],
+    },
+    {
+        id: "tpl-odd-bonus",
+        title: "Nombre impair",
+        description: "Dé impair = +1 case",
+        trigger: { type: TriggerType.ON_DICE_ROLL, value: 3 },
+        conditions: [],
+        effects: [{ type: ActionType.MOVE_RELATIVE, value: 1, target: "self" }],
+        tags: ["dice", "movement"],
+    },
+    {
+        id: "tpl-perfect-4",
+        title: "4 parfait",
+        description: "Sur un 4, bouclier activé",
+        trigger: { type: TriggerType.ON_DICE_ROLL, value: 4 },
+        conditions: [],
+        effects: [{ type: ActionType.APPLY_SHIELD, value: 1, target: "self", duration: 1 }],
+        tags: ["dice", "power-up"],
+    },
+    {
+        id: "tpl-dice-5-teleport",
+        title: "5 mystique",
+        description: "Sur un 5, téléportation aléatoire",
+        trigger: { type: TriggerType.ON_DICE_ROLL, value: 5 },
+        conditions: [],
+        effects: [{ type: ActionType.MOVE_RANDOM, value: 0, target: "self" }],
+        tags: ["dice", "special"],
+    },
+    {
+        id: "tpl-double-on-2",
+        title: "Double sur 2",
+        description: "Sur un 2, avancer de 4 cases",
+        trigger: { type: TriggerType.ON_DICE_ROLL, value: 2 },
+        conditions: [],
+        effects: [{ type: ActionType.MOVE_RELATIVE, value: 4, target: "self" }],
+        tags: ["dice", "movement"],
+    },
 
-  // === SPÉCIAL (8 règles) ===
-  {
-    id: "tpl-half-board-bonus",
-    title: "Bonus mi-parcours",
-    description: "+10 points à la moitié",
-    trigger: { type: TriggerType.ON_HALF_BOARD },
-    conditions: [],
-    effects: [{ type: ActionType.MODIFY_SCORE, value: 10, target: "self" }],
-    tags: ["special", "score"]
-  },
-  {
-    id: "tpl-near-victory-pressure",
-    title: "Pression finale",
-    description: "Près de la fin, -2 cases aux autres",
-    trigger: { type: TriggerType.ON_NEAR_VICTORY, value: 3 },
-    conditions: [],
-    effects: [{ type: ActionType.MOVE_RELATIVE, value: -2, target: "others" }],
-    tags: ["special", "interaction"]
-  },
-  {
-    id: "tpl-first-move-bonus",
-    title: "Départ canon",
-    description: "Premier mouvement = +3 cases",
-    trigger: { type: TriggerType.ON_FIRST_MOVE },
-    conditions: [],
-    effects: [{ type: ActionType.MOVE_RELATIVE, value: 3, target: "self" }],
-    tags: ["special", "movement"]
-  },
-  {
-    id: "tpl-game-start-shield",
-    title: "Protection initiale",
-    description: "Bouclier au début de partie",
-    trigger: { type: TriggerType.ON_GAME_START },
-    conditions: [],
-    effects: [{ type: ActionType.APPLY_SHIELD, value: 1, target: "all", duration: 1 }],
-    tags: ["special", "power-up"]
-  },
-  {
-    id: "tpl-turn-start-score",
-    title: "Revenu passif",
-    description: "+1 point à chaque début de tour",
-    trigger: { type: TriggerType.ON_TURN_START },
-    conditions: [],
-    effects: [{ type: ActionType.MODIFY_SCORE, value: 1, target: "self" }],
-    tags: ["special", "score"]
-  },
-  {
-    id: "tpl-turn-end-heal",
-    title: "Récupération",
-    description: "Fin de tour = retrait des malus",
-    trigger: { type: TriggerType.ON_TURN_END },
-    conditions: [],
-    effects: [{ type: ActionType.APPLY_SHIELD, value: 1, target: "self", duration: 1 }],
-    tags: ["special", "power-up"]
-  },
-  {
-    id: "tpl-effect-applied-bonus",
-    title: "Effet combo",
-    description: "Bonus quand un effet est appliqué",
-    trigger: { type: TriggerType.ON_EFFECT_APPLIED },
-    conditions: [],
-    effects: [{ type: ActionType.MODIFY_SCORE, value: 1, target: "self" }],
-    tags: ["special", "score"]
-  },
-  {
-    id: "tpl-backward-compensation",
-    title: "Compensation de recul",
-    description: "+3 points si mouvement arrière",
-    trigger: { type: TriggerType.ON_BACKWARD_MOVE },
-    conditions: [],
-    effects: [{ type: ActionType.MODIFY_SCORE, value: 3, target: "self" }],
-    tags: ["special", "score"]
-  },
+    // === SPÉCIAL (8 règles) ===
+    {
+        id: "tpl-half-board-bonus",
+        title: "Bonus mi-parcours",
+        description: "+10 points à la moitié",
+        trigger: { type: TriggerType.ON_HALF_BOARD },
+        conditions: [],
+        effects: [{ type: ActionType.MODIFY_SCORE, value: 10, target: "self" }],
+        tags: ["special", "score"],
+    },
+    {
+        id: "tpl-near-victory-pressure",
+        title: "Pression finale",
+        description: "Près de la fin, -2 cases aux autres",
+        trigger: { type: TriggerType.ON_NEAR_VICTORY, value: 3 },
+        conditions: [],
+        effects: [{ type: ActionType.MOVE_RELATIVE, value: -2, target: "others" }],
+        tags: ["special", "interaction"],
+    },
+    {
+        id: "tpl-first-move-bonus",
+        title: "Départ canon",
+        description: "Premier mouvement = +3 cases",
+        trigger: { type: TriggerType.ON_FIRST_MOVE },
+        conditions: [],
+        effects: [{ type: ActionType.MOVE_RELATIVE, value: 3, target: "self" }],
+        tags: ["special", "movement"],
+    },
+    {
+        id: "tpl-game-start-shield",
+        title: "Protection initiale",
+        description: "Bouclier au début de partie",
+        trigger: { type: TriggerType.ON_GAME_START },
+        conditions: [],
+        effects: [{ type: ActionType.APPLY_SHIELD, value: 1, target: "all", duration: 1 }],
+        tags: ["special", "power-up"],
+    },
+    {
+        id: "tpl-turn-start-score",
+        title: "Revenu passif",
+        description: "+1 point à chaque début de tour",
+        trigger: { type: TriggerType.ON_TURN_START },
+        conditions: [],
+        effects: [{ type: ActionType.MODIFY_SCORE, value: 1, target: "self" }],
+        tags: ["special", "score"],
+    },
+    {
+        id: "tpl-turn-end-heal",
+        title: "Récupération",
+        description: "Fin de tour = retrait des malus",
+        trigger: { type: TriggerType.ON_TURN_END },
+        conditions: [],
+        effects: [{ type: ActionType.APPLY_SHIELD, value: 1, target: "self", duration: 1 }],
+        tags: ["special", "power-up"],
+    },
+    {
+        id: "tpl-effect-applied-bonus",
+        title: "Effet combo",
+        description: "Bonus quand un effet est appliqué",
+        trigger: { type: TriggerType.ON_EFFECT_APPLIED },
+        conditions: [],
+        effects: [{ type: ActionType.MODIFY_SCORE, value: 1, target: "self" }],
+        tags: ["special", "score"],
+    },
+    {
+        id: "tpl-backward-compensation",
+        title: "Compensation de recul",
+        description: "+3 points si mouvement arrière",
+        trigger: { type: TriggerType.ON_BACKWARD_MOVE },
+        conditions: [],
+        effects: [{ type: ActionType.MODIFY_SCORE, value: 3, target: "self" }],
+        tags: ["special", "score"],
+    },
 
-  // === VICTOIRE (4 règles) ===
-  {
-    id: "tpl-score-victory",
-    title: "Victoire par score",
-    description: "50 points = victoire",
-    trigger: { type: TriggerType.ON_SCORE_THRESHOLD, value: 50 },
-    conditions: [],
-    effects: [{ type: ActionType.DECLARE_VICTORY, value: 0, target: "self" }],
-    tags: ["victory", "score"]
-  },
-  {
-    id: "tpl-reach-end-victory",
-    title: "Victoire classique",
-    description: "Atteindre la fin = victoire",
-    trigger: { type: TriggerType.ON_REACH_END },
-    conditions: [],
-    effects: [{ type: ActionType.DECLARE_VICTORY, value: 0, target: "self" }],
-    tags: ["victory", "position"]
-  },
-  {
-    id: "tpl-allow-mod-after-turn",
-    title: "Modification autorisée",
-    description: "Permet modification après tour",
-    trigger: { type: TriggerType.ON_AFTER_TURN },
-    conditions: [],
-    effects: [{ type: ActionType.ALLOW_RULE_MODIFICATION, value: 1, target: "self" }],
-    tags: ["victory", "special"]
-  },
-  {
-    id: "tpl-allow-tile-mod",
-    title: "Modification de case",
-    description: "Permet d'ajouter/supprimer des cases",
-    trigger: { type: TriggerType.ON_AFTER_TURN },
-    conditions: [],
-    effects: [{ type: ActionType.ALLOW_TILE_MODIFICATION, value: 1, target: "self" }],
-    tags: ["victory", "special"]
-  },
+    // === VICTOIRE (4 règles) ===
+    {
+        id: "tpl-score-victory",
+        title: "Victoire par score",
+        description: "50 points = victoire",
+        trigger: { type: TriggerType.ON_SCORE_THRESHOLD, value: 50 },
+        conditions: [],
+        effects: [{ type: ActionType.DECLARE_VICTORY, value: 0, target: "self" }],
+        tags: ["victory", "score"],
+    },
+    {
+        id: "tpl-reach-end-victory",
+        title: "Victoire classique",
+        description: "Atteindre la fin = victoire",
+        trigger: { type: TriggerType.ON_REACH_END },
+        conditions: [],
+        effects: [{ type: ActionType.DECLARE_VICTORY, value: 0, target: "self" }],
+        tags: ["victory", "position"],
+    },
+    {
+        id: "tpl-allow-mod-after-turn",
+        title: "Modification autorisée",
+        description: "Permet modification après tour",
+        trigger: { type: TriggerType.ON_AFTER_TURN },
+        conditions: [],
+        effects: [{ type: ActionType.ALLOW_RULE_MODIFICATION, value: 1, target: "self" }],
+        tags: ["victory", "special"],
+    },
+    {
+        id: "tpl-allow-tile-mod",
+        title: "Modification de case",
+        description: "Permet d'ajouter/supprimer des cases",
+        trigger: { type: TriggerType.ON_AFTER_TURN },
+        conditions: [],
+        effects: [{ type: ActionType.ALLOW_TILE_MODIFICATION, value: 1, target: "self" }],
+        tags: ["victory", "special"],
+    },
 ]
 
 export function getRulesByCategory(category: string): Rule[] {
-  return RULE_TEMPLATES.filter(r => r.tags?.includes(category))
+    return RULE_TEMPLATES.filter((r) => r.tags?.includes(category))
 }
 
 export function searchRules(query: string): Rule[] {
-  const lowerQuery = query.toLowerCase()
-  return RULE_TEMPLATES.filter(r =>
-    r.title.toLowerCase().includes(lowerQuery) ||
-    r.description?.toLowerCase().includes(lowerQuery) ||
-    r.tags?.some(t => t.toLowerCase().includes(lowerQuery))
-  )
+    const lowerQuery = query.toLowerCase()
+    return RULE_TEMPLATES.filter(
+        (r) =>
+            r.title.toLowerCase().includes(lowerQuery) ||
+            r.description?.toLowerCase().includes(lowerQuery) ||
+            r.tags?.some((t) => t.toLowerCase().includes(lowerQuery))
+    )
 }
