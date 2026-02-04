@@ -246,3 +246,43 @@ Application web installable avec support hors ligne.
 
 ### Feature Flag (Bascule de Fonctionnalité)
 Configuration permettant d'activer/désactiver une fonctionnalité.
+
+---
+
+## Système de Tutoriel
+
+### Tutorial (Tutoriel)
+Système d'onboarding interactif guidant les nouveaux joueurs.
+- Composant: `InteractiveTutorial`
+- Hook: `useTutorial()`
+
+### TutorialSection (Section de Tutoriel)
+Groupe d'étapes du tutoriel organisées par thème.
+```typescript
+type TutorialSection = 'basics' | 'rules' | 'board' | 'advanced'
+```
+
+| Section | Titre | Étapes |
+|---------|-------|--------|
+| `basics` | Les bases | 0-2 (Bienvenue, Dé, Déplacement) |
+| `rules` | Les règles | 3-5 (Règles dynamiques, Déclencheurs, Créer règle) |
+| `board` | Le plateau | 6-7 (Modification, Effets) |
+| `advanced` | Avancé | 8-10 (Victoire, Contrôles, Fin) |
+
+### TutorialPreferences (Préférences Tutoriel)
+Configuration utilisateur pour le système de tutoriel.
+- `tutorialCompleted: boolean` - Tutoriel terminé au moins une fois
+- `tutorialNeverAsk: boolean` - Ne plus afficher le modal de bienvenue
+- `tutorialCompletedSections: string[]` - Sections vues
+- `tutorialHintsEnabled: boolean` - Activer les conseils contextuels
+
+### WelcomeModal (Modal de Bienvenue)
+Dialogue affiché aux nouveaux joueurs proposant de suivre le tutoriel.
+- Composant: `TutorialWelcomeModal`
+- Affiché si: `shouldShowWelcome() === true`
+
+### TutorialHints (Conseils Contextuels)
+Toasts non-bloquants affichés pendant le jeu pour guider le joueur.
+- Composant: `TutorialHints`
+- Bibliothèque: Sonner
+- Déclenchés par: phase de jeu, nombre de tours, actions

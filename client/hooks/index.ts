@@ -38,3 +38,10 @@ export type {
 // Re-export existing hooks
 export { useGameControls } from './useGameControls'
 export { useBotAI } from './useBotAI'
+
+// Tutorial preferences
+export { useTutorialPreferences } from './use-tutorial-preferences'
+export type {
+    TutorialPreferences,
+    UseTutorialPreferencesReturn,
+} from './use-tutorial-preferences'

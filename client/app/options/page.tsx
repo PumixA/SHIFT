@@ -29,7 +29,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion"
-import { toast, Toaster } from "sonner"
+import { toast } from "sonner"
 import { motion } from "framer-motion"
 import { PageHeader } from "@/components/ui/design-system"
 
@@ -176,7 +176,6 @@ export default function OptionsPage() {
 
     return (
         <div className="min-h-screen bg-background">
-            <Toaster position="bottom-right" theme="dark" richColors />
 
             {/* Background Effect */}
             <div className="fixed inset-0 pointer-events-none">

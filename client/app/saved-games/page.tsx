@@ -18,7 +18,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { socket } from "@/services/socket"
-import { toast, Toaster } from "sonner"
+import { toast } from "sonner"
 import { PageHeader, GameCard } from "@/components/ui/design-system"
 
 interface SavedGame {
@@ -131,7 +131,6 @@ export default function SavedGamesPage() {
 
     return (
         <div className="min-h-screen bg-background">
-            <Toaster position="bottom-right" theme="dark" richColors />
 
             {/* Background Effect */}
             <div className="fixed inset-0 pointer-events-none">
