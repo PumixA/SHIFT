@@ -22,7 +22,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { SavedGamesList } from "@/components/menu/saved-games-list"
 import { socket } from "@/services/socket"
-import { toast, Toaster } from "sonner"
+import { toast } from "sonner"
 import { motion } from "framer-motion"
 import { PageHeader } from "@/components/ui/design-system"
 
@@ -247,7 +247,6 @@ export default function PlayPage() {
 
     return (
         <div className="min-h-screen bg-background">
-            <Toaster position="bottom-right" theme="dark" richColors />
 
             {/* Background Effect */}
             <div className="fixed inset-0 pointer-events-none">

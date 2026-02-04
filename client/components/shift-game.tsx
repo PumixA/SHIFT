@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import dynamic from "next/dynamic"
 import { Book, Wifi, WifiOff, Users, Trophy, RefreshCw, Plus, Crosshair, Package, Settings, Home, HelpCircle, History, Bot } from "lucide-react"
 import { socket } from "@/services/socket"
-import { toast, Toaster } from "sonner"
+import { toast } from "sonner"
 
 // Components - Core (always loaded)
 import { TopBar } from "./game/top-bar"
@@ -30,10 +30,13 @@ const SavedGamesModal = dynamic(() => import("./game/saved-games-modal").then(m 
 const TileSelectionModal = dynamic(() => import("./game/tile-selection-modal").then(m => ({ default: m.TileSelectionModal })), { ssr: false })
 const PathChoiceModal = dynamic(() => import("./game/path-choice-modal").then(m => ({ default: m.PathChoiceModal })), { ssr: false })
 const InteractiveTutorial = dynamic(() => import("./game/interactive-tutorial").then(m => ({ default: m.InteractiveTutorial })), { ssr: false })
+const TutorialWelcomeModal = dynamic(() => import("./game/tutorial-welcome-modal").then(m => ({ default: m.TutorialWelcomeModal })), { ssr: false })
+const TutorialHints = dynamic(() => import("./game/tutorial-hints").then(m => ({ default: m.TutorialHints })), { ssr: false })
 const ActionHistory = dynamic(() => import("./game/action-history").then(m => ({ default: m.ActionHistory })), { ssr: false })
 
 // Hooks from tutorial (need to import separately since we lazy load the component)
 import { useTutorial } from "./game/interactive-tutorial"
+import { useTutorialPreferences } from "@/hooks/use-tutorial-preferences"
 import {
     buildTileGraph,
     calculatePossiblePaths,
@@ -235,7 +238,9 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
     // ===========================================
     // HOOKS - Tutorial & Animations
     // ===========================================
-    const { isOpen: tutorialOpen, startTutorial, closeTutorial, completeTutorial, hasCompleted: tutorialCompleted } = useTutorial()
+    const { isOpen: tutorialOpen, activeSection: tutorialActiveSection, startTutorial, startSection: startTutorialSection, closeTutorial, completeTutorial } = useTutorial()
+    const tutorialPrefs = useTutorialPreferences()
+    const [welcomeModalOpen, setWelcomeModalOpen] = useState(false)
     const { triggerAnimation } = useRuleAnimations()
 
     // ===========================================
@@ -537,13 +542,16 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
             })
             setBotAIs(newBotAIs)
 
-            if (!tutorialCompleted) {
-                setTimeout(() => startTutorial(), 1000)
+            // Show welcome modal for first-time users instead of auto-starting tutorial
+            const shouldShow = !tutorialPrefs.preferences.isCompleted && !tutorialPrefs.preferences.neverAskAgain && !tutorialPrefs.isLoading
+            if (shouldShow) {
+                setTimeout(() => setWelcomeModalOpen(true), 1000)
             }
         } else {
             socket.connect()
         }
-    }, [gameConfig, isLocalMode, getCoordinatesFromIndex, tutorialCompleted, startTutorial, setPlayers, setCurrentTurnId, setGameStatus, setTurnPhase])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [gameConfig, isLocalMode, getCoordinatesFromIndex, setPlayers, setCurrentTurnId, setGameStatus, setTurnPhase])
 
     // ===========================================
     // EFFECTS - Socket Events (Online Mode)
@@ -742,8 +750,6 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
     // ===========================================
     return (
         <div className="h-screen w-screen flex flex-col overflow-hidden bg-background text-foreground relative">
-            <Toaster position="bottom-right" theme="dark" richColors />
-
             {winner && <GameOverModal winner={winner} players={players} onReset={handleLeaveGame} onRematch={handleRematch} />}
 
             <header className="relative z-50 bg-background/95 backdrop-blur border-b border-border/50 px-4 py-2 flex items-center justify-between">
@@ -922,6 +928,12 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
                 onSaveGame={() => setSavedGamesModalOpen(true)}
                 gamepadAssignments={gamepadAssignments}
                 onAssignGamepad={(idx, id) => setGamepadAssignments(prev => ({ ...prev, [idx]: id }))}
+                tutorialCompletedSections={tutorialPrefs.preferences.completedSections}
+                tutorialHintsEnabled={tutorialPrefs.preferences.hintsEnabled}
+                onStartTutorialSection={startTutorialSection}
+                onStartFullTutorial={startTutorial}
+                onResetTutorialProgress={tutorialPrefs.resetProgress}
+                onToggleTutorialHints={tutorialPrefs.toggleHints}
             />
 
             <SavedGamesModal
@@ -977,7 +989,40 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
             </Sheet>
 
             <RuleAnimations />
-            <InteractiveTutorial isOpen={tutorialOpen} onClose={closeTutorial} onComplete={completeTutorial} />
+
+            {/* Tutorial System */}
+            <TutorialWelcomeModal
+                open={welcomeModalOpen}
+                onStartTutorial={() => {
+                    setWelcomeModalOpen(false)
+                    startTutorial()
+                }}
+                onSkip={() => setWelcomeModalOpen(false)}
+                onNeverAsk={() => {
+                    tutorialPrefs.setNeverAskAgain(true)
+                    setWelcomeModalOpen(false)
+                }}
+            />
+            <InteractiveTutorial
+                isOpen={tutorialOpen}
+                onClose={closeTutorial}
+                onComplete={() => {
+                    tutorialPrefs.markCompleted()
+                    completeTutorial()
+                }}
+                startSection={tutorialActiveSection}
+                onSectionComplete={tutorialPrefs.markSectionCompleted}
+            />
+            <TutorialHints
+                enabled={tutorialPrefs.preferences.hintsEnabled && !tutorialOpen && isLocalMode}
+                turnCount={localTurnIndex + 1}
+                turnPhase={turnPhase}
+                hasRolledDice={diceValue !== null}
+                rulesCount={rules.length}
+                dismissedHints={tutorialPrefs.preferences.completedSections}
+                onDismiss={tutorialPrefs.markSectionCompleted}
+            />
+
             <GamepadIndicator showControls={false} />
         </div>
     )

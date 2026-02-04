@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Gamepad2, Users, Settings, BookOpen, User, ChevronRight } from "lucide-react"
@@ -50,6 +50,20 @@ export default function HomePage() {
         },
     ]
 
+    // Generate particle positions client-side only to avoid hydration mismatch
+    const [particles, setParticles] = useState<Array<{ x: number; y: number; duration: number; delay: number }>>([])
+
+    useEffect(() => {
+        // Generate random positions only on client mount
+        const newParticles = [...Array(20)].map(() => ({
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
+            duration: 3 + Math.random() * 2,
+            delay: Math.random() * 2,
+        }))
+        setParticles(newParticles)
+    }, [])
+
     useEffect(() => {
         const storedUsername = localStorage.getItem("username")
         if (storedUsername) {
@@ -92,25 +106,25 @@ export default function HomePage() {
                 }}
             />
 
-            {/* Floating particles effect */}
+            {/* Floating particles effect - rendered client-side only */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                {[...Array(20)].map((_, i) => (
+                {particles.map((particle, i) => (
                     <motion.div
                         key={i}
                         className="absolute w-1 h-1 bg-cyan-500/30 rounded-full"
                         initial={{
-                            x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1000),
-                            y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
+                            x: particle.x,
+                            y: particle.y,
                         }}
                         animate={{
                             y: [null, -20, 20],
                             opacity: [0.3, 0.8, 0.3],
                         }}
                         transition={{
-                            duration: 3 + Math.random() * 2,
+                            duration: particle.duration,
                             repeat: Infinity,
                             repeatType: "reverse",
-                            delay: Math.random() * 2,
+                            delay: particle.delay,
                         }}
                     />
                 ))}

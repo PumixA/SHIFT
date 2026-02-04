@@ -22,24 +22,44 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
 
+export type TutorialSection = 'basics' | 'rules' | 'board' | 'advanced'
+
+export interface TutorialSectionInfo {
+  id: TutorialSection
+  title: string
+  description: string
+  icon: React.ElementType
+  stepRange: [number, number]
+}
+
+export const TUTORIAL_SECTIONS: Record<TutorialSection, TutorialSectionInfo> = {
+  basics: { id: 'basics', title: 'Les bases', description: 'Dé et déplacement', icon: Dice5, stepRange: [0, 2] },
+  rules: { id: 'rules', title: 'Les règles', description: 'Système de règles dynamiques', icon: Book, stepRange: [3, 5] },
+  board: { id: 'board', title: 'Le plateau', description: 'Modification et effets', icon: Grid, stepRange: [6, 7] },
+  advanced: { id: 'advanced', title: 'Avancé', description: 'Victoire et contrôles', icon: Trophy, stepRange: [8, 10] },
+}
+
 interface TutorialStep {
   id: string
   title: string
   description: string
   icon: React.ElementType
-  highlight?: string // CSS selector or element ID to highlight
+  section: TutorialSection
+  highlight?: string
   position?: "center" | "top" | "bottom" | "left" | "right"
   action?: "click" | "drag" | "hover" | "wait"
   targetElement?: string
   tip?: string
 }
 
-const TUTORIAL_STEPS: TutorialStep[] = [
+export const TUTORIAL_STEPS: TutorialStep[] = [
+  // Section: basics (0-2)
   {
     id: "welcome",
     title: "Bienvenue dans SHIFT !",
     description: "SHIFT est un jeu de plateau avec des règles dynamiques. Chaque partie est unique grâce aux règles que vous créez et modifiez en cours de jeu.",
     icon: Trophy,
+    section: "basics",
     position: "center",
   },
   {
@@ -47,6 +67,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     title: "Lancer le dé",
     description: "Cliquez sur le dé ou appuyez sur Espace pour le lancer. Votre pion avancera du nombre de cases indiqué.",
     icon: Dice5,
+    section: "basics",
     highlight: "[data-tutorial='dice']",
     position: "bottom",
     action: "click",
@@ -57,15 +78,18 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     title: "Déplacement",
     description: "Votre pion se déplace automatiquement sur le plateau. Observez les cases spéciales qui peuvent déclencher des effets !",
     icon: Footprints,
+    section: "basics",
     highlight: "[data-tutorial='board']",
     position: "left",
     action: "wait",
   },
+  // Section: rules (3-5)
   {
     id: "rules",
     title: "Les règles dynamiques",
     description: "C'est ce qui rend SHIFT unique ! Les règles définissent ce qui se passe quand vous atterrissez sur une case, passez dessus, ou atteignez certains scores.",
     icon: Book,
+    section: "rules",
     highlight: "[data-tutorial='rules']",
     position: "left",
     tip: "Ouvrez le Livre de Règles pour voir et modifier les règles actives",
@@ -75,6 +99,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     title: "Déclencheurs de règles",
     description: "Chaque règle a un déclencheur : 'Quand un joueur atterrit sur une case', 'Quand il lance un 6', etc. Les conditions peuvent être très variées !",
     icon: Zap,
+    section: "rules",
     position: "center",
   },
   {
@@ -82,16 +107,19 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     title: "Créer une règle",
     description: "Après avoir joué, vous pouvez créer une nouvelle règle ! Choisissez un déclencheur, ajoutez des conditions, puis définissez les effets.",
     icon: Book,
+    section: "rules",
     highlight: "[data-tutorial='add-rule']",
     position: "right",
     action: "click",
     tip: "Une seule modification par tour : règle OU case",
   },
+  // Section: board (6-7)
   {
     id: "tiles",
     title: "Modifier le plateau",
     description: "Clic droit sur une case pour voir les options. Vous pouvez ajouter des cases dans toutes les directions ou supprimer des cases existantes.",
     icon: Grid,
+    section: "board",
     highlight: "[data-tutorial='board']",
     position: "left",
     action: "click",
@@ -102,14 +130,17 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     title: "Effets temporaires",
     description: "Certaines règles appliquent des effets qui durent plusieurs tours : bouclier, double dé, ralentissement... Surveillez vos effets actifs !",
     icon: Zap,
+    section: "board",
     highlight: "[data-tutorial='effects']",
     position: "bottom",
   },
+  // Section: advanced (8-10)
   {
     id: "victory",
     title: "Objectif",
     description: "Le premier joueur à atteindre la dernière case ET avoir le plus de points gagne ! Les règles peuvent changer les conditions de victoire...",
     icon: Trophy,
+    section: "advanced",
     position: "center",
   },
   {
@@ -117,6 +148,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     title: "Contrôles",
     description: "Clavier: Espace = dé, Flèches = navigation, R = règles. Manette: A = dé, Joystick = navigation, Y = règles.",
     icon: Gamepad2,
+    section: "advanced",
     position: "center",
     tip: "Tout est jouable au clavier et à la manette !",
   },
@@ -125,6 +157,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     title: "Vous êtes prêt !",
     description: "Bonne chance ! N'oubliez pas : dans SHIFT, les règles sont faites pour être changées. Soyez créatif et amusez-vous !",
     icon: CheckCircle2,
+    section: "advanced",
     position: "center",
   },
 ]
@@ -134,6 +167,8 @@ interface InteractiveTutorialProps {
   onClose: () => void
   onComplete: () => void
   startStep?: number
+  startSection?: TutorialSection
+  onSectionComplete?: (section: TutorialSection) => void
 }
 
 export function InteractiveTutorial({
@@ -141,14 +176,61 @@ export function InteractiveTutorial({
   onClose,
   onComplete,
   startStep = 0,
+  startSection,
+  onSectionComplete,
 }: InteractiveTutorialProps) {
-  const [currentStep, setCurrentStep] = useState(startStep)
+  // Determine initial step based on startSection or startStep
+  const getInitialStep = () => {
+    if (startSection) {
+      return TUTORIAL_SECTIONS[startSection].stepRange[0]
+    }
+    return startStep
+  }
+
+  const [currentStep, setCurrentStep] = useState(getInitialStep)
   const [highlightedElement, setHighlightedElement] = useState<HTMLElement | null>(null)
+  const [currentSectionMode] = useState<TutorialSection | null>(startSection || null)
+
+  // Reset step when startSection changes
+  useEffect(() => {
+    if (isOpen) {
+      setCurrentStep(getInitialStep())
+    }
+  }, [isOpen, startSection])
 
   const step = TUTORIAL_STEPS[currentStep]
-  const progress = ((currentStep + 1) / TUTORIAL_STEPS.length) * 100
-  const isLastStep = currentStep === TUTORIAL_STEPS.length - 1
-  const isFirstStep = currentStep === 0
+
+  // Calculate progress based on section mode or full tutorial
+  const getProgress = () => {
+    if (currentSectionMode) {
+      const section = TUTORIAL_SECTIONS[currentSectionMode]
+      const [start, end] = section.stepRange
+      const sectionLength = end - start + 1
+      const currentInSection = currentStep - start + 1
+      return (currentInSection / sectionLength) * 100
+    }
+    return ((currentStep + 1) / TUTORIAL_STEPS.length) * 100
+  }
+
+  const progress = getProgress()
+
+  // Determine if last/first step based on section mode
+  const getIsLastStep = () => {
+    if (currentSectionMode) {
+      return currentStep === TUTORIAL_SECTIONS[currentSectionMode].stepRange[1]
+    }
+    return currentStep === TUTORIAL_STEPS.length - 1
+  }
+
+  const getIsFirstStep = () => {
+    if (currentSectionMode) {
+      return currentStep === TUTORIAL_SECTIONS[currentSectionMode].stepRange[0]
+    }
+    return currentStep === 0
+  }
+
+  const isLastStep = getIsLastStep()
+  const isFirstStep = getIsFirstStep()
 
   // Highlight element when step changes
   useEffect(() => {
@@ -167,12 +249,23 @@ export function InteractiveTutorial({
 
   const handleNext = useCallback(() => {
     if (isLastStep) {
+      // Notify section completion if in section mode
+      if (currentSectionMode && onSectionComplete) {
+        onSectionComplete(currentSectionMode)
+      }
       onComplete()
       onClose()
     } else {
-      setCurrentStep(prev => prev + 1)
+      const nextStep = currentStep + 1
+      // Check if we're transitioning to a new section
+      const currentSection = step.section
+      const nextSection = TUTORIAL_STEPS[nextStep]?.section
+      if (currentSection !== nextSection && onSectionComplete) {
+        onSectionComplete(currentSection)
+      }
+      setCurrentStep(nextStep)
     }
-  }, [isLastStep, onComplete, onClose])
+  }, [isLastStep, onComplete, onClose, currentSectionMode, onSectionComplete, currentStep, step.section])
 
   const handlePrev = useCallback(() => {
     if (!isFirstStep) {
@@ -251,8 +344,8 @@ export function InteractiveTutorial({
       >
         {/* Backdrop with cutout */}
         <div className="absolute inset-0">
-          {/* Dark overlay */}
-          <div className="absolute inset-0 bg-black/80" />
+          {/* Dark overlay - reduced opacity for less intrusive experience */}
+          <div className="absolute inset-0 bg-black/50" />
 
           {/* Highlight cutout */}
           {highlightedElement && (
@@ -265,7 +358,7 @@ export function InteractiveTutorial({
                 left: highlightedElement.getBoundingClientRect().left - 8,
                 width: highlightedElement.getBoundingClientRect().width + 16,
                 height: highlightedElement.getBoundingClientRect().height + 16,
-                boxShadow: "0 0 0 9999px rgba(0,0,0,0.8)",
+                boxShadow: "0 0 0 9999px rgba(0,0,0,0.5)",
                 borderRadius: "12px",
                 border: "2px solid rgba(34, 211, 238, 0.5)",
               }}
@@ -298,7 +391,15 @@ export function InteractiveTutorial({
           {/* Progress bar */}
           <div className="px-6 pt-4">
             <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
-              <span>Étape {currentStep + 1} / {TUTORIAL_STEPS.length}</span>
+              {currentSectionMode ? (
+                <span>
+                  {TUTORIAL_SECTIONS[currentSectionMode].title} - Étape{" "}
+                  {currentStep - TUTORIAL_SECTIONS[currentSectionMode].stepRange[0] + 1} /{" "}
+                  {TUTORIAL_SECTIONS[currentSectionMode].stepRange[1] - TUTORIAL_SECTIONS[currentSectionMode].stepRange[0] + 1}
+                </span>
+              ) : (
+                <span>Étape {currentStep + 1} / {TUTORIAL_STEPS.length}</span>
+              )}
               <span>{Math.round(progress)}%</span>
             </div>
             <Progress value={progress} className="h-1" />
@@ -391,20 +492,31 @@ export function InteractiveTutorial({
 
           {/* Step dots */}
           <div className="flex justify-center gap-1 pb-4">
-            {TUTORIAL_STEPS.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentStep(index)}
-                className={cn(
-                  "w-2 h-2 rounded-full transition-all",
-                  index === currentStep
-                    ? "bg-cyan-400 w-4"
-                    : index < currentStep
-                    ? "bg-cyan-400/50"
-                    : "bg-white/20"
-                )}
-              />
-            ))}
+            {(currentSectionMode
+              ? TUTORIAL_STEPS.slice(
+                  TUTORIAL_SECTIONS[currentSectionMode].stepRange[0],
+                  TUTORIAL_SECTIONS[currentSectionMode].stepRange[1] + 1
+                )
+              : TUTORIAL_STEPS
+            ).map((_, index) => {
+              const actualIndex = currentSectionMode
+                ? index + TUTORIAL_SECTIONS[currentSectionMode].stepRange[0]
+                : index
+              return (
+                <button
+                  key={actualIndex}
+                  onClick={() => setCurrentStep(actualIndex)}
+                  className={cn(
+                    "w-2 h-2 rounded-full transition-all",
+                    actualIndex === currentStep
+                      ? "bg-cyan-400 w-4"
+                      : actualIndex < currentStep
+                      ? "bg-cyan-400/50"
+                      : "bg-white/20"
+                  )}
+                />
+              )
+            })}
           </div>
         </motion.div>
 
@@ -426,6 +538,7 @@ export function InteractiveTutorial({
 export function useTutorial() {
   const [isOpen, setIsOpen] = useState(false)
   const [hasCompleted, setHasCompleted] = useState(false)
+  const [activeSection, setActiveSection] = useState<TutorialSection | undefined>(undefined)
 
   useEffect(() => {
     // Check if tutorial has been completed before
@@ -436,17 +549,25 @@ export function useTutorial() {
   }, [])
 
   const startTutorial = useCallback(() => {
+    setActiveSection(undefined)
+    setIsOpen(true)
+  }, [])
+
+  const startSection = useCallback((section: TutorialSection) => {
+    setActiveSection(section)
     setIsOpen(true)
   }, [])
 
   const closeTutorial = useCallback(() => {
     setIsOpen(false)
+    setActiveSection(undefined)
   }, [])
 
   const completeTutorial = useCallback(() => {
     setHasCompleted(true)
     localStorage.setItem("shift_tutorial_completed", "true")
     setIsOpen(false)
+    setActiveSection(undefined)
   }, [])
 
   const resetTutorial = useCallback(() => {
@@ -457,7 +578,9 @@ export function useTutorial() {
   return {
     isOpen,
     hasCompleted,
+    activeSection,
     startTutorial,
+    startSection,
     closeTutorial,
     completeTutorial,
     resetTutorial,

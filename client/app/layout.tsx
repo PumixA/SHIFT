@@ -86,7 +86,7 @@ export default function RootLayout({
         >
           <AudioProvider>
             {children}
-            <Toaster richColors position="top-center" />
+            <Toaster richColors position="bottom-right" />
           </AudioProvider>
         </ThemeProvider>
       </body>

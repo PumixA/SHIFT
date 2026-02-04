@@ -3,7 +3,7 @@
 import { useState } from "react"
 import {
     Settings, LogOut, UserX, Crown, Users, Volume2, VolumeX, Gamepad2, Save, Keyboard,
-    Pencil, LayoutGrid, Shield, AlertTriangle, Focus, Eye, EyeOff
+    Pencil, LayoutGrid, Shield, AlertTriangle, Focus, Eye, EyeOff, HelpCircle
 } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -24,7 +24,9 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { GamepadSettings } from "./gamepad-settings"
+import { TutorialHelpMenu } from "./tutorial-help-menu"
 import { GAME_SHORTCUTS } from "@/hooks/useKeyboardShortcuts"
+import type { TutorialSection } from "./interactive-tutorial"
 
 interface Player {
     id: string | number
@@ -51,6 +53,13 @@ interface SettingsModalProps {
     onSaveGame?: () => void
     gamepadAssignments?: Record<number, string | null>
     onAssignGamepad?: (gamepadIndex: number, playerId: string | null) => void
+    // Tutorial props
+    tutorialCompletedSections?: string[]
+    tutorialHintsEnabled?: boolean
+    onStartTutorialSection?: (section: TutorialSection) => void
+    onStartFullTutorial?: () => void
+    onResetTutorialProgress?: () => void
+    onToggleTutorialHints?: (enabled: boolean) => void
 }
 
 export function SettingsModal({
@@ -71,6 +80,13 @@ export function SettingsModal({
     onSaveGame,
     gamepadAssignments = {},
     onAssignGamepad,
+    // Tutorial props
+    tutorialCompletedSections = [],
+    tutorialHintsEnabled = true,
+    onStartTutorialSection,
+    onStartFullTutorial,
+    onResetTutorialProgress,
+    onToggleTutorialHints,
 }: SettingsModalProps) {
     const [soundEnabled, setSoundEnabled] = useState(true)
     const [vibrationEnabled, setVibrationEnabled] = useState(true)
@@ -112,7 +128,7 @@ export function SettingsModal({
                     </DialogHeader>
 
                     <Tabs defaultValue="game" className="mt-4">
-                        <TabsList className="grid w-full grid-cols-4">
+                        <TabsList className="grid w-full grid-cols-5">
                             <TabsTrigger value="game" className="text-xs">
                                 <Settings className="h-4 w-4 mr-1" />
                                 Partie
@@ -128,6 +144,10 @@ export function SettingsModal({
                             <TabsTrigger value="shortcuts" className="text-xs">
                                 <Keyboard className="h-4 w-4 mr-1" />
                                 Touches
+                            </TabsTrigger>
+                            <TabsTrigger value="help" className="text-xs">
+                                <HelpCircle className="h-4 w-4 mr-1" />
+                                Aide
                             </TabsTrigger>
                         </TabsList>
 
@@ -408,6 +428,24 @@ export function SettingsModal({
                                     </div>
                                 </div>
                             </div>
+                        </TabsContent>
+
+                        {/* Onglet Aide */}
+                        <TabsContent value="help" className="mt-4">
+                            <TutorialHelpMenu
+                                completedSections={tutorialCompletedSections}
+                                hintsEnabled={tutorialHintsEnabled}
+                                onStartSection={(section) => {
+                                    onOpenChange(false)
+                                    onStartTutorialSection?.(section)
+                                }}
+                                onStartFull={() => {
+                                    onOpenChange(false)
+                                    onStartFullTutorial?.()
+                                }}
+                                onReset={() => onResetTutorialProgress?.()}
+                                onToggleHints={(enabled) => onToggleTutorialHints?.(enabled)}
+                            />
                         </TabsContent>
                     </Tabs>
                 </DialogContent>

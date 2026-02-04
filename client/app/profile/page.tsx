@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { socket } from "@/services/socket"
-import { toast, Toaster } from "sonner"
+import { toast } from "sonner"
 import { PageHeader, GameCard } from "@/components/ui/design-system"
 
 interface UserStats {
@@ -124,7 +124,6 @@ export default function ProfilePage() {
 
     return (
         <div className="min-h-screen bg-background">
-            <Toaster position="bottom-right" theme="dark" richColors />
 
             {/* Background Effect */}
             <div className="fixed inset-0 pointer-events-none">

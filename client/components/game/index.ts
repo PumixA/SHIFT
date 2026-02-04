@@ -14,7 +14,18 @@ export { SettingsModal } from './settings-modal'
 export { TileDetailModal } from './tile-detail-modal'
 export { TopBar } from './top-bar'
 export { RuleAnimations, useRuleAnimations, type RuleAnimationEvent } from './rule-animations'
-export { InteractiveTutorial, useTutorial, TutorialTooltip } from './interactive-tutorial'
+export {
+  InteractiveTutorial,
+  useTutorial,
+  TutorialTooltip,
+  TUTORIAL_STEPS,
+  TUTORIAL_SECTIONS,
+  type TutorialSection,
+  type TutorialSectionInfo
+} from './interactive-tutorial'
+export { TutorialWelcomeModal } from './tutorial-welcome-modal'
+export { TutorialHints } from './tutorial-hints'
+export { TutorialHelpMenu } from './tutorial-help-menu'
 export { ChainedRuleEditor } from './chained-rule-editor'
 export { TileSelectionModal } from './tile-selection-modal'
 export { GamepadIndicator, GamepadBadge } from './gamepad-indicator'

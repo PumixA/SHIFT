@@ -23,6 +23,11 @@ export interface LocalSettings {
   highContrast: boolean;
   showTutorial: boolean;
   notificationsEnabled: boolean;
+  // Tutorial preferences
+  tutorialCompleted: boolean;
+  tutorialNeverAsk: boolean;
+  tutorialCompletedSections: string[];
+  tutorialHintsEnabled: boolean;
 }
 
 export interface LocalGamePreferences {
@@ -44,7 +49,12 @@ const DEFAULT_SETTINGS: LocalSettings = {
   reducedMotion: false,
   highContrast: false,
   showTutorial: true,
-  notificationsEnabled: false
+  notificationsEnabled: false,
+  // Tutorial preferences
+  tutorialCompleted: false,
+  tutorialNeverAsk: false,
+  tutorialCompletedSections: [],
+  tutorialHintsEnabled: true
 };
 
 const DEFAULT_GAME_PREFERENCES: LocalGamePreferences = {

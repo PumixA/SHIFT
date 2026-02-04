@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
-import { toast, Toaster } from "sonner"
+import { toast } from "sonner"
 import { PageHeader, GameCard } from "@/components/ui/design-system"
 
 interface RuleTemplate {
@@ -150,7 +150,6 @@ export default function RulesetsPage() {
 
     return (
         <div className="min-h-screen bg-background">
-            <Toaster position="bottom-right" theme="dark" richColors />
 
             {/* Background Effect */}
             <div className="fixed inset-0 pointer-events-none">
