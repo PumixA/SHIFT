@@ -151,3 +151,43 @@ SHIFT est un jeu de plateau stratégique où les règles évoluent dynamiquement
 - Mode hors ligne fonctionnel
 - PWA installable
 - Reconnexion automatique
+
+## Fonctionnalités Additionnelles
+
+### F6: Système de Tutoriel
+
+#### F6.1: Onboarding Non-Intrusif
+- Modal de bienvenue au premier lancement
+- Option "Ne plus demander" persistante
+- Consentement utilisateur requis avant tutoriel
+
+#### F6.2: Tutoriel Interactif
+- Navigation libre (précédent/suivant)
+- 11 étapes réparties en 4 sections
+- Overlay semi-transparent (50% opacité)
+- Mise en surbrillance des éléments
+- Raccourcis clavier (flèches, Échap)
+
+#### F6.3: Sections du Tutoriel
+| Section | Nom | Contenu |
+|---------|-----|---------|
+| basics | Les bases | Bienvenue, Dé, Déplacement |
+| rules | Les règles | Règles dynamiques, Déclencheurs, Création |
+| board | Le plateau | Modification, Effets |
+| advanced | Avancé | Victoire, Contrôles, Fin |
+
+#### F6.4: Accès Segmenté
+- Onglet "Aide" dans les paramètres
+- Relancer une section spécifique
+- Relancer le tutoriel complet
+- Visualisation des sections vues (badges)
+
+#### F6.5: Conseils Contextuels
+- Hints non-bloquants via toasts
+- Activables/désactivables dans les paramètres
+- Déclenchés par phase de jeu et actions
+
+#### F6.6: Persistance
+- Préférences dans LocalStorage (`shift_settings`)
+- Migration automatique de l'ancien flag
+- Réinitialisation possible
