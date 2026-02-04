@@ -16,7 +16,6 @@ const eslintConfig = [
       // TypeScript strict rules
       "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
       "@typescript-eslint/no-explicit-any": "warn",
-      "@typescript-eslint/prefer-const": "error",
 
       // React rules
       "react/jsx-no-leaked-render": "warn",
