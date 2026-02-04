@@ -25,8 +25,7 @@
   },
   "lint-staged": {
     "client/**/*.{ts,tsx}": [
-      "prettier --write",
-      "eslint --fix"
+      "prettier --write"
     ],
     "server/**/*.ts": [
       "prettier --write"
