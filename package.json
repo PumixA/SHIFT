@@ -1,0 +1,47 @@
+{
+  "name": "shift-project",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SHIFT - The Board Game with Dynamic Rules",
+  "scripts": {
+    "prepare": "husky",
+    "lint": "npm run lint --workspace=client",
+    "lint:fix": "npm run lint:fix --workspace=client",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\" --ignore-path .gitignore",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\" --ignore-path .gitignore",
+    "commitlint": "commitlint --edit"
+  },
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "devDependencies": {
+    "@commitlint/cli": "^19.6.1",
+    "@commitlint/config-conventional": "^19.6.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
+    "prettier": "^3.4.2",
+    "prettier-plugin-tailwindcss": "^0.7.2"
+  },
+  "lint-staged": {
+    "client/**/*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "server/**/*.ts": [
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PumixA/SHIFT_PROJECT.git"
+  },
+  "author": "PumixA",
+  "license": "MIT"
+}
