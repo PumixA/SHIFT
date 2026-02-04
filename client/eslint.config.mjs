@@ -10,6 +10,16 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+  // Global ignores
+  {
+    ignores: [
+      ".next/**",
+      "node_modules/**",
+      "dist/**",
+      "build/**",
+      "public/sw.js",
+    ],
+  },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     rules: {
@@ -21,6 +31,8 @@ const eslintConfig = [
       "react/jsx-no-leaked-render": "warn",
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
+      // Downgrade to warning - cosmetic issue with apostrophes in JSX
+      "react/no-unescaped-entities": "warn",
 
       // Code quality
       "no-console": ["warn", { allow: ["warn", "error"] }],

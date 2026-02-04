@@ -9,7 +9,16 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
 import { PageHeader, GameCard } from "@/components/ui/design-system"
 
@@ -45,8 +54,22 @@ const DEFAULT_PACKS: RulePack[] = [
         name: "Classique",
         description: "Quelques cases spéciales pour pimenter le jeu",
         rules: [
-            { ruleId: "turbo-5", title: "Turbo Boost", trigger: "ON_LAND", tileIndex: 5, effects: [{ type: "MOVE_RELATIVE", value: 2, target: "self" }], priority: 1 },
-            { ruleId: "trap-10", title: "Piège", trigger: "ON_LAND", tileIndex: 10, effects: [{ type: "MOVE_RELATIVE", value: -3, target: "self" }], priority: 1 },
+            {
+                ruleId: "turbo-5",
+                title: "Turbo Boost",
+                trigger: "ON_LAND",
+                tileIndex: 5,
+                effects: [{ type: "MOVE_RELATIVE", value: 2, target: "self" }],
+                priority: 1,
+            },
+            {
+                ruleId: "trap-10",
+                title: "Piège",
+                trigger: "ON_LAND",
+                tileIndex: 10,
+                effects: [{ type: "MOVE_RELATIVE", value: -3, target: "self" }],
+                priority: 1,
+            },
         ],
         isDefault: true,
         tags: ["classique", "équilibré"],
@@ -56,9 +79,30 @@ const DEFAULT_PACKS: RulePack[] = [
         name: "Chaos",
         description: "Téléportations et surprises à chaque coin !",
         rules: [
-            { ruleId: "teleport-5", title: "Téléporteur Alpha", trigger: "ON_LAND", tileIndex: 5, effects: [{ type: "TELEPORT", value: 15, target: "self" }], priority: 1 },
-            { ruleId: "teleport-15", title: "Téléporteur Beta", trigger: "ON_LAND", tileIndex: 15, effects: [{ type: "TELEPORT", value: 3, target: "self" }], priority: 1 },
-            { ruleId: "reset-10", title: "Retour Départ", trigger: "ON_LAND", tileIndex: 10, effects: [{ type: "BACK_TO_START", value: 0, target: "self" }], priority: 1 },
+            {
+                ruleId: "teleport-5",
+                title: "Téléporteur Alpha",
+                trigger: "ON_LAND",
+                tileIndex: 5,
+                effects: [{ type: "TELEPORT", value: 15, target: "self" }],
+                priority: 1,
+            },
+            {
+                ruleId: "teleport-15",
+                title: "Téléporteur Beta",
+                trigger: "ON_LAND",
+                tileIndex: 15,
+                effects: [{ type: "TELEPORT", value: 3, target: "self" }],
+                priority: 1,
+            },
+            {
+                ruleId: "reset-10",
+                title: "Retour Départ",
+                trigger: "ON_LAND",
+                tileIndex: 10,
+                effects: [{ type: "BACK_TO_START", value: 0, target: "self" }],
+                priority: 1,
+            },
         ],
         isDefault: true,
         tags: ["chaos", "fun"],
@@ -67,12 +111,12 @@ const DEFAULT_PACKS: RulePack[] = [
 
 const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.08 } }
+    visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
 }
 
 const itemVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
+    visible: { opacity: 1, y: 0 },
 }
 
 export default function RulesetsPage() {
@@ -108,7 +152,7 @@ export default function RulesetsPage() {
             tags: ["personnalisé"],
         }
 
-        const customPacks = packs.filter(p => !p.isDefault)
+        const customPacks = packs.filter((p) => !p.isDefault)
         customPacks.push(newPack)
         saveCustomPacks(customPacks)
         setPacks([...DEFAULT_PACKS, ...customPacks])
@@ -122,7 +166,7 @@ export default function RulesetsPage() {
     const deletePack = (pack: RulePack) => {
         if (pack.isDefault) return
 
-        const customPacks = packs.filter(p => !p.isDefault && p.packId !== pack.packId)
+        const customPacks = packs.filter((p) => !p.isDefault && p.packId !== pack.packId)
         saveCustomPacks(customPacks)
         setPacks([...DEFAULT_PACKS, ...customPacks])
         setPackToDelete(null)
@@ -138,29 +182,33 @@ export default function RulesetsPage() {
             tags: ["personnalisé", "copie"],
         }
 
-        const customPacks = packs.filter(p => !p.isDefault)
+        const customPacks = packs.filter((p) => !p.isDefault)
         customPacks.push(newPack)
         saveCustomPacks(customPacks)
         setPacks([...DEFAULT_PACKS, ...customPacks])
         toast.success(`Pack dupliqué !`)
     }
 
-    const defaultPacks = packs.filter(p => p.isDefault)
-    const customPacks = packs.filter(p => !p.isDefault)
+    const defaultPacks = packs.filter((p) => p.isDefault)
+    const customPacks = packs.filter((p) => !p.isDefault)
 
     return (
-        <div className="min-h-screen bg-background">
-
+        <div className="bg-background min-h-screen">
             {/* Background Effect */}
-            <div className="fixed inset-0 pointer-events-none">
+            <div className="pointer-events-none fixed inset-0">
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(249,115,22,0.1),transparent_50%)]" />
             </div>
 
             {/* Header */}
-            <header className="relative z-10 border-b border-white/5 bg-background/80 backdrop-blur-xl sticky top-0">
-                <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+            <header className="bg-background/80 relative sticky top-0 z-10 border-b border-white/5 backdrop-blur-xl">
+                <div className="container mx-auto flex items-center justify-between px-4 py-4">
                     <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="icon" onClick={() => router.push("/")} className="hover:bg-white/10">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => router.push("/")}
+                            className="hover:bg-white/10"
+                        >
                             <ArrowLeft className="h-5 w-5" />
                         </Button>
                         <PageHeader
@@ -170,17 +218,20 @@ export default function RulesetsPage() {
                             gradient="from-orange-500 to-red-600"
                         />
                     </div>
-                    <Button onClick={() => setIsCreateOpen(true)} className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-400 hover:to-red-500">
-                        <Plus className="h-4 w-4 mr-2" />
+                    <Button
+                        onClick={() => setIsCreateOpen(true)}
+                        className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-400 hover:to-red-500"
+                    >
+                        <Plus className="mr-2 h-4 w-4" />
                         Nouveau Pack
                     </Button>
                 </div>
             </header>
 
-            <main className="relative z-10 container mx-auto px-4 py-8 max-w-5xl">
+            <main className="relative z-10 container mx-auto max-w-5xl px-4 py-8">
                 {/* Default Packs */}
                 <section className="mb-10">
-                    <h2 className="text-xs font-bold uppercase tracking-wider text-orange-400 mb-4 flex items-center gap-2">
+                    <h2 className="mb-4 flex items-center gap-2 text-xs font-bold tracking-wider text-orange-400 uppercase">
                         <Sparkles className="h-4 w-4" />
                         Packs Officiels
                     </h2>
@@ -188,29 +239,25 @@ export default function RulesetsPage() {
                         variants={containerVariants}
                         initial="hidden"
                         animate="visible"
-                        className="grid md:grid-cols-3 gap-4"
+                        className="grid gap-4 md:grid-cols-3"
                     >
                         {defaultPacks.map((pack) => (
-                            <PackCard
-                                key={pack.packId}
-                                pack={pack}
-                                onDuplicate={() => duplicatePack(pack)}
-                            />
+                            <PackCard key={pack.packId} pack={pack} onDuplicate={() => duplicatePack(pack)} />
                         ))}
                     </motion.div>
                 </section>
 
                 {/* Custom Packs */}
                 <section>
-                    <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
+                    <h2 className="text-muted-foreground mb-4 flex items-center gap-2 text-xs font-bold tracking-wider uppercase">
                         <Package className="h-4 w-4" />
                         Mes Packs ({customPacks.length})
                     </h2>
                     {customPacks.length === 0 ? (
-                        <GameCard className="text-center py-12">
-                            <Package className="h-12 w-12 mx-auto text-muted-foreground/30 mb-4" />
+                        <GameCard className="py-12 text-center">
+                            <Package className="text-muted-foreground/30 mx-auto mb-4 h-12 w-12" />
                             <p className="text-muted-foreground">Aucun pack personnalisé</p>
-                            <p className="text-sm text-muted-foreground/60 mt-1">
+                            <p className="text-muted-foreground/60 mt-1 text-sm">
                                 Créez un nouveau pack ou dupliquez un pack existant
                             </p>
                         </GameCard>
@@ -219,7 +266,7 @@ export default function RulesetsPage() {
                             variants={containerVariants}
                             initial="hidden"
                             animate="visible"
-                            className="grid md:grid-cols-2 gap-4"
+                            className="grid gap-4 md:grid-cols-2"
                         >
                             {customPacks.map((pack) => (
                                 <PackCard
@@ -239,12 +286,12 @@ export default function RulesetsPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    className="mt-10 p-4 rounded-xl bg-orange-500/10 border border-orange-500/20"
+                    className="mt-10 rounded-xl border border-orange-500/20 bg-orange-500/10 p-4"
                 >
                     <p className="text-sm text-orange-200">
-                        <strong>Astuce :</strong> Les packs personnalisés sont sauvegardés dans votre navigateur.
-                        Pour créer des règles complexes, lancez une partie et utilisez l'éditeur de règles intégré,
-                        puis sauvegardez votre configuration.
+                        <strong>Astuce :</strong> Les packs personnalisés sont sauvegardés dans votre navigateur. Pour
+                        créer des règles complexes, lancez une partie et utilisez l'éditeur de règles intégré, puis
+                        sauvegardez votre configuration.
                     </p>
                 </motion.div>
             </main>
@@ -269,7 +316,7 @@ export default function RulesetsPage() {
                                 onChange={(e) => setNewPackName(e.target.value)}
                                 placeholder="Mon super pack"
                                 maxLength={30}
-                                onKeyDown={(e) => e.key === 'Enter' && createPack()}
+                                onKeyDown={(e) => e.key === "Enter" && createPack()}
                             />
                         </div>
                         <div className="space-y-2">
@@ -282,7 +329,7 @@ export default function RulesetsPage() {
                             />
                         </div>
                         <Button onClick={createPack} className="w-full" disabled={!newPackName.trim()}>
-                            <Plus className="h-4 w-4 mr-2" />
+                            <Plus className="mr-2 h-4 w-4" />
                             Créer le pack
                         </Button>
                     </div>
@@ -327,59 +374,78 @@ function PackCard({
 }) {
     return (
         <motion.div variants={itemVariants}>
-            <GameCard className="h-full hover:bg-white/10 transition-colors">
-                <div className="flex items-start justify-between mb-3">
+            <GameCard className="h-full transition-colors hover:bg-white/10">
+                <div className="mb-3 flex items-start justify-between">
                     <div className="flex items-center gap-2">
                         {pack.isDefault && <Sparkles className="h-4 w-4 text-yellow-400" />}
-                        <h3 className="font-bold text-lg text-white">{pack.name}</h3>
+                        <h3 className="text-lg font-bold text-white">{pack.name}</h3>
                     </div>
                     <div className="flex items-center gap-1">
-                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-white/10" onClick={onDuplicate} title="Dupliquer">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 hover:bg-white/10"
+                            onClick={onDuplicate}
+                            title="Dupliquer"
+                        >
                             <Copy className="h-4 w-4" />
                         </Button>
                         {!pack.isDefault && onEdit && (
-                            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-white/10" onClick={onEdit} title="Modifier">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 hover:bg-white/10"
+                                onClick={onEdit}
+                                title="Modifier"
+                            >
                                 <Edit className="h-4 w-4" />
                             </Button>
                         )}
                         {!pack.isDefault && onDelete && (
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-500/20" onClick={onDelete} title="Supprimer">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-red-400 hover:bg-red-500/20 hover:text-red-300"
+                                onClick={onDelete}
+                                title="Supprimer"
+                            >
                                 <Trash2 className="h-4 w-4" />
                             </Button>
                         )}
                     </div>
                 </div>
 
-                {pack.description && (
-                    <p className="text-sm text-muted-foreground mb-3">{pack.description}</p>
-                )}
+                {pack.description && <p className="text-muted-foreground mb-3 text-sm">{pack.description}</p>}
 
-                <div className="flex items-center gap-2 flex-wrap mb-3">
-                    <Badge variant="secondary" className="text-xs bg-orange-500/20 text-orange-300 border-orange-500/30">
-                        <Zap className="h-3 w-3 mr-1" />
-                        {pack.rules.length} règle{pack.rules.length !== 1 ? 's' : ''}
+                <div className="mb-3 flex flex-wrap items-center gap-2">
+                    <Badge
+                        variant="secondary"
+                        className="border-orange-500/30 bg-orange-500/20 text-xs text-orange-300"
+                    >
+                        <Zap className="mr-1 h-3 w-3" />
+                        {pack.rules.length} règle{pack.rules.length !== 1 ? "s" : ""}
                     </Badge>
                     {pack.tags.map((tag) => (
-                        <Badge key={tag} variant="outline" className="text-xs border-white/20">
+                        <Badge key={tag} variant="outline" className="border-white/20 text-xs">
                             {tag}
                         </Badge>
                     ))}
                 </div>
 
                 {pack.rules.length > 0 && (
-                    <div className="space-y-1 pt-3 border-t border-white/10">
+                    <div className="space-y-1 border-t border-white/10 pt-3">
                         {pack.rules.slice(0, 3).map((rule) => (
-                            <div key={rule.ruleId} className="text-xs text-muted-foreground flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 rounded-full bg-cyan-500" />
+                            <div key={rule.ruleId} className="text-muted-foreground flex items-center gap-2 text-xs">
+                                <div className="h-1.5 w-1.5 rounded-full bg-cyan-500" />
                                 <span className="truncate">{rule.title}</span>
-                                {rule.tileIndex != null && (
-                                    <span className="text-cyan-400 shrink-0">(Case {rule.tileIndex})</span>
+                                {rule.tileIndex !== null && rule.tileIndex !== undefined && (
+                                    <span className="shrink-0 text-cyan-400">(Case {rule.tileIndex})</span>
                                 )}
                             </div>
                         ))}
                         {pack.rules.length > 3 && (
-                            <div className="text-xs text-muted-foreground/60">
-                                +{pack.rules.length - 3} autre{pack.rules.length - 3 > 1 ? 's' : ''}
+                            <div className="text-muted-foreground/60 text-xs">
+                                +{pack.rules.length - 3} autre{pack.rules.length - 3 > 1 ? "s" : ""}
                             </div>
                         )}
                     </div>
