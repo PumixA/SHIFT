@@ -4,7 +4,7 @@
   "private": true,
   "description": "SHIFT - The Board Game with Dynamic Rules",
   "scripts": {
-    "prepare": "husky",
+    "prepare": "node -e \"if(process.env.CI!=='true'){require('child_process').execSync('npx husky',{stdio:'inherit'})}\"",
     "lint": "npm run lint --workspace=client",
     "lint:fix": "npm run lint:fix --workspace=client",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\" --ignore-path .gitignore",
