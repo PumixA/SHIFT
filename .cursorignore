@@ -1,0 +1,77 @@
+# Fichiers et dossiers à exclure du contexte IA
+# Ces fichiers polluent inutilement la fenêtre de contexte
+
+# Dépendances
+node_modules/
+.pnpm-store/
+
+# Build outputs
+.next/
+dist/
+build/
+out/
+
+# Cache
+.cache/
+*.cache
+.turbo/
+
+# IDE et éditeurs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environnement (secrets)
+.env
+.env.local
+.env.*.local
+*.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tests coverage
+coverage/
+.nyc_output/
+
+# Prisma
+server/prisma/migrations/
+
+# Assets binaires
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.svg
+*.woff
+*.woff2
+*.ttf
+*.eot
+*.mp3
+*.wav
+*.mp4
+*.webm
+
+# Lock files (trop volumineux)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Fichiers générés
+*.generated.*
+*.min.js
+*.min.css
+
+# Documentation externe
+docs/
+*.pdf

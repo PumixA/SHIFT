@@ -1,0 +1,101 @@
+# ================================
+# DEPENDENCIES
+# ================================
+node_modules/
+.pnpm-store/
+.yarn/
+
+# ================================
+# BUILD OUTPUTS
+# ================================
+# Next.js
+client/.next/
+client/out/
+client/.turbo/
+
+# TypeScript
+dist/
+build/
+*.tsbuildinfo
+
+# ================================
+# ENVIRONMENT & SECRETS
+# ================================
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ================================
+# LOGS
+# ================================
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ================================
+# CACHE
+# ================================
+.cache/
+*.cache
+.eslintcache
+.prettiercache
+
+# ================================
+# IDE & EDITORS
+# ================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# ================================
+# OS FILES
+# ================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ================================
+# TESTING
+# ================================
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+
+# ================================
+# PRISMA
+# ================================
+# Ne pas ignorer schema.prisma ni les migrations
+# Ignorer seulement les fichiers générés locaux
+
+# ================================
+# DOCKER
+# ================================
+# Ne pas ignorer docker-compose.yml
+# Ignorer les volumes locaux si créés hors Docker
+postgres_data/
+
+# ================================
+# MISC
+# ================================
+*.local
+.vercel
+.netlify
+
+# Lock files (optionnel - décommenter si souhaité)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml

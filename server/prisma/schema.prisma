@@ -1,0 +1,269 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ================================
+// USER & PROFILE SYSTEM
+// ================================
+
+// Utilisateur (profil persistant)
+model User {
+  id            String    @id @default(uuid())
+  username      String    @unique
+  avatarUrl     String?
+  avatarPreset  String?
+  createdAt     DateTime  @default(now())
+
+  profile           UserProfile?
+  friends           Friendship[]      @relation("UserFriends")
+  friendOf          Friendship[]      @relation("FriendOf")
+  gameHistories     GameHistory[]
+  savedGames        SavedGame[]
+  pushSubscriptions PushSubscription[]
+
+  @@index([username])
+}
+
+// Profil & Statistiques
+model UserProfile {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gamesPlayed     Int      @default(0)
+  gamesWon        Int      @default(0)
+  totalScore      Int      @default(0)
+  highestScore    Int      @default(0)
+  totalTurns      Int      @default(0)
+  totalPlayTime   Int      @default(0)  // In seconds
+  favoriteRulePack String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// ================================
+// SOCIAL SYSTEM
+// ================================
+
+// Système d'Amis
+model Friendship {
+  id          String           @id @default(uuid())
+  userId      String
+  friendId    String
+  status      FriendshipStatus @default(PENDING)
+  user        User             @relation("UserFriends", fields: [userId], references: [id], onDelete: Cascade)
+  friend      User             @relation("FriendOf", fields: [friendId], references: [id], onDelete: Cascade)
+  createdAt   DateTime         @default(now())
+
+  @@unique([userId, friendId])
+  @@index([userId, status])
+  @@index([friendId, status])
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  BLOCKED
+}
+
+// Messages Chat
+model ChatMessage {
+  id          String      @id @default(uuid())
+  roomId      String
+  senderId    String
+  senderName  String
+  content     String
+  type        MessageType @default(TEXT)
+  createdAt   DateTime    @default(now())
+
+  @@index([roomId, createdAt])
+}
+
+enum MessageType {
+  TEXT
+  EMOJI
+  SYSTEM
+}
+
+// ================================
+// GAME HISTORY & SAVES
+// ================================
+
+// Historique des Parties
+model GameHistory {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roomId       String
+  roomName     String?
+  players      Json     // Array of player info at game end
+  winner       String   // Winner's name or ID
+  isWinner     Boolean  @default(false)
+  playerScore  Int
+  turnCount    Int
+  duration     Int      // In seconds
+  rulePackUsed String?
+  playedAt     DateTime @default(now())
+
+  @@index([userId])
+  @@index([playedAt])
+}
+
+// Parties Sauvegardées
+model SavedGame {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roomId       String   @unique
+  roomName     String?
+  gameState    Json     // Full game state snapshot
+  lastActivity DateTime @default(now())
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+  @@index([lastActivity])
+}
+
+// ================================
+// NOTIFICATIONS
+// ================================
+
+// Notifications Push
+model PushSubscription {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint     String   @unique
+  keys         Json     // {p256dh, auth}
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ================================
+// GAME SESSION (existing, updated)
+// ================================
+
+// Joueur dans une session de jeu
+model Player {
+  id          String      @id @default(uuid())
+  socketId    String      // Socket ID
+  userId      String?     // Link to User if authenticated
+  name        String      @default("Anonymous")
+  color       PlayerColor
+  position    Int         @default(0)
+  score       Int         @default(0)
+  effects     Json        @default("[]")  // Active temporary effects
+  isConnected Boolean     @default(true)
+  isHost      Boolean     @default(false)
+  lastSeen    DateTime    @default(now())
+
+  gameSession   GameSession @relation(fields: [gameSessionId], references: [id], onDelete: Cascade)
+  gameSessionId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([socketId])
+  @@index([gameSessionId])
+  @@index([userId])
+}
+
+// Session de jeu
+model GameSession {
+  id           String       @id @default(uuid())
+  roomId       String       @unique
+  roomName     String?
+  password     String?
+
+  maxPlayers   Int          @default(2)
+  status       GameStatus   @default(WAITING)
+  currentTurn  String       @default("")
+  winnerId     String?
+  turnCount    Int          @default(0)
+
+  allowRuleEdit Boolean     @default(true)
+  isLocal       Boolean     @default(false)
+  isSaved       Boolean     @default(false)
+
+  // Timing
+  startedAt    DateTime?
+  endedAt      DateTime?
+  duration     Int          @default(0)  // In seconds
+
+  players      Player[]
+  rules        Rule[]
+  rulePackId   String?
+  rulePack     RulePack?    @relation(fields: [rulePackId], references: [id])
+
+  lastActivity DateTime    @default(now())
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([status])
+  @@index([roomId])
+  @@index([isSaved])
+}
+
+// Règle de jeu active
+model Rule {
+  id          String   @id @default(uuid())
+  ruleId      String
+  title       String
+  trigger     String
+  tileIndex   Int?
+  conditions  Json     @default("[]")
+  effects     Json
+  priority    Int      @default(1)
+  isActive    Boolean  @default(true)
+  createdBy   String?
+
+  gameSession   GameSession @relation(fields: [gameSessionId], references: [id], onDelete: Cascade)
+  gameSessionId String
+
+  createdAt DateTime @default(now())
+
+  @@index([gameSessionId])
+  @@index([trigger, tileIndex])
+}
+
+// Set de règles prédéfini
+model RulePack {
+  id          String   @id @default(uuid())
+  packId      String   @unique
+  name        String
+  description String?
+  rules       Json
+
+  isDefault   Boolean  @default(false)
+  isPublic    Boolean  @default(false)
+  usageCount  Int      @default(0)
+  tags        String[] @default([])
+  createdBy   String?
+
+  gameSessions GameSession[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isPublic, usageCount])
+  @@index([isDefault])
+}
+
+enum PlayerColor {
+  CYAN
+  VIOLET
+  ORANGE
+  GREEN
+}
+
+enum GameStatus {
+  WAITING
+  PLAYING
+  PAUSED
+  FINISHED
+}

@@ -1,0 +1,144 @@
+# Règles pour Cursor AI - SHIFT Project
+
+Tu es un expert en développement web fullstack spécialisé dans Next.js 16, React 19, TypeScript, et les architectures temps réel avec Socket.io.
+
+## Contexte du Projet
+
+SHIFT est un jeu de plateau multijoueur avec un système de règles dynamiques. Le code est organisé en:
+- `client/` - Application Next.js (App Router)
+- `server/` - API Express + Socket.io
+- `server/prisma/` - Schéma de base de données
+
+## Directives Obligatoires
+
+### TypeScript
+- TOUJOURS utiliser le mode strict
+- JAMAIS utiliser `any` - préférer `unknown` avec type guards
+- TOUJOURS définir les types de retour explicites
+- Utiliser `interface` pour les objets, `type` pour les unions/intersections
+
+### React/Next.js
+- UNIQUEMENT des composants fonctionnels (JAMAIS de classes)
+- TOUJOURS utiliser l'App Router (dossier `app/`)
+- Préférer Server Components, ajouter 'use client' seulement si nécessaire
+- Utiliser Radix UI pour tous les composants interactifs
+- Styling avec TailwindCSS uniquement
+
+### Validation
+- TOUJOURS valider avec Zod les entrées utilisateur
+- TOUJOURS valider côté serveur, même si validé côté client
+
+### Conventions de Nommage
+- Fichiers composants: kebab-case (`rule-builder-modal.tsx`)
+- Fichiers services: PascalCase (`GameService.ts`)
+- Variables/Fonctions: camelCase
+- Types/Interfaces: PascalCase
+- Constantes: UPPER_SNAKE_CASE
+
+### Sécurité
+- JAMAIS de credentials en dur
+- TOUJOURS échapper les sorties HTML
+- JAMAIS exposer les stack traces au client
+
+## Processus de Modification
+
+Avant chaque modification:
+1. Lis le fichier concerné en entier
+2. Identifie les dépendances et impacts
+3. Propose un plan en commentaire si complexe
+4. Implémente en respectant les patterns existants
+5. Vérifie la cohérence TypeScript
+
+## Fichiers de Référence
+
+Pour comprendre le projet, lis:
+- `.agent/AGENT.md` - Directives globales
+- `.agent/spec/requirement.md` - Exigences fonctionnelles
+- `.agent/spec/design.md` - Architecture système
+- `.agent/wiki/domain.md` - Glossaire métier
+- `.agent/tech/stack.md` - Versions des dépendances
+
+## Patterns du Projet
+
+### Hooks personnalisés
+```typescript
+// Toujours préfixer par "use"
+export function useGameState() {
+  const context = useContext(GameContext);
+  if (!context) {
+    throw new Error('useGameState must be used within GameProvider');
+  }
+  return context;
+}
+```
+
+### Composants UI (Radix)
+```typescript
+// Utiliser les primitives Radix avec Tailwind
+import * as Dialog from '@radix-ui/react-dialog';
+
+export function Modal({ children, ...props }) {
+  return (
+    <Dialog.Root {...props}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 bg-black/50" />
+        <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+          {children}
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+}
+```
+
+### Services Backend
+```typescript
+// Services dans server/src/services/
+export class GameService {
+  async createGame(hostId: string, options: GameOptions): Promise<GameSession> {
+    return prisma.gameSession.create({
+      data: { hostId, ...options }
+    });
+  }
+}
+```
+
+### Socket Events
+```typescript
+// Événements typés
+interface ServerToClientEvents {
+  game_state: (state: GameState) => void;
+  player_moved: (data: { playerId: string; to: number }) => void;
+}
+
+interface ClientToServerEvents {
+  roll_dice: (data: { gameId: string }) => void;
+  create_rule: (data: { gameId: string; rule: Rule }) => void;
+}
+```
+
+## Anti-Patterns à Éviter
+
+- ❌ `useState` pour état global → ✅ Context + hooks
+- ❌ `any` type → ✅ Types explicites ou `unknown`
+- ❌ CSS inline ou CSS-in-JS → ✅ TailwindCSS
+- ❌ Validation manuelle → ✅ Zod schemas
+- ❌ console.log en production → ✅ Logging structuré
+- ❌ Logique métier dans composants → ✅ Hooks/Services
+
+## Commandes Utiles
+
+```bash
+# Client
+cd client && npm run dev     # Dev server
+cd client && npm run build   # Build production
+cd client && npm run lint    # Linting
+
+# Server
+cd server && npm run dev     # Dev server (nodemon)
+cd server && npm run db:push # Sync Prisma schema
+cd server && npm run db:studio # GUI database
+
+# Docker
+docker-compose up -d         # Start PostgreSQL
+```
