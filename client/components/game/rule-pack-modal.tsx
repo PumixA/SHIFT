@@ -124,7 +124,7 @@ export function RulePackModal({ open, onOpenChange, currentRulesCount }: RulePac
                     <DialogDescription>Sauvegardez vos règles ou chargez un preset existant</DialogDescription>
                 </DialogHeader>
 
-                <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "save" | "load")}>
+                <Tabs value={activeTab} onValueChange={(v: string) => setActiveTab(v as "save" | "load")}>
                     <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="load" className="flex items-center gap-2">
                             <Download className="h-4 w-4" /> Charger
