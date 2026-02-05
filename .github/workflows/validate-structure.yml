@@ -108,15 +108,27 @@ jobs:
       - name: Validate commits (Push)
         if: github.event_name == 'push'
         run: |
-          # Get the commit range
-          if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
-            # New branch, validate only the last commit
+          BEFORE_SHA="${{ github.event.before }}"
+          CURRENT_SHA="${{ github.sha }}"
+
+          # Check if this is a new branch
+          if [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ]; then
             echo "New branch detected, validating last commit only"
             npx commitlint --from HEAD~1 --to HEAD --verbose || true
-          else
-            echo "Validating commits from ${{ github.event.before }} to ${{ github.sha }}"
-            npx commitlint --from ${{ github.event.before }} --to ${{ github.sha }} --verbose
+            exit 0
           fi
+
+          # Check if the before SHA exists (handles force push case)
+          if ! git cat-file -e "$BEFORE_SHA" 2>/dev/null; then
+            echo "Force push detected (previous SHA not in history)"
+            echo "Validating only the latest commit"
+            npx commitlint --from HEAD~1 --to HEAD --verbose
+            exit 0
+          fi
+
+          # Normal push - validate the commit range
+          echo "Validating commits from $BEFORE_SHA to $CURRENT_SHA"
+          npx commitlint --from "$BEFORE_SHA" --to "$CURRENT_SHA" --verbose
 
   # ============================================
   # Validate PR Title (for squash merges)
