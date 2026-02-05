@@ -1,7 +1,7 @@
 # Architecture Système - SHIFT
 
-> Version: 1.0.0
-> Dernière mise à jour: 2026-02-04
+> Version: 1.0.1
+> Dernière mise à jour: 2026-02-05
 
 ## Vue d'Ensemble
 
@@ -61,46 +61,46 @@ flowchart LR
 
 ### Composants Principaux
 
-| Composant | Responsabilité | Fichier |
-|-----------|----------------|---------|
-| ShiftGame | Orchestration du jeu | `components/shift-game.tsx` |
-| GameViewport | Rendu du plateau | `components/game/game-viewport.tsx` |
-| RuleBuilderModal | Création de règles | `components/game/rule-builder-modal.tsx` |
-| ActionHistory | Historique des actions | `components/game/action-history.tsx` |
-| ChatPanel | Chat en jeu | `components/game/chat-panel.tsx` |
-| InteractiveTutorial | Tutoriel interactif | `components/game/interactive-tutorial.tsx` |
-| TutorialWelcomeModal | Modal de bienvenue | `components/game/tutorial-welcome-modal.tsx` |
-| TutorialHints | Conseils contextuels | `components/game/tutorial-hints.tsx` |
-| TutorialHelpMenu | Menu d'aide segmenté | `components/game/tutorial-help-menu.tsx` |
+| Composant            | Responsabilité         | Fichier                                      |
+| -------------------- | ---------------------- | -------------------------------------------- |
+| ShiftGame            | Orchestration du jeu   | `components/shift-game.tsx`                  |
+| GameViewport         | Rendu du plateau       | `components/game/game-viewport.tsx`          |
+| RuleBuilderModal     | Création de règles     | `components/game/rule-builder-modal.tsx`     |
+| ActionHistory        | Historique des actions | `components/game/action-history.tsx`         |
+| ChatPanel            | Chat en jeu            | `components/game/chat-panel.tsx`             |
+| InteractiveTutorial  | Tutoriel interactif    | `components/game/interactive-tutorial.tsx`   |
+| TutorialWelcomeModal | Modal de bienvenue     | `components/game/tutorial-welcome-modal.tsx` |
+| TutorialHints        | Conseils contextuels   | `components/game/tutorial-hints.tsx`         |
+| TutorialHelpMenu     | Menu d'aide segmenté   | `components/game/tutorial-help-menu.tsx`     |
 
 ### Hooks Critiques
 
-| Hook | Fonction | Dépendances |
-|------|----------|-------------|
-| useGameState | État global du jeu | GameContext |
-| useGameControls | Contrôles joueur | useGameState, Socket |
-| useRuleManagement | CRUD règles | useGameState, Socket |
-| useTurnManagement | Gestion des tours | useGameState |
-| useBotAI | Logique IA | useGameState |
-| useTutorial | État tutoriel interactif | localStorage |
-| useTutorialPreferences | Préférences tutoriel | user-storage |
+| Hook                   | Fonction                 | Dépendances          |
+| ---------------------- | ------------------------ | -------------------- |
+| useGameState           | État global du jeu       | GameContext          |
+| useGameControls        | Contrôles joueur         | useGameState, Socket |
+| useRuleManagement      | CRUD règles              | useGameState, Socket |
+| useTurnManagement      | Gestion des tours        | useGameState         |
+| useBotAI               | Logique IA               | useGameState         |
+| useTutorial            | État tutoriel interactif | localStorage         |
+| useTutorialPreferences | Préférences tutoriel     | user-storage         |
 
 ### Contextes React
 
 ```typescript
 // GameContext - État principal
 interface GameContextValue {
-  gameState: GameState | null;
-  currentPlayer: Player | null;
-  isMyTurn: boolean;
-  dispatch: (action: GameAction) => void;
+  gameState: GameState | null
+  currentPlayer: Player | null
+  isMyTurn: boolean
+  dispatch: (action: GameAction) => void
 }
 
 // AudioContext - Gestion audio
 interface AudioContextValue {
-  playSound: (sound: SoundType) => void;
-  setVolume: (volume: number) => void;
-  isMuted: boolean;
+  playSound: (sound: SoundType) => void
+  setVolume: (volume: number) => void
+  isMuted: boolean
 }
 ```
 
@@ -143,13 +143,13 @@ classDiagram
 
 Le moteur de jeu est le cœur de la logique métier. Il est composé de modules découplés:
 
-| Module | Fichier | Responsabilité |
-|--------|---------|----------------|
-| Processor | `engine/processor.ts` | Orchestration du flux de jeu |
-| RuleEvaluator | `engine/rule-evaluator.ts` | Évaluation des conditions |
-| EffectManager | `engine/effect-manager.ts` | Application des effets |
-| ConditionEvaluator | `engine/condition-evaluator.ts` | Parsing des conditions |
-| Actions | `engine/actions.ts` | Exécution des actions |
+| Module             | Fichier                         | Responsabilité               |
+| ------------------ | ------------------------------- | ---------------------------- |
+| Processor          | `engine/processor.ts`           | Orchestration du flux de jeu |
+| RuleEvaluator      | `engine/rule-evaluator.ts`      | Évaluation des conditions    |
+| EffectManager      | `engine/effect-manager.ts`      | Application des effets       |
+| ConditionEvaluator | `engine/condition-evaluator.ts` | Parsing des conditions       |
+| Actions            | `engine/actions.ts`             | Exécution des actions        |
 
 ### Flux d'un Tour
 
@@ -239,20 +239,22 @@ model Rule {
 ### Événements Socket.io
 
 #### Client → Serveur
-| Événement | Payload | Description |
-|-----------|---------|-------------|
-| `join_game` | `{ gameId, userId }` | Rejoindre une partie |
-| `roll_dice` | `{ gameId }` | Lancer le dé |
-| `create_rule` | `{ gameId, rule }` | Créer une règle |
-| `send_message` | `{ gameId, message }` | Envoyer un message |
+
+| Événement      | Payload               | Description          |
+| -------------- | --------------------- | -------------------- |
+| `join_game`    | `{ gameId, userId }`  | Rejoindre une partie |
+| `roll_dice`    | `{ gameId }`          | Lancer le dé         |
+| `create_rule`  | `{ gameId, rule }`    | Créer une règle      |
+| `send_message` | `{ gameId, message }` | Envoyer un message   |
 
 #### Serveur → Client
-| Événement | Payload | Description |
-|-----------|---------|-------------|
-| `game_state` | `GameState` | État complet du jeu |
-| `player_moved` | `{ playerId, from, to }` | Mouvement d'un joueur |
-| `rule_triggered` | `{ rule, effects }` | Règle déclenchée |
-| `turn_changed` | `{ playerId }` | Changement de tour |
+
+| Événement        | Payload                  | Description           |
+| ---------------- | ------------------------ | --------------------- |
+| `game_state`     | `GameState`              | État complet du jeu   |
+| `player_moved`   | `{ playerId, from, to }` | Mouvement d'un joueur |
+| `rule_triggered` | `{ rule, effects }`      | Règle déclenchée      |
+| `turn_changed`   | `{ playerId }`           | Changement de tour    |
 
 ## Sécurité
 
@@ -263,15 +265,15 @@ Toutes les actions joueur sont validées côté serveur:
 ```typescript
 // Exemple de validation
 function validateRollDice(gameId: string, userId: string): boolean {
-  const game = getGame(gameId);
-  const player = game.players.find(p => p.userId === userId);
+  const game = getGame(gameId)
+  const player = game.players.find((p) => p.userId === userId)
 
   return (
-    game.status === 'IN_PROGRESS' &&
+    game.status === "IN_PROGRESS" &&
     player !== undefined &&
     game.currentPlayerIndex === player.index &&
     !player.hasRolled
-  );
+  )
 }
 ```
 

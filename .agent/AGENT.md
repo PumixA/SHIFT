@@ -1,6 +1,6 @@
 # AGENT.md - Directives Globales pour Agents IA
 
-> Version: 1.1.0
+> Version: 1.2.0
 > Dernière mise à jour: 2026-02-05
 > Projet: SHIFT - The Board Game
 
