@@ -3,198 +3,198 @@
  * Handles service worker registration and push subscription
  */
 
-const VAPID_PUBLIC_KEY_ENDPOINT = 'http://localhost:3001/api/vapid-public-key';
+const VAPID_PUBLIC_KEY_ENDPOINT = "http://localhost:3001/api/vapid-public-key"
 
 /**
  * Check if push notifications are supported
  */
 export function isPushSupported(): boolean {
-  return typeof window !== 'undefined' &&
-    'serviceWorker' in navigator &&
-    'PushManager' in window &&
-    'Notification' in window;
+    return (
+        typeof window !== "undefined" &&
+        "serviceWorker" in navigator &&
+        "PushManager" in window &&
+        "Notification" in window
+    )
 }
 
 /**
  * Get current notification permission
  */
-export function getNotificationPermission(): NotificationPermission | 'unsupported' {
-  if (!isPushSupported()) return 'unsupported';
-  return Notification.permission;
+export function getNotificationPermission(): NotificationPermission | "unsupported" {
+    if (!isPushSupported()) return "unsupported"
+    return Notification.permission
 }
 
 /**
  * Request notification permission
  */
 export async function requestNotificationPermission(): Promise<NotificationPermission> {
-  if (!isPushSupported()) {
-    throw new Error('Push notifications not supported');
-  }
+    if (!isPushSupported()) {
+        throw new Error("Push notifications not supported")
+    }
 
-  const permission = await Notification.requestPermission();
-  return permission;
+    const permission = await Notification.requestPermission()
+    return permission
 }
 
 /**
  * Register service worker
  */
 export async function registerServiceWorker(): Promise<ServiceWorkerRegistration | null> {
-  if (!isPushSupported()) {
-    console.warn('[Push] Service workers not supported');
-    return null;
-  }
+    if (!isPushSupported()) {
+        console.warn("[Push] Service workers not supported")
+        return null
+    }
 
-  try {
-    const registration = await navigator.serviceWorker.register('/sw.js');
-    console.log('[Push] Service worker registered');
-    return registration;
-  } catch (error) {
-    console.error('[Push] Service worker registration failed:', error);
-    return null;
-  }
+    try {
+        const registration = await navigator.serviceWorker.register("/sw.js")
+        console.log("[Push] Service worker registered")
+        return registration
+    } catch (error) {
+        console.error("[Push] Service worker registration failed:", error)
+        return null
+    }
 }
 
 /**
  * Get VAPID public key from server
  */
 async function getVapidPublicKey(): Promise<string> {
-  try {
-    const response = await fetch(VAPID_PUBLIC_KEY_ENDPOINT);
-    const data = await response.json();
-    return data.publicKey;
-  } catch (error) {
-    console.error('[Push] Failed to get VAPID key:', error);
-    throw error;
-  }
+    try {
+        const response = await fetch(VAPID_PUBLIC_KEY_ENDPOINT)
+        const data = await response.json()
+        return data.publicKey
+    } catch (error) {
+        console.error("[Push] Failed to get VAPID key:", error)
+        throw error
+    }
 }
 
 /**
  * Convert URL-safe base64 to Uint8Array
  */
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding)
-    .replace(/-/g, '+')
-    .replace(/_/g, '/');
+    const padding = "=".repeat((4 - (base64String.length % 4)) % 4)
+    const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/")
 
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
+    const rawData = window.atob(base64)
+    const outputArray = new Uint8Array(rawData.length)
 
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i);
-  }
-  return outputArray;
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i)
+    }
+    return outputArray
 }
 
 /**
  * Subscribe to push notifications
  */
 export async function subscribeToPush(): Promise<PushSubscription | null> {
-  if (!isPushSupported()) {
-    console.warn('[Push] Not supported');
-    return null;
-  }
-
-  const permission = await requestNotificationPermission();
-  if (permission !== 'granted') {
-    console.warn('[Push] Permission denied');
-    return null;
-  }
-
-  const registration = await registerServiceWorker();
-  if (!registration) return null;
-
-  try {
-    // Get existing subscription or create new one
-    let subscription = await registration.pushManager.getSubscription();
-
-    if (!subscription) {
-      const vapidPublicKey = await getVapidPublicKey();
-
-      if (!vapidPublicKey) {
-        console.warn('[Push] VAPID key not available');
-        return null;
-      }
-
-      subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
-      });
-
-      console.log('[Push] Subscribed to push notifications');
+    if (!isPushSupported()) {
+        console.warn("[Push] Not supported")
+        return null
     }
 
-    return subscription;
-  } catch (error) {
-    console.error('[Push] Subscription failed:', error);
-    return null;
-  }
+    const permission = await requestNotificationPermission()
+    if (permission !== "granted") {
+        console.warn("[Push] Permission denied")
+        return null
+    }
+
+    const registration = await registerServiceWorker()
+    if (!registration) return null
+
+    try {
+        // Get existing subscription or create new one
+        let subscription = await registration.pushManager.getSubscription()
+
+        if (!subscription) {
+            const vapidPublicKey = await getVapidPublicKey()
+
+            if (!vapidPublicKey) {
+                console.warn("[Push] VAPID key not available")
+                return null
+            }
+
+            subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(vapidPublicKey) as BufferSource,
+            })
+
+            console.log("[Push] Subscribed to push notifications")
+        }
+
+        return subscription
+    } catch (error) {
+        console.error("[Push] Subscription failed:", error)
+        return null
+    }
 }
 
 /**
  * Unsubscribe from push notifications
  */
 export async function unsubscribeFromPush(): Promise<boolean> {
-  if (!isPushSupported()) return false;
+    if (!isPushSupported()) return false
 
-  try {
-    const registration = await navigator.serviceWorker.ready;
-    const subscription = await registration.pushManager.getSubscription();
+    try {
+        const registration = await navigator.serviceWorker.ready
+        const subscription = await registration.pushManager.getSubscription()
 
-    if (subscription) {
-      await subscription.unsubscribe();
-      console.log('[Push] Unsubscribed from push notifications');
-      return true;
+        if (subscription) {
+            await subscription.unsubscribe()
+            console.log("[Push] Unsubscribed from push notifications")
+            return true
+        }
+        return false
+    } catch (error) {
+        console.error("[Push] Unsubscription failed:", error)
+        return false
     }
-    return false;
-  } catch (error) {
-    console.error('[Push] Unsubscription failed:', error);
-    return false;
-  }
 }
 
 /**
  * Get push subscription data for sending to server
  */
 export async function getPushSubscriptionData(): Promise<{
-  endpoint: string;
-  keys: { p256dh: string; auth: string };
+    endpoint: string
+    keys: { p256dh: string; auth: string }
 } | null> {
-  if (!isPushSupported()) return null;
+    if (!isPushSupported()) return null
 
-  try {
-    const registration = await navigator.serviceWorker.ready;
-    const subscription = await registration.pushManager.getSubscription();
+    try {
+        const registration = await navigator.serviceWorker.ready
+        const subscription = await registration.pushManager.getSubscription()
 
-    if (!subscription) return null;
+        if (!subscription) return null
 
-    const key = subscription.getKey('p256dh');
-    const auth = subscription.getKey('auth');
+        const key = subscription.getKey("p256dh")
+        const auth = subscription.getKey("auth")
 
-    if (!key || !auth) return null;
+        if (!key || !auth) return null
 
-    return {
-      endpoint: subscription.endpoint,
-      keys: {
-        p256dh: btoa(String.fromCharCode(...new Uint8Array(key))),
-        auth: btoa(String.fromCharCode(...new Uint8Array(auth)))
-      }
-    };
-  } catch (error) {
-    console.error('[Push] Failed to get subscription data:', error);
-    return null;
-  }
+        return {
+            endpoint: subscription.endpoint,
+            keys: {
+                p256dh: btoa(String.fromCharCode(...new Uint8Array(key))),
+                auth: btoa(String.fromCharCode(...new Uint8Array(auth))),
+            },
+        }
+    } catch (error) {
+        console.error("[Push] Failed to get subscription data:", error)
+        return null
+    }
 }
 
 /**
  * Show a local notification (for testing or fallback)
  */
 export function showLocalNotification(title: string, options?: NotificationOptions): void {
-  if (!isPushSupported() || Notification.permission !== 'granted') return;
+    if (!isPushSupported() || Notification.permission !== "granted") return
 
-  new Notification(title, {
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/badge-72x72.png',
-    ...options
-  });
+    new Notification(title, {
+        icon: "/icons/icon-192x192.png",
+        badge: "/icons/badge-72x72.png",
+        ...options,
+    })
 }

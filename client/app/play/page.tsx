@@ -4,9 +4,25 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import {
-    ArrowLeft, Play, Plus, Minus, User, Bot, Package, Pencil, Users,
-    Globe, Gamepad2, Mail, Clock, UserPlus, Wifi, WifiOff, Check, X,
-    ChevronRight
+    ArrowLeft,
+    Play,
+    Plus,
+    Minus,
+    User,
+    Bot,
+    Package,
+    Pencil,
+    Users,
+    Globe,
+    Gamepad2,
+    Mail,
+    Clock,
+    UserPlus,
+    Wifi,
+    WifiOff,
+    Check,
+    X,
+    ChevronRight,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -22,17 +38,17 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { SavedGamesList } from "@/components/menu/saved-games-list"
 import { socket } from "@/services/socket"
-import { toast, Toaster } from "sonner"
+import { toast } from "sonner"
 import { motion } from "framer-motion"
 import { PageHeader } from "@/components/ui/design-system"
 
-const PLAYER_COLORS = ['cyan', 'violet', 'orange', 'green'] as const
+const PLAYER_COLORS = ["cyan", "violet", "orange", "green"] as const
 
 interface PlayerConfig {
     name: string
-    color: typeof PLAYER_COLORS[number]
+    color: (typeof PLAYER_COLORS)[number]
     isBot?: boolean
-    botDifficulty?: 'easy' | 'medium' | 'hard'
+    botDifficulty?: "easy" | "medium" | "hard"
 }
 
 interface Friend {
@@ -87,7 +103,7 @@ export default function PlayPage() {
         const storedName = localStorage.getItem("username")
         if (storedName) {
             setPlayerName(storedName)
-            setPlayers(prev => {
+            setPlayers((prev) => {
                 const newPlayers = [...prev]
                 newPlayers[0] = { ...newPlayers[0], name: storedName }
                 return newPlayers
@@ -158,7 +174,7 @@ export default function PlayPage() {
 
         if (updates.isBot && !newPlayers[index].name.includes("Bot")) {
             newPlayers[index].name = `Bot ${index + 1}`
-            newPlayers[index].botDifficulty = 'medium'
+            newPlayers[index].botDifficulty = "medium"
         } else if (updates.isBot === false && newPlayers[index].name.includes("Bot")) {
             newPlayers[index].name = `Joueur ${index + 1}`
         }
@@ -167,10 +183,8 @@ export default function PlayPage() {
     }
 
     const toggleFriendInvite = (friendId: string) => {
-        setSelectedFriends(prev =>
-            prev.includes(friendId)
-                ? prev.filter(id => id !== friendId)
-                : [...prev, friendId]
+        setSelectedFriends((prev) =>
+            prev.includes(friendId) ? prev.filter((id) => id !== friendId) : [...prev, friendId]
         )
     }
 
@@ -178,7 +192,7 @@ export default function PlayPage() {
         if (gameMode === "local") {
             const gameConfig = {
                 mode: "local",
-                players: players.map(p => ({
+                players: players.map((p) => ({
                     name: p.name,
                     color: p.color,
                     isBot: p.isBot,
@@ -209,7 +223,7 @@ export default function PlayPage() {
             // Envoyer les invitations aux amis sélectionnés
             if (selectedFriends.length > 0 && userId) {
                 const roomId = Math.random().toString(36).substring(2, 8).toUpperCase()
-                selectedFriends.forEach(friendId => {
+                selectedFriends.forEach((friendId) => {
                     socket.emit("invite_to_game", {
                         userId,
                         friendId,
@@ -238,24 +252,22 @@ export default function PlayPage() {
         const userId = localStorage.getItem("userId")
         if (userId) {
             socket.emit("decline_game_invite", { userId, inviteId })
-            setInvites(prev => prev.filter(i => i.id !== inviteId))
+            setInvites((prev) => prev.filter((i) => i.id !== inviteId))
             toast.info("Invitation refusée")
         }
     }
 
-    const onlineFriends = friends.filter(f => f.isOnline)
+    const onlineFriends = friends.filter((f) => f.isOnline)
 
     return (
-        <div className="min-h-screen bg-background">
-            <Toaster position="bottom-right" theme="dark" richColors />
-
+        <div className="bg-background min-h-screen">
             {/* Background Effect */}
-            <div className="fixed inset-0 pointer-events-none">
+            <div className="pointer-events-none fixed inset-0">
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(6,182,212,0.1),transparent_50%)]" />
             </div>
 
             {/* Header */}
-            <header className="relative z-10 border-b border-white/5 bg-background/80 backdrop-blur-xl sticky top-0">
+            <header className="bg-background/80 relative sticky top-0 z-10 border-b border-white/5 backdrop-blur-xl">
                 <div className="container mx-auto px-4 py-4">
                     <div className="flex items-center gap-4">
                         <Link href="/">
@@ -273,14 +285,17 @@ export default function PlayPage() {
                 </div>
             </header>
 
-            <main className="relative z-10 container mx-auto px-4 py-6 max-w-2xl">
+            <main className="relative z-10 container mx-auto max-w-2xl px-4 py-6">
                 <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "games" | "create")}>
-                    <TabsList className="grid w-full grid-cols-2 mb-6">
+                    <TabsList className="mb-6 grid w-full grid-cols-2">
                         <TabsTrigger value="games" className="flex items-center gap-2">
                             <Gamepad2 className="h-4 w-4" />
                             Mes Parties
                             {invites.length > 0 && (
-                                <Badge variant="destructive" className="ml-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                                <Badge
+                                    variant="destructive"
+                                    className="ml-1 flex h-5 w-5 items-center justify-center p-0 text-xs"
+                                >
                                     {invites.length}
                                 </Badge>
                             )}
@@ -300,19 +315,19 @@ export default function PlayPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 className="space-y-3"
                             >
-                                <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground">
+                                <div className="text-muted-foreground flex items-center gap-2 text-sm font-bold tracking-wider uppercase">
                                     <Mail className="h-4 w-4" />
                                     Invitations reçues
                                 </div>
                                 {invites.map((invite) => (
-                                    <Card key={invite.id} className="bg-violet-500/10 border-violet-500/30">
-                                        <CardContent className="p-4 flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-full bg-violet-500/20 flex items-center justify-center">
+                                    <Card key={invite.id} className="border-violet-500/30 bg-violet-500/10">
+                                        <CardContent className="flex items-center gap-4 p-4">
+                                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-500/20">
                                                 <Mail className="h-5 w-5 text-violet-400" />
                                             </div>
                                             <div className="flex-1">
                                                 <p className="font-semibold">{invite.roomName}</p>
-                                                <p className="text-sm text-muted-foreground">
+                                                <p className="text-muted-foreground text-sm">
                                                     Invitation de {invite.hostName}
                                                 </p>
                                             </div>
@@ -322,7 +337,7 @@ export default function PlayPage() {
                                                     onClick={() => joinInvite(invite.roomId)}
                                                     className="bg-violet-600 hover:bg-violet-500"
                                                 >
-                                                    <Check className="h-4 w-4 mr-1" />
+                                                    <Check className="mr-1 h-4 w-4" />
                                                     Rejoindre
                                                 </Button>
                                                 <Button
@@ -340,23 +355,20 @@ export default function PlayPage() {
                         )}
 
                         {/* Parties sauvegardées */}
-                        <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-                            <SavedGamesList
-                                mode="local"
-                                onCreateNew={() => setActiveTab("create")}
-                            />
+                        <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+                            <SavedGamesList mode="local" onCreateNew={() => setActiveTab("create")} />
                         </div>
                     </TabsContent>
 
                     {/* Onglet Créer */}
                     <TabsContent value="create" className="space-y-6">
                         {/* Toggle Mode Local / En Ligne */}
-                        <div className="flex rounded-xl bg-white/5 p-1 border border-white/10">
+                        <div className="flex rounded-xl border border-white/10 bg-white/5 p-1">
                             <button
                                 onClick={() => setGameMode("local")}
-                                className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-bold transition-all ${
+                                className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-3 font-bold transition-all ${
                                     gameMode === "local"
-                                        ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30"
+                                        ? "border border-cyan-500/30 bg-cyan-500/20 text-cyan-400"
                                         : "text-muted-foreground hover:text-white"
                                 }`}
                             >
@@ -365,9 +377,9 @@ export default function PlayPage() {
                             </button>
                             <button
                                 onClick={() => setGameMode("online")}
-                                className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-bold transition-all ${
+                                className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-3 font-bold transition-all ${
                                     gameMode === "online"
-                                        ? "bg-violet-500/20 text-violet-400 border border-violet-500/30"
+                                        ? "border border-violet-500/30 bg-violet-500/20 text-violet-400"
                                         : "text-muted-foreground hover:text-white"
                                 }`}
                             >
@@ -376,11 +388,11 @@ export default function PlayPage() {
                             </button>
                         </div>
 
-                        <div className="space-y-6 bg-white/5 rounded-2xl p-6 border border-white/10">
+                        <div className="space-y-6 rounded-2xl border border-white/10 bg-white/5 p-6">
                             {/* Nom de la partie (Online) */}
                             {gameMode === "online" && (
                                 <div className="space-y-2">
-                                    <Label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+                                    <Label className="text-muted-foreground text-sm font-bold tracking-wider uppercase">
                                         Nom de la partie
                                     </Label>
                                     <Input
@@ -396,11 +408,11 @@ export default function PlayPage() {
                             {/* Pseudo (Online) */}
                             {gameMode === "online" && (
                                 <div className="space-y-2">
-                                    <Label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+                                    <Label className="text-muted-foreground text-sm font-bold tracking-wider uppercase">
                                         Votre pseudo
                                     </Label>
                                     <div className="flex items-center gap-2">
-                                        <User className="h-5 w-5 text-muted-foreground" />
+                                        <User className="text-muted-foreground h-5 w-5" />
                                         <Input
                                             value={playerName}
                                             onChange={(e) => setPlayerName(e.target.value)}
@@ -414,7 +426,7 @@ export default function PlayPage() {
 
                             {/* Nombre de joueurs */}
                             <div className="space-y-3">
-                                <Label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+                                <Label className="text-muted-foreground text-sm font-bold tracking-wider uppercase">
                                     Nombre de joueurs
                                 </Label>
                                 <div className="flex items-center gap-4">
@@ -427,9 +439,11 @@ export default function PlayPage() {
                                     >
                                         <Minus className="h-4 w-4" />
                                     </Button>
-                                    <span className={`text-4xl font-black w-12 text-center ${
-                                        gameMode === "local" ? "text-cyan-400" : "text-violet-400"
-                                    }`}>
+                                    <span
+                                        className={`w-12 text-center text-4xl font-black ${
+                                            gameMode === "local" ? "text-cyan-400" : "text-violet-400"
+                                        }`}
+                                    >
                                         {playerCount}
                                     </span>
                                     <Button
@@ -447,14 +461,17 @@ export default function PlayPage() {
                             {/* Configuration des joueurs (Local uniquement) */}
                             {gameMode === "local" && (
                                 <div className="space-y-3">
-                                    <Label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+                                    <Label className="text-muted-foreground text-sm font-bold tracking-wider uppercase">
                                         Joueurs
                                     </Label>
                                     <div className="grid gap-3">
                                         {players.map((player, index) => (
-                                            <div key={index} className="flex items-center gap-3 p-3 rounded-xl bg-white/5">
+                                            <div
+                                                key={index}
+                                                className="flex items-center gap-3 rounded-xl bg-white/5 p-3"
+                                            >
                                                 <div
-                                                    className={`w-10 h-10 rounded-lg flex items-center justify-center bg-${player.color}-500/20 border border-${player.color}-500/50`}
+                                                    className={`flex h-10 w-10 items-center justify-center rounded-lg bg-${player.color}-500/20 border border-${player.color}-500/50`}
                                                 >
                                                     {player.isBot ? (
                                                         <Bot className={`h-5 w-5 text-${player.color}-400`} />
@@ -471,22 +488,31 @@ export default function PlayPage() {
                                                 />
 
                                                 <div className="flex items-center gap-2">
-                                                    <Label htmlFor={`bot-${index}`} className="text-xs text-muted-foreground cursor-pointer">
+                                                    <Label
+                                                        htmlFor={`bot-${index}`}
+                                                        className="text-muted-foreground cursor-pointer text-xs"
+                                                    >
                                                         IA
                                                     </Label>
                                                     <Switch
                                                         id={`bot-${index}`}
                                                         checked={player.isBot}
-                                                        onCheckedChange={(checked) => updatePlayer(index, { isBot: checked })}
+                                                        onCheckedChange={(checked) =>
+                                                            updatePlayer(index, { isBot: checked })
+                                                        }
                                                     />
                                                 </div>
 
-                                                {player.isBot && (
+                                                {player.isBot ? (
                                                     <Select
-                                                        value={player.botDifficulty || 'medium'}
-                                                        onValueChange={(v) => updatePlayer(index, { botDifficulty: v as 'easy' | 'medium' | 'hard' })}
+                                                        value={player.botDifficulty || "medium"}
+                                                        onValueChange={(v) =>
+                                                            updatePlayer(index, {
+                                                                botDifficulty: v as "easy" | "medium" | "hard",
+                                                            })
+                                                        }
                                                     >
-                                                        <SelectTrigger className="w-24 h-8 bg-white/5">
+                                                        <SelectTrigger className="h-8 w-24 bg-white/5">
                                                             <SelectValue />
                                                         </SelectTrigger>
                                                         <SelectContent>
@@ -495,9 +521,9 @@ export default function PlayPage() {
                                                             <SelectItem value="hard">Difficile</SelectItem>
                                                         </SelectContent>
                                                     </Select>
-                                                )}
+                                                ) : null}
 
-                                                <div className={`w-4 h-4 rounded-full bg-${player.color}-500`} />
+                                                <div className={`h-4 w-4 rounded-full bg-${player.color}-500`} />
                                             </div>
                                         ))}
                                     </div>
@@ -507,18 +533,16 @@ export default function PlayPage() {
                             {/* Inviter des amis (Online) */}
                             {gameMode === "online" && (
                                 <div className="space-y-3">
-                                    <Label className="text-sm font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                                    <Label className="text-muted-foreground flex items-center gap-2 text-sm font-bold tracking-wider uppercase">
                                         <UserPlus className="h-4 w-4" />
                                         Inviter des amis
                                     </Label>
 
                                     {onlineFriends.length === 0 ? (
-                                        <Card className="bg-white/5 border-dashed">
+                                        <Card className="border-dashed bg-white/5">
                                             <CardContent className="py-6 text-center">
-                                                <Users className="h-8 w-8 mx-auto text-muted-foreground mb-2 opacity-50" />
-                                                <p className="text-sm text-muted-foreground">
-                                                    Aucun ami en ligne
-                                                </p>
+                                                <Users className="text-muted-foreground mx-auto mb-2 h-8 w-8 opacity-50" />
+                                                <p className="text-muted-foreground text-sm">Aucun ami en ligne</p>
                                                 <Link href="/friends">
                                                     <Button variant="link" size="sm" className="mt-2">
                                                         Gérer les amis
@@ -532,17 +556,19 @@ export default function PlayPage() {
                                                 <div
                                                     key={friend.id}
                                                     onClick={() => toggleFriendInvite(friend.id)}
-                                                    className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${
+                                                    className={`flex cursor-pointer items-center gap-3 rounded-xl p-3 transition-all ${
                                                         selectedFriends.includes(friend.id)
-                                                            ? "bg-violet-500/20 border border-violet-500/30"
+                                                            ? "border border-violet-500/30 bg-violet-500/20"
                                                             : "bg-white/5 hover:bg-white/10"
                                                     }`}
                                                 >
                                                     <div className="relative">
                                                         <Avatar className="h-8 w-8">
-                                                            <AvatarFallback>{friend.username.charAt(0).toUpperCase()}</AvatarFallback>
+                                                            <AvatarFallback>
+                                                                {friend.username.charAt(0).toUpperCase()}
+                                                            </AvatarFallback>
                                                         </Avatar>
-                                                        <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 border-2 border-background" />
+                                                        <span className="border-background absolute right-0 bottom-0 h-2.5 w-2.5 rounded-full border-2 bg-green-500" />
                                                     </div>
                                                     <span className="flex-1 font-medium">{friend.username}</span>
                                                     {selectedFriends.includes(friend.id) && (
@@ -556,29 +582,35 @@ export default function PlayPage() {
                                                     <DialogTrigger asChild>
                                                         <Button variant="ghost" className="w-full">
                                                             Voir tous les amis en ligne ({onlineFriends.length})
-                                                            <ChevronRight className="h-4 w-4 ml-2" />
+                                                            <ChevronRight className="ml-2 h-4 w-4" />
                                                         </Button>
                                                     </DialogTrigger>
                                                     <DialogContent>
                                                         <DialogHeader>
                                                             <DialogTitle>Inviter des amis</DialogTitle>
                                                         </DialogHeader>
-                                                        <ScrollArea className="max-h-[400px] mt-4">
+                                                        <ScrollArea className="mt-4 max-h-[400px]">
                                                             <div className="space-y-2">
                                                                 {onlineFriends.map((friend) => (
                                                                     <div
                                                                         key={friend.id}
                                                                         onClick={() => toggleFriendInvite(friend.id)}
-                                                                        className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${
+                                                                        className={`flex cursor-pointer items-center gap-3 rounded-xl p-3 transition-all ${
                                                                             selectedFriends.includes(friend.id)
-                                                                                ? "bg-violet-500/20 border border-violet-500/30"
+                                                                                ? "border border-violet-500/30 bg-violet-500/20"
                                                                                 : "bg-white/5 hover:bg-white/10"
                                                                         }`}
                                                                     >
                                                                         <Avatar className="h-8 w-8">
-                                                                            <AvatarFallback>{friend.username.charAt(0).toUpperCase()}</AvatarFallback>
+                                                                            <AvatarFallback>
+                                                                                {friend.username
+                                                                                    .charAt(0)
+                                                                                    .toUpperCase()}
+                                                                            </AvatarFallback>
                                                                         </Avatar>
-                                                                        <span className="flex-1 font-medium">{friend.username}</span>
+                                                                        <span className="flex-1 font-medium">
+                                                                            {friend.username}
+                                                                        </span>
                                                                         {selectedFriends.includes(friend.id) && (
                                                                             <Check className="h-5 w-5 text-violet-400" />
                                                                         )}
@@ -591,8 +623,9 @@ export default function PlayPage() {
                                             )}
 
                                             {selectedFriends.length > 0 && (
-                                                <p className="text-xs text-muted-foreground">
-                                                    {selectedFriends.length} ami{selectedFriends.length > 1 ? "s" : ""} sélectionné{selectedFriends.length > 1 ? "s" : ""}
+                                                <p className="text-muted-foreground text-xs">
+                                                    {selectedFriends.length} ami{selectedFriends.length > 1 ? "s" : ""}{" "}
+                                                    sélectionné{selectedFriends.length > 1 ? "s" : ""}
                                                 </p>
                                             )}
                                         </div>
@@ -604,7 +637,7 @@ export default function PlayPage() {
 
                             {/* Set de règles */}
                             <div className="space-y-3">
-                                <Label className="text-sm font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                                <Label className="text-muted-foreground flex items-center gap-2 text-sm font-bold tracking-wider uppercase">
                                     <Package className="h-4 w-4" />
                                     Set de règles
                                 </Label>
@@ -617,7 +650,9 @@ export default function PlayPage() {
                                             <SelectItem key={pack.id} value={pack.id}>
                                                 <div className="flex flex-col">
                                                     <span className="font-bold">{pack.name}</span>
-                                                    <span className="text-xs text-muted-foreground">{pack.description}</span>
+                                                    <span className="text-muted-foreground text-xs">
+                                                        {pack.description}
+                                                    </span>
                                                 </div>
                                             </SelectItem>
                                         ))}
@@ -627,46 +662,38 @@ export default function PlayPage() {
 
                             {/* Options de partie */}
                             <div className="space-y-3">
-                                <Label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+                                <Label className="text-muted-foreground text-sm font-bold tracking-wider uppercase">
                                     Options de partie
                                 </Label>
 
-                                <div className="flex items-center justify-between p-4 rounded-xl bg-white/5">
+                                <div className="flex items-center justify-between rounded-xl bg-white/5 p-4">
                                     <div className="flex items-center gap-3">
-                                        <Pencil className="h-5 w-5 text-muted-foreground" />
+                                        <Pencil className="text-muted-foreground h-5 w-5" />
                                         <div>
                                             <Label htmlFor="rule-edit" className="cursor-pointer font-bold">
                                                 Édition de règles
                                             </Label>
-                                            <p className="text-xs text-muted-foreground">
+                                            <p className="text-muted-foreground text-xs">
                                                 Créer et modifier des règles en jeu
                                             </p>
                                         </div>
                                     </div>
-                                    <Switch
-                                        id="rule-edit"
-                                        checked={allowRuleEdit}
-                                        onCheckedChange={setAllowRuleEdit}
-                                    />
+                                    <Switch id="rule-edit" checked={allowRuleEdit} onCheckedChange={setAllowRuleEdit} />
                                 </div>
 
-                                <div className="flex items-center justify-between p-4 rounded-xl bg-white/5">
+                                <div className="flex items-center justify-between rounded-xl bg-white/5 p-4">
                                     <div className="flex items-center gap-3">
-                                        <Plus className="h-5 w-5 text-muted-foreground" />
+                                        <Plus className="text-muted-foreground h-5 w-5" />
                                         <div>
                                             <Label htmlFor="tile-edit" className="cursor-pointer font-bold">
                                                 Modification du plateau
                                             </Label>
-                                            <p className="text-xs text-muted-foreground">
+                                            <p className="text-muted-foreground text-xs">
                                                 Ajouter ou supprimer des cases en jeu
                                             </p>
                                         </div>
                                     </div>
-                                    <Switch
-                                        id="tile-edit"
-                                        checked={allowTileEdit}
-                                        onCheckedChange={setAllowTileEdit}
-                                    />
+                                    <Switch id="tile-edit" checked={allowTileEdit} onCheckedChange={setAllowTileEdit} />
                                 </div>
                             </div>
                         </div>
@@ -674,13 +701,13 @@ export default function PlayPage() {
                         {/* Bouton Lancer */}
                         <Button
                             onClick={startGame}
-                            className={`w-full h-14 text-lg font-black uppercase tracking-wider ${
+                            className={`h-14 w-full text-lg font-black tracking-wider uppercase ${
                                 gameMode === "local"
                                     ? "bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500"
                                     : "bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500"
                             }`}
                         >
-                            <Play className="h-5 w-5 mr-2" />
+                            <Play className="mr-2 h-5 w-5" />
                             {gameMode === "local" ? "Lancer la partie" : "Créer la partie"}
                         </Button>
                     </TabsContent>

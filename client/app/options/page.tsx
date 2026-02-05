@@ -4,9 +4,26 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import {
-    ArrowLeft, Volume2, VolumeX, Gamepad2, Keyboard, Monitor, Bell, Accessibility,
-    RotateCcw, ChevronRight, Music, Zap, Sun, Moon, Eye, Type, Vibrate,
-    Settings, Save, Check
+    ArrowLeft,
+    Volume2,
+    VolumeX,
+    Gamepad2,
+    Keyboard,
+    Monitor,
+    Bell,
+    Accessibility,
+    RotateCcw,
+    ChevronRight,
+    Music,
+    Zap,
+    Sun,
+    Moon,
+    Eye,
+    Type,
+    Vibrate,
+    Settings,
+    Save,
+    Check,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -15,21 +32,9 @@ import { Slider } from "@/components/ui/slider"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-    DialogFooter,
-} from "@/components/ui/dialog"
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from "@/components/ui/accordion"
-import { toast, Toaster } from "sonner"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { toast } from "sonner"
 import { motion } from "framer-motion"
 import { PageHeader } from "@/components/ui/design-system"
 
@@ -150,7 +155,7 @@ export default function OptionsPage() {
         key: keyof GameOptions[K],
         value: GameOptions[K][keyof GameOptions[K]]
     ) => {
-        setOptions(prev => ({
+        setOptions((prev) => ({
             ...prev,
             [category]: {
                 ...prev[category],
@@ -175,16 +180,14 @@ export default function OptionsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-background">
-            <Toaster position="bottom-right" theme="dark" richColors />
-
+        <div className="bg-background min-h-screen">
             {/* Background Effect */}
-            <div className="fixed inset-0 pointer-events-none">
+            <div className="pointer-events-none fixed inset-0">
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(249,115,22,0.1),transparent_50%)]" />
             </div>
 
             {/* Header */}
-            <header className="relative z-10 border-b border-white/5 bg-background/80 backdrop-blur-xl sticky top-0">
+            <header className="bg-background/80 relative sticky top-0 z-10 border-b border-white/5 backdrop-blur-xl">
                 <div className="container mx-auto px-4 py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
@@ -201,24 +204,24 @@ export default function OptionsPage() {
                             />
                         </div>
 
-                        {hasChanges && (
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                            >
-                                <Button onClick={saveAndExit} className="gap-2 bg-gradient-to-r from-orange-500 to-red-600">
+                        {hasChanges ? (
+                            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
+                                <Button
+                                    onClick={saveAndExit}
+                                    className="gap-2 bg-gradient-to-r from-orange-500 to-red-600"
+                                >
                                     <Save className="h-4 w-4" />
                                     Sauvegarder
                                 </Button>
                             </motion.div>
-                        )}
+                        ) : null}
                     </div>
                 </div>
             </header>
 
-            <main className="relative z-10 container mx-auto px-4 py-6 max-w-2xl space-y-6">
+            <main className="relative z-10 container mx-auto max-w-2xl space-y-6 px-4 py-6">
                 {/* Audio */}
-                <Card className="bg-white/5 border-white/10">
+                <Card className="border-white/10 bg-white/5">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-3">
                             {options.audio.muted ? (
@@ -235,7 +238,7 @@ export default function OptionsPage() {
                         <div className="space-y-3">
                             <div className="flex items-center justify-between">
                                 <Label>Volume principal</Label>
-                                <span className="text-sm text-muted-foreground">{options.audio.masterVolume}%</span>
+                                <span className="text-muted-foreground text-sm">{options.audio.masterVolume}%</span>
                             </div>
                             <Slider
                                 value={[options.audio.masterVolume]}
@@ -253,7 +256,7 @@ export default function OptionsPage() {
                                     <Music className="h-4 w-4" />
                                     Musique
                                 </Label>
-                                <span className="text-sm text-muted-foreground">{options.audio.musicVolume}%</span>
+                                <span className="text-muted-foreground text-sm">{options.audio.musicVolume}%</span>
                             </div>
                             <Slider
                                 value={[options.audio.musicVolume]}
@@ -271,7 +274,7 @@ export default function OptionsPage() {
                                     <Zap className="h-4 w-4" />
                                     Effets sonores
                                 </Label>
-                                <span className="text-sm text-muted-foreground">{options.audio.sfxVolume}%</span>
+                                <span className="text-muted-foreground text-sm">{options.audio.sfxVolume}%</span>
                             </div>
                             <Slider
                                 value={[options.audio.sfxVolume]}
@@ -288,7 +291,7 @@ export default function OptionsPage() {
                         <div className="flex items-center justify-between">
                             <div>
                                 <Label>Couper le son</Label>
-                                <p className="text-xs text-muted-foreground">Désactiver tous les sons</p>
+                                <p className="text-muted-foreground text-xs">Désactiver tous les sons</p>
                             </div>
                             <Switch
                                 checked={options.audio.muted}
@@ -299,7 +302,7 @@ export default function OptionsPage() {
                 </Card>
 
                 {/* Controls */}
-                <Card className="bg-white/5 border-white/10">
+                <Card className="border-white/10 bg-white/5">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-3">
                             <Gamepad2 className="h-5 w-5 text-violet-400" />
@@ -309,12 +312,12 @@ export default function OptionsPage() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                         {/* Gamepad */}
-                        <div className="flex items-center justify-between p-4 rounded-xl bg-white/5">
+                        <div className="flex items-center justify-between rounded-xl bg-white/5 p-4">
                             <div className="flex items-center gap-3">
-                                <Gamepad2 className="h-5 w-5 text-muted-foreground" />
+                                <Gamepad2 className="text-muted-foreground h-5 w-5" />
                                 <div>
                                     <Label>Support manette</Label>
-                                    <p className="text-xs text-muted-foreground">Activer le support des manettes</p>
+                                    <p className="text-muted-foreground text-xs">Activer le support des manettes</p>
                                 </div>
                             </div>
                             <Switch
@@ -324,12 +327,12 @@ export default function OptionsPage() {
                         </div>
 
                         {/* Gamepad Vibration */}
-                        <div className="flex items-center justify-between p-4 rounded-xl bg-white/5">
+                        <div className="flex items-center justify-between rounded-xl bg-white/5 p-4">
                             <div className="flex items-center gap-3">
-                                <Vibrate className="h-5 w-5 text-muted-foreground" />
+                                <Vibrate className="text-muted-foreground h-5 w-5" />
                                 <div>
                                     <Label>Vibration manette</Label>
-                                    <p className="text-xs text-muted-foreground">Retour haptique</p>
+                                    <p className="text-muted-foreground text-xs">Retour haptique</p>
                                 </div>
                             </div>
                             <Switch
@@ -340,12 +343,12 @@ export default function OptionsPage() {
                         </div>
 
                         {/* Keyboard Shortcuts */}
-                        <div className="flex items-center justify-between p-4 rounded-xl bg-white/5">
+                        <div className="flex items-center justify-between rounded-xl bg-white/5 p-4">
                             <div className="flex items-center gap-3">
-                                <Keyboard className="h-5 w-5 text-muted-foreground" />
+                                <Keyboard className="text-muted-foreground h-5 w-5" />
                                 <div>
                                     <Label>Raccourcis clavier</Label>
-                                    <p className="text-xs text-muted-foreground">Activer les raccourcis</p>
+                                    <p className="text-muted-foreground text-xs">Activer les raccourcis</p>
                                 </div>
                             </div>
                             <Switch
@@ -369,7 +372,7 @@ export default function OptionsPage() {
                                     <div className="space-y-2 pt-2">
                                         {KEYBOARD_SHORTCUTS.map((shortcut, i) => (
                                             <div key={i} className="flex items-center justify-between text-sm">
-                                                <code className="px-2 py-1 rounded bg-white/10 font-mono text-xs">
+                                                <code className="rounded bg-white/10 px-2 py-1 font-mono text-xs">
                                                     {shortcut.key}
                                                 </code>
                                                 <span className="text-muted-foreground">{shortcut.action}</span>
@@ -390,7 +393,7 @@ export default function OptionsPage() {
                                     <div className="space-y-2 pt-2">
                                         {GAMEPAD_BUTTONS.map((btn, i) => (
                                             <div key={i} className="flex items-center justify-between text-sm">
-                                                <code className="px-2 py-1 rounded bg-white/10 font-mono text-xs">
+                                                <code className="rounded bg-white/10 px-2 py-1 font-mono text-xs">
                                                     {btn.button}
                                                 </code>
                                                 <span className="text-muted-foreground">{btn.action}</span>
@@ -404,7 +407,7 @@ export default function OptionsPage() {
                 </Card>
 
                 {/* Display */}
-                <Card className="bg-white/5 border-white/10">
+                <Card className="border-white/10 bg-white/5">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-3">
                             <Monitor className="h-5 w-5 text-orange-400" />
@@ -418,7 +421,9 @@ export default function OptionsPage() {
                             <Label>Thème</Label>
                             <Select
                                 value={options.display.theme}
-                                onValueChange={(v) => updateOption("display", "theme", v as "dark" | "light" | "system")}
+                                onValueChange={(v) =>
+                                    updateOption("display", "theme", v as "dark" | "light" | "system")
+                                }
                             >
                                 <SelectTrigger className="bg-white/5">
                                     <SelectValue />
@@ -447,10 +452,10 @@ export default function OptionsPage() {
                         </div>
 
                         {/* Animations */}
-                        <div className="flex items-center justify-between p-4 rounded-xl bg-white/5">
+                        <div className="flex items-center justify-between rounded-xl bg-white/5 p-4">
                             <div>
                                 <Label>Animations</Label>
-                                <p className="text-xs text-muted-foreground">Activer les animations de l'interface</p>
+                                <p className="text-muted-foreground text-xs">Activer les animations de l'interface</p>
                             </div>
                             <Switch
                                 checked={options.display.animations}
@@ -463,7 +468,9 @@ export default function OptionsPage() {
                             <Label>Qualité des effets</Label>
                             <Select
                                 value={options.display.effectsQuality}
-                                onValueChange={(v) => updateOption("display", "effectsQuality", v as "low" | "medium" | "high")}
+                                onValueChange={(v) =>
+                                    updateOption("display", "effectsQuality", v as "low" | "medium" | "high")
+                                }
                             >
                                 <SelectTrigger className="bg-white/5">
                                     <SelectValue />
@@ -477,10 +484,10 @@ export default function OptionsPage() {
                         </div>
 
                         {/* Show FPS */}
-                        <div className="flex items-center justify-between p-4 rounded-xl bg-white/5">
+                        <div className="flex items-center justify-between rounded-xl bg-white/5 p-4">
                             <div>
                                 <Label>Afficher les FPS</Label>
-                                <p className="text-xs text-muted-foreground">Compteur de performance</p>
+                                <p className="text-muted-foreground text-xs">Compteur de performance</p>
                             </div>
                             <Switch
                                 checked={options.display.showFps}
@@ -491,7 +498,7 @@ export default function OptionsPage() {
                 </Card>
 
                 {/* Notifications */}
-                <Card className="bg-white/5 border-white/10">
+                <Card className="border-white/10 bg-white/5">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-3">
                             <Bell className="h-5 w-5 text-green-400" />
@@ -500,10 +507,10 @@ export default function OptionsPage() {
                         <CardDescription>Alertes et rappels</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="flex items-center justify-between p-4 rounded-xl bg-white/5">
+                        <div className="flex items-center justify-between rounded-xl bg-white/5 p-4">
                             <div>
                                 <Label>Notifications push</Label>
-                                <p className="text-xs text-muted-foreground">Recevoir des notifications</p>
+                                <p className="text-muted-foreground text-xs">Recevoir des notifications</p>
                             </div>
                             <Switch
                                 checked={options.notifications.pushEnabled}
@@ -511,10 +518,10 @@ export default function OptionsPage() {
                             />
                         </div>
 
-                        <div className="flex items-center justify-between p-4 rounded-xl bg-white/5">
+                        <div className="flex items-center justify-between rounded-xl bg-white/5 p-4">
                             <div>
                                 <Label>Son de notification</Label>
-                                <p className="text-xs text-muted-foreground">Jouer un son</p>
+                                <p className="text-muted-foreground text-xs">Jouer un son</p>
                             </div>
                             <Switch
                                 checked={options.notifications.soundEnabled}
@@ -522,10 +529,10 @@ export default function OptionsPage() {
                             />
                         </div>
 
-                        <div className="flex items-center justify-between p-4 rounded-xl bg-white/5">
+                        <div className="flex items-center justify-between rounded-xl bg-white/5 p-4">
                             <div>
                                 <Label>Vibration</Label>
-                                <p className="text-xs text-muted-foreground">Vibrer sur mobile</p>
+                                <p className="text-muted-foreground text-xs">Vibrer sur mobile</p>
                             </div>
                             <Switch
                                 checked={options.notifications.vibrationEnabled}
@@ -533,10 +540,10 @@ export default function OptionsPage() {
                             />
                         </div>
 
-                        <div className="flex items-center justify-between p-4 rounded-xl bg-white/5">
+                        <div className="flex items-center justify-between rounded-xl bg-white/5 p-4">
                             <div>
                                 <Label>Rappel de tour</Label>
-                                <p className="text-xs text-muted-foreground">Notifier quand c'est votre tour</p>
+                                <p className="text-muted-foreground text-xs">Notifier quand c'est votre tour</p>
                             </div>
                             <Switch
                                 checked={options.notifications.turnReminder}
@@ -547,7 +554,7 @@ export default function OptionsPage() {
                 </Card>
 
                 {/* Accessibility */}
-                <Card className="bg-white/5 border-white/10">
+                <Card className="border-white/10 bg-white/5">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-3">
                             <Accessibility className="h-5 w-5 text-blue-400" />
@@ -564,7 +571,13 @@ export default function OptionsPage() {
                             </Label>
                             <Select
                                 value={options.accessibility.colorBlindMode}
-                                onValueChange={(v) => updateOption("accessibility", "colorBlindMode", v as GameOptions["accessibility"]["colorBlindMode"])}
+                                onValueChange={(v) =>
+                                    updateOption(
+                                        "accessibility",
+                                        "colorBlindMode",
+                                        v as GameOptions["accessibility"]["colorBlindMode"]
+                                    )
+                                }
                             >
                                 <SelectTrigger className="bg-white/5">
                                     <SelectValue />
@@ -578,12 +591,12 @@ export default function OptionsPage() {
                             </Select>
                         </div>
 
-                        <div className="flex items-center justify-between p-4 rounded-xl bg-white/5">
+                        <div className="flex items-center justify-between rounded-xl bg-white/5 p-4">
                             <div className="flex items-center gap-3">
-                                <Type className="h-5 w-5 text-muted-foreground" />
+                                <Type className="text-muted-foreground h-5 w-5" />
                                 <div>
                                     <Label>Texte agrandi</Label>
-                                    <p className="text-xs text-muted-foreground">Augmenter la taille du texte</p>
+                                    <p className="text-muted-foreground text-xs">Augmenter la taille du texte</p>
                                 </div>
                             </div>
                             <Switch
@@ -592,10 +605,10 @@ export default function OptionsPage() {
                             />
                         </div>
 
-                        <div className="flex items-center justify-between p-4 rounded-xl bg-white/5">
+                        <div className="flex items-center justify-between rounded-xl bg-white/5 p-4">
                             <div>
                                 <Label>Réduire les mouvements</Label>
-                                <p className="text-xs text-muted-foreground">Minimiser les animations</p>
+                                <p className="text-muted-foreground text-xs">Minimiser les animations</p>
                             </div>
                             <Switch
                                 checked={options.accessibility.reduceMotion}
@@ -603,10 +616,10 @@ export default function OptionsPage() {
                             />
                         </div>
 
-                        <div className="flex items-center justify-between p-4 rounded-xl bg-white/5">
+                        <div className="flex items-center justify-between rounded-xl bg-white/5 p-4">
                             <div>
                                 <Label>Contraste élevé</Label>
-                                <p className="text-xs text-muted-foreground">Améliorer la lisibilité</p>
+                                <p className="text-muted-foreground text-xs">Améliorer la lisibilité</p>
                             </div>
                             <Switch
                                 checked={options.accessibility.highContrast}
@@ -620,7 +633,7 @@ export default function OptionsPage() {
                 <Dialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>
                     <DialogTrigger asChild>
                         <Button variant="outline" className="w-full">
-                            <RotateCcw className="h-4 w-4 mr-2" />
+                            <RotateCcw className="mr-2 h-4 w-4" />
                             Réinitialiser par défaut
                         </Button>
                     </DialogTrigger>
@@ -628,7 +641,7 @@ export default function OptionsPage() {
                         <DialogHeader>
                             <DialogTitle>Réinitialiser les options ?</DialogTitle>
                         </DialogHeader>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-muted-foreground text-sm">
                             Tous les paramètres seront remis à leurs valeurs par défaut. Cette action est irréversible.
                         </p>
                         <DialogFooter>
@@ -643,7 +656,7 @@ export default function OptionsPage() {
                 </Dialog>
 
                 {/* Version info */}
-                <div className="text-center text-xs text-muted-foreground/50 font-mono py-4">
+                <div className="text-muted-foreground/50 py-4 text-center font-mono text-xs">
                     SHIFT v1.0.0 • Options sauvegardées localement
                 </div>
             </main>

@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { socket } from "@/services/socket"
-import { toast, Toaster } from "sonner"
+import { toast } from "sonner"
 import { PageHeader, GameCard } from "@/components/ui/design-system"
 
 interface UserStats {
@@ -44,12 +44,12 @@ const AVATAR_PRESETS = [
 
 const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
 }
 
 const itemVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
+    visible: { opacity: 1, y: 0 },
 }
 
 export default function ProfilePage() {
@@ -96,15 +96,15 @@ export default function ProfilePage() {
         socket.emit("update_user_profile", {
             userId: user.id,
             username: editUsername,
-            avatarPreset: selectedAvatar
+            avatarPreset: selectedAvatar,
         })
     }
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-background flex items-center justify-center">
+            <div className="bg-background flex min-h-screen items-center justify-center">
                 <div className="text-center">
-                    <div className="h-12 w-12 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                    <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-violet-500 border-t-transparent" />
                     <p className="text-muted-foreground">Chargement du profil...</p>
                 </div>
             </div>
@@ -112,30 +112,69 @@ export default function ProfilePage() {
     }
 
     const achievements = [
-        { name: "Premier pas", desc: "Jouer votre première partie", icon: Gamepad2, color: "cyan", unlocked: (stats?.gamesPlayed || 0) > 0 },
-        { name: "Victorieux", desc: "Gagner une partie", icon: Trophy, color: "yellow", unlocked: (stats?.gamesWon || 0) > 0 },
-        { name: "Habitué", desc: "Jouer 10 parties", icon: Target, color: "green", unlocked: (stats?.gamesPlayed || 0) >= 10 },
-        { name: "Champion", desc: "Gagner 5 parties", icon: Star, color: "violet", unlocked: (stats?.gamesWon || 0) >= 5 },
-        { name: "En feu", desc: "Série de 3 victoires", icon: Flame, color: "orange", unlocked: (stats?.bestStreak || 0) >= 3 },
-        { name: "Légende", desc: "Gagner 50 parties", icon: Star, color: "pink", unlocked: (stats?.gamesWon || 0) >= 50 },
+        {
+            name: "Premier pas",
+            desc: "Jouer votre première partie",
+            icon: Gamepad2,
+            color: "cyan",
+            unlocked: (stats?.gamesPlayed || 0) > 0,
+        },
+        {
+            name: "Victorieux",
+            desc: "Gagner une partie",
+            icon: Trophy,
+            color: "yellow",
+            unlocked: (stats?.gamesWon || 0) > 0,
+        },
+        {
+            name: "Habitué",
+            desc: "Jouer 10 parties",
+            icon: Target,
+            color: "green",
+            unlocked: (stats?.gamesPlayed || 0) >= 10,
+        },
+        {
+            name: "Champion",
+            desc: "Gagner 5 parties",
+            icon: Star,
+            color: "violet",
+            unlocked: (stats?.gamesWon || 0) >= 5,
+        },
+        {
+            name: "En feu",
+            desc: "Série de 3 victoires",
+            icon: Flame,
+            color: "orange",
+            unlocked: (stats?.bestStreak || 0) >= 3,
+        },
+        {
+            name: "Légende",
+            desc: "Gagner 50 parties",
+            icon: Star,
+            color: "pink",
+            unlocked: (stats?.gamesWon || 0) >= 50,
+        },
     ]
 
-    const unlockedCount = achievements.filter(a => a.unlocked).length
+    const unlockedCount = achievements.filter((a) => a.unlocked).length
 
     return (
-        <div className="min-h-screen bg-background">
-            <Toaster position="bottom-right" theme="dark" richColors />
-
+        <div className="bg-background min-h-screen">
             {/* Background Effect */}
-            <div className="fixed inset-0 pointer-events-none">
+            <div className="pointer-events-none fixed inset-0">
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(139,92,246,0.1),transparent_50%)]" />
             </div>
 
             {/* Header */}
-            <header className="relative z-10 border-b border-white/5 bg-background/80 backdrop-blur-xl sticky top-0">
-                <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+            <header className="bg-background/80 relative sticky top-0 z-10 border-b border-white/5 backdrop-blur-xl">
+                <div className="container mx-auto flex items-center justify-between px-4 py-4">
                     <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="icon" onClick={() => router.push("/")} className="hover:bg-white/10">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => router.push("/")}
+                            className="hover:bg-white/10"
+                        >
                             <ArrowLeft className="h-5 w-5" />
                         </Button>
                         <PageHeader
@@ -146,24 +185,28 @@ export default function ProfilePage() {
                         />
                     </div>
                     {!isEditing ? (
-                        <Button onClick={() => setIsEditing(true)} variant="outline" className="border-white/20 hover:bg-white/10">
-                            <Edit2 className="h-4 w-4 mr-2" /> Modifier
+                        <Button
+                            onClick={() => setIsEditing(true)}
+                            variant="outline"
+                            className="border-white/20 hover:bg-white/10"
+                        >
+                            <Edit2 className="mr-2 h-4 w-4" /> Modifier
                         </Button>
                     ) : (
                         <div className="flex gap-2">
                             <Button onClick={() => setIsEditing(false)} variant="ghost">
-                                <X className="h-4 w-4 mr-2" /> Annuler
+                                <X className="mr-2 h-4 w-4" /> Annuler
                             </Button>
                             <Button onClick={handleSave} className="bg-gradient-to-r from-violet-500 to-purple-600">
-                                <Save className="h-4 w-4 mr-2" /> Sauvegarder
+                                <Save className="mr-2 h-4 w-4" /> Sauvegarder
                             </Button>
                         </div>
                     )}
                 </div>
             </header>
 
-            <main className="relative z-10 container mx-auto px-4 py-8 max-w-5xl">
-                <div className="grid lg:grid-cols-3 gap-8">
+            <main className="relative z-10 container mx-auto max-w-5xl px-4 py-8">
+                <div className="grid gap-8 lg:grid-cols-3">
                     {/* Profile Card */}
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
@@ -178,11 +221,11 @@ export default function ProfilePage() {
                                         {user?.username?.charAt(0).toUpperCase()}
                                     </AvatarFallback>
                                 </Avatar>
-                                {stats && stats.currentStreak >= 3 && (
-                                    <div className="absolute -top-2 -right-2 bg-orange-500 rounded-full p-1.5">
+                                {stats && stats.currentStreak >= 3 ? (
+                                    <div className="absolute -top-2 -right-2 rounded-full bg-orange-500 p-1.5">
                                         <Flame className="h-4 w-4 text-white" />
                                     </div>
-                                )}
+                                ) : null}
                             </div>
 
                             {isEditing ? (
@@ -193,7 +236,7 @@ export default function ProfilePage() {
                                             id="username"
                                             value={editUsername}
                                             onChange={(e) => setEditUsername(e.target.value)}
-                                            className="bg-white/5 border-white/10"
+                                            className="border-white/10 bg-white/5"
                                         />
                                     </div>
                                     <div className="space-y-2 text-left">
@@ -203,15 +246,17 @@ export default function ProfilePage() {
                                                 <button
                                                     key={avatar.id}
                                                     onClick={() => setSelectedAvatar(avatar.id)}
-                                                    className={`p-2 rounded-lg border-2 transition-all ${
+                                                    className={`rounded-lg border-2 p-2 transition-all ${
                                                         selectedAvatar === avatar.id
                                                             ? "border-violet-500 bg-violet-500/20"
                                                             : "border-white/10 hover:border-violet-500/50"
                                                     }`}
                                                 >
-                                                    <Avatar className="h-10 w-10 mx-auto">
+                                                    <Avatar className="mx-auto h-10 w-10">
                                                         <AvatarImage src={`/avatars/${avatar.id}.png`} />
-                                                        <AvatarFallback className="text-xs">{avatar.name.charAt(0)}</AvatarFallback>
+                                                        <AvatarFallback className="text-xs">
+                                                            {avatar.name.charAt(0)}
+                                                        </AvatarFallback>
                                                     </Avatar>
                                                 </button>
                                             ))}
@@ -221,11 +266,17 @@ export default function ProfilePage() {
                             ) : (
                                 <>
                                     <h2 className="mt-4 text-2xl font-bold text-white">{user?.username}</h2>
-                                    <p className="text-sm text-muted-foreground">
-                                        Membre depuis {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }) : 'N/A'}
+                                    <p className="text-muted-foreground text-sm">
+                                        Membre depuis{" "}
+                                        {user?.createdAt
+                                            ? new Date(user.createdAt).toLocaleDateString("fr-FR", {
+                                                  month: "long",
+                                                  year: "numeric",
+                                              })
+                                            : "N/A"}
                                     </p>
                                     <div className="mt-4 flex justify-center gap-2">
-                                        <Badge className="bg-violet-500/20 text-violet-300 border-violet-500/30">
+                                        <Badge className="border-violet-500/30 bg-violet-500/20 text-violet-300">
                                             {unlockedCount}/{achievements.length} succès
                                         </Badge>
                                     </div>
@@ -239,32 +290,53 @@ export default function ProfilePage() {
                         variants={containerVariants}
                         initial="hidden"
                         animate="visible"
-                        className="lg:col-span-2 space-y-6"
+                        className="space-y-6 lg:col-span-2"
                     >
                         <Tabs defaultValue="stats">
                             <TabsList className="grid w-full grid-cols-2 bg-white/5 p-1">
-                                <TabsTrigger value="stats" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500/20 data-[state=active]:to-purple-500/20">
+                                <TabsTrigger
+                                    value="stats"
+                                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500/20 data-[state=active]:to-purple-500/20"
+                                >
                                     Statistiques
                                 </TabsTrigger>
-                                <TabsTrigger value="achievements" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-500/20 data-[state=active]:to-orange-500/20">
+                                <TabsTrigger
+                                    value="achievements"
+                                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-500/20 data-[state=active]:to-orange-500/20"
+                                >
                                     Succès
                                 </TabsTrigger>
                             </TabsList>
 
-                            <TabsContent value="stats" className="space-y-6 mt-6">
+                            <TabsContent value="stats" className="mt-6 space-y-6">
                                 {/* Quick Stats */}
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                                     {[
-                                        { icon: Trophy, value: stats?.gamesWon || 0, label: "Victoires", color: "yellow" },
-                                        { icon: Target, value: stats?.gamesPlayed || 0, label: "Parties", color: "cyan" },
-                                        { icon: Flame, value: stats?.currentStreak || 0, label: "Série", color: "orange" },
+                                        {
+                                            icon: Trophy,
+                                            value: stats?.gamesWon || 0,
+                                            label: "Victoires",
+                                            color: "yellow",
+                                        },
+                                        {
+                                            icon: Target,
+                                            value: stats?.gamesPlayed || 0,
+                                            label: "Parties",
+                                            color: "cyan",
+                                        },
+                                        {
+                                            icon: Flame,
+                                            value: stats?.currentStreak || 0,
+                                            label: "Série",
+                                            color: "orange",
+                                        },
                                         { icon: Clock, value: stats?.totalScore || 0, label: "Score", color: "violet" },
                                     ].map((stat, i) => (
                                         <motion.div key={stat.label} variants={itemVariants}>
                                             <GameCard className="text-center">
-                                                <stat.icon className={`h-8 w-8 mx-auto mb-2 text-${stat.color}-400`} />
+                                                <stat.icon className={`mx-auto mb-2 h-8 w-8 text-${stat.color}-400`} />
                                                 <p className="text-3xl font-black text-white">{stat.value}</p>
-                                                <p className="text-xs text-muted-foreground">{stat.label}</p>
+                                                <p className="text-muted-foreground text-xs">{stat.label}</p>
                                             </GameCard>
                                         </motion.div>
                                     ))}
@@ -273,9 +345,11 @@ export default function ProfilePage() {
                                 {/* Win Rate */}
                                 <motion.div variants={itemVariants}>
                                     <GameCard>
-                                        <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Taux de victoire</h3>
+                                        <h3 className="text-muted-foreground mb-4 text-sm font-bold tracking-wider uppercase">
+                                            Taux de victoire
+                                        </h3>
                                         <div className="flex items-center gap-4">
-                                            <Progress value={stats?.winRate || 0} className="flex-1 h-3" />
+                                            <Progress value={stats?.winRate || 0} className="h-3 flex-1" />
                                             <span className="text-3xl font-black text-violet-400">
                                                 {stats?.winRate?.toFixed(0) || 0}%
                                             </span>
@@ -286,14 +360,25 @@ export default function ProfilePage() {
                                 {/* Detailed Stats */}
                                 <motion.div variants={itemVariants}>
                                     <GameCard>
-                                        <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Détails</h3>
+                                        <h3 className="text-muted-foreground mb-4 text-sm font-bold tracking-wider uppercase">
+                                            Détails
+                                        </h3>
                                         <div className="space-y-4">
                                             {[
-                                                { label: "Score moyen par partie", value: stats?.avgScore?.toFixed(0) || 0 },
+                                                {
+                                                    label: "Score moyen par partie",
+                                                    value: stats?.avgScore?.toFixed(0) || 0,
+                                                },
                                                 { label: "Meilleure série", value: stats?.bestStreak || 0 },
-                                                { label: "Parties perdues", value: (stats?.gamesPlayed || 0) - (stats?.gamesWon || 0) },
+                                                {
+                                                    label: "Parties perdues",
+                                                    value: (stats?.gamesPlayed || 0) - (stats?.gamesWon || 0),
+                                                },
                                             ].map((item) => (
-                                                <div key={item.label} className="flex justify-between items-center py-2 border-b border-white/5 last:border-0">
+                                                <div
+                                                    key={item.label}
+                                                    className="flex items-center justify-between border-b border-white/5 py-2 last:border-0"
+                                                >
                                                     <span className="text-muted-foreground">{item.label}</span>
                                                     <span className="text-xl font-bold text-white">{item.value}</span>
                                                 </div>
@@ -308,23 +393,29 @@ export default function ProfilePage() {
                                     variants={containerVariants}
                                     initial="hidden"
                                     animate="visible"
-                                    className="grid md:grid-cols-2 gap-4"
+                                    className="grid gap-4 md:grid-cols-2"
                                 >
                                     {achievements.map((achievement) => (
                                         <motion.div key={achievement.name} variants={itemVariants}>
-                                            <GameCard className={`flex items-center gap-4 ${!achievement.unlocked ? 'opacity-40' : ''}`}>
-                                                <div className={`w-14 h-14 rounded-xl flex items-center justify-center bg-${achievement.color}-500/20`}>
-                                                    <achievement.icon className={`h-7 w-7 text-${achievement.color}-400`} />
+                                            <GameCard
+                                                className={`flex items-center gap-4 ${!achievement.unlocked ? "opacity-40" : ""}`}
+                                            >
+                                                <div
+                                                    className={`flex h-14 w-14 items-center justify-center rounded-xl bg-${achievement.color}-500/20`}
+                                                >
+                                                    <achievement.icon
+                                                        className={`h-7 w-7 text-${achievement.color}-400`}
+                                                    />
                                                 </div>
                                                 <div className="flex-1">
                                                     <p className="font-bold text-white">{achievement.name}</p>
-                                                    <p className="text-sm text-muted-foreground">{achievement.desc}</p>
+                                                    <p className="text-muted-foreground text-sm">{achievement.desc}</p>
                                                 </div>
-                                                {achievement.unlocked && (
-                                                    <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                                                {achievement.unlocked ? (
+                                                    <Badge className="border-green-500/30 bg-green-500/20 text-green-400">
                                                         Débloqué
                                                     </Badge>
-                                                )}
+                                                ) : null}
                                             </GameCard>
                                         </motion.div>
                                     ))}

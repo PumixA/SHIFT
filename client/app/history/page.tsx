@@ -33,12 +33,12 @@ interface Stats {
 
 const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.08 } }
+    visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
 }
 
 const itemVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
+    visible: { opacity: 1, y: 0 },
 }
 
 export default function HistoryPage() {
@@ -78,20 +78,20 @@ export default function HistoryPage() {
 
     const getResultBadge = (isWinner: boolean, playerScore: number, winnerScore: number) => {
         if (isWinner) {
-            return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Victoire</Badge>
+            return <Badge className="border-green-500/30 bg-green-500/20 text-green-400">Victoire</Badge>
         }
         const diff = winnerScore - playerScore
         if (diff <= 5) {
-            return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">Proche</Badge>
+            return <Badge className="border-yellow-500/30 bg-yellow-500/20 text-yellow-400">Proche</Badge>
         }
-        return <Badge className="bg-red-500/20 text-red-400 border-red-500/30">Défaite</Badge>
+        return <Badge className="border-red-500/30 bg-red-500/20 text-red-400">Défaite</Badge>
     }
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-background flex items-center justify-center">
+            <div className="bg-background flex min-h-screen items-center justify-center">
                 <div className="text-center">
-                    <div className="h-12 w-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                    <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-cyan-500 border-t-transparent" />
                     <p className="text-muted-foreground">Chargement de l'historique...</p>
                 </div>
             </div>
@@ -99,51 +99,56 @@ export default function HistoryPage() {
     }
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="bg-background min-h-screen">
             {/* Background Effect */}
-            <div className="fixed inset-0 pointer-events-none">
+            <div className="pointer-events-none fixed inset-0">
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(6,182,212,0.1),transparent_50%)]" />
             </div>
 
             {/* Header */}
-            <header className="relative z-10 border-b border-white/5 bg-background/80 backdrop-blur-xl sticky top-0">
-                <div className="container mx-auto px-4 py-4 flex items-center gap-4">
+            <header className="bg-background/80 relative sticky top-0 z-10 border-b border-white/5 backdrop-blur-xl">
+                <div className="container mx-auto flex items-center gap-4 px-4 py-4">
                     <Button variant="ghost" size="icon" onClick={() => router.push("/")} className="hover:bg-white/10">
                         <ArrowLeft className="h-5 w-5" />
                     </Button>
                     <PageHeader
                         icon={History}
                         title="HISTORIQUE"
-                        subtitle={`${history.length} partie${history.length !== 1 ? 's' : ''} jouée${history.length !== 1 ? 's' : ''}`}
+                        subtitle={`${history.length} partie${history.length !== 1 ? "s" : ""} jouée${history.length !== 1 ? "s" : ""}`}
                         gradient="from-cyan-500 to-blue-600"
                     />
                 </div>
             </header>
 
-            <main className="relative z-10 container mx-auto px-4 py-8 max-w-5xl">
+            <main className="relative z-10 container mx-auto max-w-5xl px-4 py-8">
                 {/* Stats Summary */}
                 <motion.div
                     variants={containerVariants}
                     initial="hidden"
                     animate="visible"
-                    className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
+                    className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4"
                 >
                     {[
                         { icon: Trophy, value: stats?.gamesWon || 0, label: "Victoires", color: "yellow" },
                         { icon: Users, value: stats?.gamesPlayed || 0, label: "Parties", color: "cyan" },
-                        { icon: TrendingUp, value: `${stats?.winRate?.toFixed(0) || 0}%`, label: "Taux victoire", color: "green" },
+                        {
+                            icon: TrendingUp,
+                            value: `${stats?.winRate?.toFixed(0) || 0}%`,
+                            label: "Taux victoire",
+                            color: "green",
+                        },
                         {
                             icon: streak > 0 ? TrendingUp : streak < 0 ? TrendingDown : Minus,
                             value: Math.abs(streak),
-                            label: streak > 0 ? 'Série victoires' : streak < 0 ? 'Série défaites' : 'Neutre',
-                            color: streak > 0 ? 'green' : streak < 0 ? 'red' : 'gray'
+                            label: streak > 0 ? "Série victoires" : streak < 0 ? "Série défaites" : "Neutre",
+                            color: streak > 0 ? "green" : streak < 0 ? "red" : "gray",
                         },
                     ].map((stat, i) => (
                         <motion.div key={stat.label} variants={itemVariants}>
                             <GameCard className="text-center">
-                                <stat.icon className={`h-8 w-8 mx-auto mb-2 text-${stat.color}-400`} />
+                                <stat.icon className={`mx-auto mb-2 h-8 w-8 text-${stat.color}-400`} />
                                 <p className="text-3xl font-black text-white">{stat.value}</p>
-                                <p className="text-xs text-muted-foreground">{stat.label}</p>
+                                <p className="text-muted-foreground text-xs">{stat.label}</p>
                             </GameCard>
                         </motion.div>
                     ))}
@@ -151,14 +156,14 @@ export default function HistoryPage() {
 
                 {/* History List */}
                 {history.length === 0 ? (
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                    >
-                        <GameCard className="text-center py-12">
-                            <Trophy className="h-12 w-12 mx-auto text-muted-foreground/30 mb-4" />
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                        <GameCard className="py-12 text-center">
+                            <Trophy className="text-muted-foreground/30 mx-auto mb-4 h-12 w-12" />
                             <p className="text-muted-foreground">Aucune partie jouée</p>
-                            <Button className="mt-4 bg-gradient-to-r from-cyan-500 to-blue-600" onClick={() => router.push("/")}>
+                            <Button
+                                className="mt-4 bg-gradient-to-r from-cyan-500 to-blue-600"
+                                onClick={() => router.push("/")}
+                            >
                                 Jouer maintenant
                             </Button>
                         </GameCard>
@@ -172,20 +177,26 @@ export default function HistoryPage() {
                             className="space-y-4"
                         >
                             {history.map((game) => {
-                                const winnerPlayer = game.players.find(p => p.id === game.winner)
+                                const winnerPlayer = game.players.find((p) => p.id === game.winner)
                                 return (
                                     <motion.div key={game.id} variants={itemVariants}>
                                         <GameCard className={game.isWinner ? "border-green-500/30 bg-green-500/5" : ""}>
-                                            <div className="flex items-start justify-between mb-3">
+                                            <div className="mb-3 flex items-start justify-between">
                                                 <div>
                                                     <div className="flex items-center gap-2">
-                                                        <h3 className="font-bold text-white">{game.roomName || `Partie ${game.roomId.substring(0, 6)}`}</h3>
-                                                        {getResultBadge(game.isWinner, game.playerScore, winnerPlayer?.score || 0)}
+                                                        <h3 className="font-bold text-white">
+                                                            {game.roomName || `Partie ${game.roomId.substring(0, 6)}`}
+                                                        </h3>
+                                                        {getResultBadge(
+                                                            game.isWinner,
+                                                            game.playerScore,
+                                                            winnerPlayer?.score || 0
+                                                        )}
                                                     </div>
-                                                    <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
+                                                    <div className="text-muted-foreground mt-1 flex items-center gap-4 text-sm">
                                                         <span className="flex items-center gap-1">
                                                             <Calendar className="h-3 w-3" />
-                                                            {new Date(game.playedAt).toLocaleDateString('fr-FR')}
+                                                            {new Date(game.playedAt).toLocaleDateString("fr-FR")}
                                                         </span>
                                                         <span className="flex items-center gap-1">
                                                             <Clock className="h-3 w-3" />
@@ -198,8 +209,10 @@ export default function HistoryPage() {
                                                     </div>
                                                 </div>
                                                 <div className="text-right">
-                                                    <p className="text-3xl font-black text-cyan-400">{game.playerScore}</p>
-                                                    <p className="text-xs text-muted-foreground">points</p>
+                                                    <p className="text-3xl font-black text-cyan-400">
+                                                        {game.playerScore}
+                                                    </p>
+                                                    <p className="text-muted-foreground text-xs">points</p>
                                                 </div>
                                             </div>
 
@@ -211,9 +224,10 @@ export default function HistoryPage() {
                                                         <Badge
                                                             key={player.id}
                                                             variant="outline"
-                                                            className={player.id === game.winner
-                                                                ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
-                                                                : "border-white/20 text-muted-foreground"
+                                                            className={
+                                                                player.id === game.winner
+                                                                    ? "border-yellow-500/30 bg-yellow-500/20 text-yellow-400"
+                                                                    : "text-muted-foreground border-white/20"
                                                             }
                                                         >
                                                             {index + 1}. {player.name} ({player.score}pts)
@@ -222,11 +236,11 @@ export default function HistoryPage() {
                                                     ))}
                                             </div>
 
-                                            {game.rulePackUsed && (
-                                                <p className="text-xs text-muted-foreground mt-3 pt-3 border-t border-white/5">
+                                            {game.rulePackUsed ? (
+                                                <p className="text-muted-foreground mt-3 border-t border-white/5 pt-3 text-xs">
                                                     Pack: {game.rulePackUsed}
                                                 </p>
-                                            )}
+                                            ) : null}
                                         </GameCard>
                                     </motion.div>
                                 )

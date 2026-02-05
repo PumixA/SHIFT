@@ -1,0 +1,215 @@
+name: Validate Structure
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - dev
+      - main
+
+jobs:
+  # ============================================
+  # Validate Branch Name
+  # ============================================
+  validate-branch:
+    name: Validate Branch Name
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - name: Check branch name
+        run: |
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          echo "Branch name: $BRANCH_NAME"
+
+          # Pattern for valid branch names
+          VALID_PATTERN="^(feat|fix|docs|refactor|test|chore|hotfix)\/[a-z0-9._-]+$"
+
+          if [[ ! "$BRANCH_NAME" =~ $VALID_PATTERN ]]; then
+            echo "::error::Invalid branch name: $BRANCH_NAME"
+            echo ""
+            echo "Branch names must follow the pattern: <type>/<description>"
+            echo ""
+            echo "Valid types:"
+            echo "  - feat     : New feature"
+            echo "  - fix      : Bug fix"
+            echo "  - docs     : Documentation"
+            echo "  - refactor : Code refactoring"
+            echo "  - test     : Adding/modifying tests"
+            echo "  - chore    : Maintenance tasks"
+            echo "  - hotfix   : Urgent production fix"
+            echo ""
+            echo "Examples:"
+            echo "  - feat/user-authentication"
+            echo "  - fix/dice-roll-bug"
+            echo "  - docs/api-documentation"
+            echo "  - chore/update-dependencies"
+            exit 1
+          fi
+
+          echo "Branch name is valid!"
+
+  # ============================================
+  # Validate Commit Messages
+  # ============================================
+  validate-commits:
+    name: Validate Commit Messages
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install commitlint
+        run: |
+          npm install -g @commitlint/cli @commitlint/config-conventional
+
+      - name: Create commitlint config
+        run: |
+          cat > commitlint.config.js << 'EOF'
+          module.exports = {
+            extends: ['@commitlint/config-conventional'],
+            rules: {
+              'type-enum': [
+                2,
+                'always',
+                ['feat', 'fix', 'docs', 'style', 'refactor', 'test', 'chore', 'revert', 'ci', 'build', 'perf']
+              ],
+              'scope-enum': [
+                1,
+                'always',
+                ['client', 'server', 'engine', 'rules', 'board', 'player', 'bot', 'ui', 'auth', 'socket', 'db', 'ci', 'docs', 'deps']
+              ],
+              'subject-case': [2, 'always', 'lower-case'],
+              'subject-empty': [2, 'never'],
+              'subject-max-length': [2, 'always', 72],
+              'body-max-line-length': [1, 'always', 100],
+              'header-max-length': [2, 'always', 100]
+            }
+          };
+          EOF
+
+      - name: Validate commits (PR)
+        if: github.event_name == 'pull_request'
+        run: |
+          SOURCE_BRANCH="${{ github.head_ref }}"
+          TARGET_BRANCH="${{ github.base_ref }}"
+
+          # Skip commit validation for dev -> main PRs (releases)
+          # These commits were already validated when merged into dev
+          if [[ "$SOURCE_BRANCH" == "dev" && "$TARGET_BRANCH" == "main" ]]; then
+            echo "Release PR detected (dev -> main), skipping commit validation"
+            echo "Commits were already validated when merged into dev"
+            exit 0
+          fi
+
+          echo "Validating commits from ${{ github.event.pull_request.base.sha }} to ${{ github.event.pull_request.head.sha }}"
+          npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+
+      - name: Validate commits (Push)
+        if: github.event_name == 'push'
+        run: |
+          BEFORE_SHA="${{ github.event.before }}"
+          CURRENT_SHA="${{ github.sha }}"
+
+          # Check if this is a new branch
+          if [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            echo "New branch detected, validating last commit only"
+            npx commitlint --from HEAD~1 --to HEAD --verbose || true
+            exit 0
+          fi
+
+          # Check if the before SHA exists (handles force push case)
+          if ! git cat-file -e "$BEFORE_SHA" 2>/dev/null; then
+            echo "Force push detected (previous SHA not in history)"
+            echo "Validating only the latest commit"
+            npx commitlint --from HEAD~1 --to HEAD --verbose
+            exit 0
+          fi
+
+          # Normal push - validate the commit range
+          echo "Validating commits from $BEFORE_SHA to $CURRENT_SHA"
+          npx commitlint --from "$BEFORE_SHA" --to "$CURRENT_SHA" --verbose
+
+  # ============================================
+  # Validate PR Title (for squash merges)
+  # ============================================
+  validate-pr-title:
+    name: Validate PR Title
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Check PR title format
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          echo "PR Title: $PR_TITLE"
+
+          # Pattern for conventional commit format
+          VALID_PATTERN="^(feat|fix|docs|style|refactor|test|chore|revert|ci|build|perf)(\([a-z0-9._-]+\))?: .{1,72}$"
+
+          if [[ ! "$PR_TITLE" =~ $VALID_PATTERN ]]; then
+            echo "::error::Invalid PR title format"
+            echo ""
+            echo "PR titles must follow Conventional Commits format:"
+            echo "  <type>(<scope>): <description>"
+            echo ""
+            echo "Examples:"
+            echo "  feat(rules): add swap position effect"
+            echo "  fix(dice): correct random seed issue"
+            echo "  docs: update installation guide"
+            echo ""
+            echo "Valid types: feat, fix, docs, style, refactor, test, chore, revert, ci, build, perf"
+            exit 1
+          fi
+
+          echo "PR title is valid!"
+
+  # ============================================
+  # Check PR Target Branch
+  # ============================================
+  validate-pr-target:
+    name: Validate PR Target
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Check PR target branch
+        run: |
+          SOURCE_BRANCH="${{ github.head_ref }}"
+          TARGET_BRANCH="${{ github.base_ref }}"
+
+          echo "Source: $SOURCE_BRANCH -> Target: $TARGET_BRANCH"
+
+          # Extract branch type
+          BRANCH_TYPE=$(echo "$SOURCE_BRANCH" | cut -d'/' -f1)
+
+          # Rules:
+          # - Feature branches (feat, fix, docs, refactor, test, chore) -> dev only
+          # - hotfix branches -> main allowed
+          # - dev -> main allowed
+
+          if [[ "$TARGET_BRANCH" == "main" ]]; then
+            if [[ "$SOURCE_BRANCH" != "dev" && "$BRANCH_TYPE" != "hotfix" ]]; then
+              echo "::error::Direct PR to main is not allowed!"
+              echo ""
+              echo "Only these branches can target main:"
+              echo "  - dev (for releases)"
+              echo "  - hotfix/* (for urgent fixes)"
+              echo ""
+              echo "Please target 'dev' instead."
+              exit 1
+            fi
+          fi
+
+          echo "PR target is valid!"

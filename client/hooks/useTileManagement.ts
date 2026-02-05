@@ -48,86 +48,103 @@ export function useTileManagement({
     const [tileDetailOpen, setTileDetailOpen] = useState(false)
     const [selectedTileIndex, setSelectedTileIndex] = useState<number>(0)
 
-    const handleAddTile = useCallback((direction: "up" | "down" | "left" | "right", fromTile?: { x: number; y: number }) => {
-        if (!canModifyTilesNow) {
-            if (turnPhase === 'ROLL') {
-                toast.warning("Lancez le dé d'abord")
-            } else {
-                toast.error("Vous ne pouvez pas modifier le plateau maintenant")
+    const handleAddTile = useCallback(
+        (direction: "up" | "down" | "left" | "right", fromTile?: { x: number; y: number }) => {
+            if (!canModifyTilesNow) {
+                if (turnPhase === "ROLL") {
+                    toast.warning("Lancez le dé d'abord")
+                } else {
+                    toast.error("Vous ne pouvez pas modifier le plateau maintenant")
+                }
+                return
             }
-            return
-        }
 
-        const baseTile = fromTile || tiles[tiles.length - 1]
-        let newX = baseTile.x
-        let newY = baseTile.y
+            const baseTile = fromTile || tiles[tiles.length - 1]
+            let newX = baseTile.x
+            let newY = baseTile.y
 
-        switch (direction) {
-            case "up": newY -= 1; break
-            case "down": newY += 1; break
-            case "left": newX -= 1; break
-            case "right": newX += 1; break
-        }
-
-        if (tiles.some(t => t.x === newX && t.y === newY)) {
-            toast.error("Une case existe déjà à cet endroit")
-            return
-        }
-
-        const newTile: Tile = {
-            id: `tile-${Date.now()}`,
-            x: newX,
-            y: newY,
-            type: "normal",
-            connections: [tiles.find(t => t.x === baseTile.x && t.y === baseTile.y)?.id || '']
-        }
-
-        if (isLocalMode) {
-            setTiles(prev => [...prev, newTile])
-            toast.success("Case ajoutée !")
-            markModificationDone()
-        } else if (activeRoom) {
-            socket.emit("modify_tile", { type: 'add', position: { x: newX, y: newY }, tileType: 'normal' })
-        }
-    }, [canModifyTilesNow, turnPhase, tiles, isLocalMode, activeRoom, markModificationDone, setTiles])
-
-    const handleRemoveTile = useCallback((tileId: string) => {
-        if (!canModifyTilesNow) {
-            if (turnPhase === 'ROLL') {
-                toast.warning("Lancez le dé d'abord")
-            } else {
-                toast.error("Vous ne pouvez pas modifier le plateau maintenant")
+            switch (direction) {
+                case "up":
+                    newY -= 1
+                    break
+                case "down":
+                    newY += 1
+                    break
+                case "left":
+                    newX -= 1
+                    break
+                case "right":
+                    newX += 1
+                    break
             }
-            return
-        }
 
-        const tile = tiles.find(t => t.id === tileId)
-        if (tile?.type === 'start') {
-            toast.error("Impossible de supprimer la case de départ")
-            return
-        }
-
-        if (isLocalMode) {
-            setTiles(prev => prev.filter(t => t.id !== tileId))
-            toast.success("Case supprimée")
-            markModificationDone()
-        } else if (activeRoom) {
-            socket.emit("modify_tile", { type: 'remove', tileId })
-        }
-    }, [canModifyTilesNow, turnPhase, tiles, isLocalMode, activeRoom, markModificationDone, setTiles])
-
-    const openTileSelectionModal = useCallback((mode: "add" | "remove") => {
-        if (!canModifyTilesNow) {
-            if (turnPhase === 'ROLL') {
-                toast.warning("Lancez le dé d'abord")
-            } else {
-                toast.error("Vous ne pouvez pas modifier le plateau maintenant")
+            if (tiles.some((t) => t.x === newX && t.y === newY)) {
+                toast.error("Une case existe déjà à cet endroit")
+                return
             }
-            return
-        }
-        setTileSelectionMode(mode)
-        setTileSelectionModalOpen(true)
-    }, [canModifyTilesNow, turnPhase])
+
+            const newTile: Tile = {
+                id: `tile-${Date.now()}`,
+                x: newX,
+                y: newY,
+                type: "normal",
+                connections: [tiles.find((t) => t.x === baseTile.x && t.y === baseTile.y)?.id || ""],
+            }
+
+            if (isLocalMode) {
+                setTiles((prev) => [...prev, newTile])
+                toast.success("Case ajoutée !")
+                markModificationDone()
+            } else if (activeRoom) {
+                socket.emit("modify_tile", { type: "add", position: { x: newX, y: newY }, tileType: "normal" })
+            }
+        },
+        [canModifyTilesNow, turnPhase, tiles, isLocalMode, activeRoom, markModificationDone, setTiles]
+    )
+
+    const handleRemoveTile = useCallback(
+        (tileId: string) => {
+            if (!canModifyTilesNow) {
+                if (turnPhase === "ROLL") {
+                    toast.warning("Lancez le dé d'abord")
+                } else {
+                    toast.error("Vous ne pouvez pas modifier le plateau maintenant")
+                }
+                return
+            }
+
+            const tile = tiles.find((t) => t.id === tileId)
+            if (tile?.type === "start") {
+                toast.error("Impossible de supprimer la case de départ")
+                return
+            }
+
+            if (isLocalMode) {
+                setTiles((prev) => prev.filter((t) => t.id !== tileId))
+                toast.success("Case supprimée")
+                markModificationDone()
+            } else if (activeRoom) {
+                socket.emit("modify_tile", { type: "remove", tileId })
+            }
+        },
+        [canModifyTilesNow, turnPhase, tiles, isLocalMode, activeRoom, markModificationDone, setTiles]
+    )
+
+    const openTileSelectionModal = useCallback(
+        (mode: "add" | "remove") => {
+            if (!canModifyTilesNow) {
+                if (turnPhase === "ROLL") {
+                    toast.warning("Lancez le dé d'abord")
+                } else {
+                    toast.error("Vous ne pouvez pas modifier le plateau maintenant")
+                }
+                return
+            }
+            setTileSelectionMode(mode)
+            setTileSelectionModalOpen(true)
+        },
+        [canModifyTilesNow, turnPhase]
+    )
 
     const handleTileDetails = useCallback((index: number) => {
         setSelectedTileIndex(index)
