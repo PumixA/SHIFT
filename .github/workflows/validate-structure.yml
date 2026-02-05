@@ -102,6 +102,17 @@ jobs:
       - name: Validate commits (PR)
         if: github.event_name == 'pull_request'
         run: |
+          SOURCE_BRANCH="${{ github.head_ref }}"
+          TARGET_BRANCH="${{ github.base_ref }}"
+
+          # Skip commit validation for dev -> main PRs (releases)
+          # These commits were already validated when merged into dev
+          if [[ "$SOURCE_BRANCH" == "dev" && "$TARGET_BRANCH" == "main" ]]; then
+            echo "Release PR detected (dev -> main), skipping commit validation"
+            echo "Commits were already validated when merged into dev"
+            exit 0
+          fi
+
           echo "Validating commits from ${{ github.event.pull_request.base.sha }} to ${{ github.event.pull_request.head.sha }}"
           npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
