@@ -10,18 +10,29 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+  // Global ignores
+  {
+    ignores: [
+      ".next/**",
+      "node_modules/**",
+      "dist/**",
+      "build/**",
+      "public/sw.js",
+    ],
+  },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     rules: {
       // TypeScript strict rules
       "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
       "@typescript-eslint/no-explicit-any": "warn",
-      "@typescript-eslint/prefer-const": "error",
 
       // React rules
       "react/jsx-no-leaked-render": "warn",
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
+      // Downgrade to warning - cosmetic issue with apostrophes in JSX
+      "react/no-unescaped-entities": "warn",
 
       // Code quality
       "no-console": ["warn", { allow: ["warn", "error"] }],

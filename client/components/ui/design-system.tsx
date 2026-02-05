@@ -108,8 +108,7 @@ const menuButtonVariants = cva(
 )
 
 export interface MenuButtonProps
-    extends React.AnchorHTMLAttributes<HTMLAnchorElement>,
-        VariantProps<typeof menuButtonVariants> {
+    extends Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "color">, VariantProps<typeof menuButtonVariants> {
     href: string
     icon: React.ElementType
     label: string
@@ -127,53 +126,41 @@ export function MenuButton({
     className,
     ...props
 }: MenuButtonProps) {
-    const colorClasses = colors.player[color || "cyan"]
+    const colorKey: PlayerColor = color && color in colors.player ? color : "cyan"
+    const colorClasses = colors.player[colorKey]
 
     return (
         <Link href={href} {...props}>
-            <div
-                className={cn(menuButtonVariants({ color }), className)}
-                data-selected={selected}
-            >
+            <div className={cn(menuButtonVariants({ color: colorKey }), className)} data-selected={selected}>
                 {/* Glow effect on selection */}
-                {selected && (
+                {selected ? (
                     <div
-                        className={cn(
-                            "absolute inset-0 rounded-xl opacity-10 bg-gradient-to-r",
-                            colorClasses.gradient
-                        )}
+                        className={cn("absolute inset-0 rounded-xl bg-gradient-to-r opacity-10", colorClasses.gradient)}
                     />
-                )}
+                ) : null}
 
-                <div className="relative z-10 flex items-center gap-4 flex-1">
+                <div className="relative z-10 flex flex-1 items-center gap-4">
                     {/* Icon */}
                     <div
                         className={cn(
-                            "w-12 h-12 rounded-lg flex items-center justify-center transition-all duration-200",
-                            selected
-                                ? `bg-gradient-to-br ${colorClasses.gradient} shadow-lg`
-                                : "bg-white/5"
+                            "flex h-12 w-12 items-center justify-center rounded-lg transition-all duration-200",
+                            selected ? `bg-gradient-to-br ${colorClasses.gradient} shadow-lg` : "bg-white/5"
                         )}
                     >
-                        <Icon
-                            className={cn(
-                                "h-6 w-6",
-                                selected ? "text-white" : "text-muted-foreground"
-                            )}
-                        />
+                        <Icon className={cn("h-6 w-6", selected ? "text-white" : "text-muted-foreground")} />
                     </div>
 
                     {/* Text */}
                     <div className="flex-1">
                         <h2
                             className={cn(
-                                "text-xl md:text-2xl font-black tracking-tight transition-colors duration-200",
+                                "text-xl font-black tracking-tight transition-colors duration-200 md:text-2xl",
                                 selected ? "text-white" : "text-muted-foreground"
                             )}
                         >
                             {label}
                         </h2>
-                        {description && (
+                        {description ? (
                             <p
                                 className={cn(
                                     "text-xs transition-colors duration-200",
@@ -182,7 +169,7 @@ export function MenuButton({
                             >
                                 {description}
                             </p>
-                        )}
+                        ) : null}
                     </div>
 
                     {/* Arrow */}
@@ -190,8 +177,8 @@ export function MenuButton({
                         className={cn(
                             "h-6 w-6 transition-all duration-200",
                             selected
-                                ? "text-white opacity-100 translate-x-0"
-                                : "text-muted-foreground opacity-0 -translate-x-2"
+                                ? "translate-x-0 text-white opacity-100"
+                                : "text-muted-foreground -translate-x-2 opacity-0"
                         )}
                     />
                 </div>
@@ -216,43 +203,31 @@ export function MenuButton({
  * </GameCard>
  * ```
  */
-const gameCardVariants = cva(
-    "rounded-xl border transition-all duration-200",
-    {
-        variants: {
-            variant: {
-                default: "bg-white/5 border-white/10 hover:bg-white/10",
-                highlight: "border-2",
-                transparent: "bg-transparent border-transparent",
-            },
-            padding: {
-                none: "",
-                sm: "p-3",
-                md: "p-4",
-                lg: "p-6",
-            },
+const gameCardVariants = cva("rounded-xl border transition-all duration-200", {
+    variants: {
+        variant: {
+            default: "bg-white/5 border-white/10 hover:bg-white/10",
+            highlight: "border-2",
+            transparent: "bg-transparent border-transparent",
         },
-        defaultVariants: {
-            variant: "default",
-            padding: "md",
+        padding: {
+            none: "",
+            sm: "p-3",
+            md: "p-4",
+            lg: "p-6",
         },
-    }
-)
+    },
+    defaultVariants: {
+        variant: "default",
+        padding: "md",
+    },
+})
 
-export interface GameCardProps
-    extends React.HTMLAttributes<HTMLDivElement>,
-        VariantProps<typeof gameCardVariants> {
+export interface GameCardProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof gameCardVariants> {
     playerColor?: PlayerColor
 }
 
-export function GameCard({
-    variant,
-    padding,
-    playerColor,
-    className,
-    children,
-    ...props
-}: GameCardProps) {
+export function GameCard({ variant, padding, playerColor, className, children, ...props }: GameCardProps) {
     const colorClasses = playerColor ? colors.player[playerColor] : null
 
     return (
@@ -296,15 +271,7 @@ export interface PlayerBadgeProps extends React.HTMLAttributes<HTMLDivElement> {
     size?: "sm" | "md" | "lg"
 }
 
-export function PlayerBadge({
-    color,
-    name,
-    score,
-    isCurrentTurn,
-    size = "md",
-    className,
-    ...props
-}: PlayerBadgeProps) {
+export function PlayerBadge({ color, name, score, isCurrentTurn, size = "md", className, ...props }: PlayerBadgeProps) {
     const colorClasses = colors.player[color]
 
     const sizeClasses = {
@@ -333,9 +300,7 @@ export function PlayerBadge({
         >
             <div className={cn("rounded-full", colorClasses.bg, dotSizes[size])} />
             <span className="font-medium">{name}</span>
-            {score !== undefined && (
-                <span className="opacity-60">({score}pts)</span>
-            )}
+            {score !== undefined && <span className="opacity-60">({score}pts)</span>}
         </div>
     )
 }
@@ -358,28 +323,18 @@ export interface SectionHeaderProps extends React.HTMLAttributes<HTMLDivElement>
     count?: number
 }
 
-export function SectionHeader({
-    icon: Icon,
-    title,
-    count,
-    className,
-    ...props
-}: SectionHeaderProps) {
+export function SectionHeader({ icon: Icon, title, count, className, ...props }: SectionHeaderProps) {
     return (
         <div
             className={cn(
-                "flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground",
+                "text-muted-foreground flex items-center gap-2 text-sm font-bold tracking-wider uppercase",
                 className
             )}
             {...props}
         >
-            {Icon && <Icon className="h-4 w-4" />}
+            {Icon ? <Icon className="h-4 w-4" /> : null}
             {title}
-            {count !== undefined && (
-                <span className="text-xs bg-white/10 px-2 py-0.5 rounded-full">
-                    {count}
-                </span>
-            )}
+            {count !== undefined && <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs">{count}</span>}
         </div>
     )
 }
@@ -420,19 +375,12 @@ export function PageHeader({
 }: PageHeaderProps) {
     return (
         <div className={cn("flex items-center gap-3", className)} {...props}>
-            <div
-                className={cn(
-                    "w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br",
-                    gradient
-                )}
-            >
+            <div className={cn("flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br", gradient)}>
                 <Icon className="h-5 w-5 text-white" />
             </div>
             <div>
                 <h1 className="text-2xl font-black tracking-tighter italic">{title}</h1>
-                {subtitle && (
-                    <p className="text-xs text-muted-foreground">{subtitle}</p>
-                )}
+                {subtitle ? <p className="text-muted-foreground text-xs">{subtitle}</p> : null}
             </div>
         </div>
     )
@@ -464,29 +412,14 @@ export interface OptionRowProps extends React.HTMLAttributes<HTMLDivElement> {
     children: React.ReactNode
 }
 
-export function OptionRow({
-    icon: Icon,
-    label,
-    description,
-    children,
-    className,
-    ...props
-}: OptionRowProps) {
+export function OptionRow({ icon: Icon, label, description, children, className, ...props }: OptionRowProps) {
     return (
-        <div
-            className={cn(
-                "flex items-center justify-between p-4 rounded-xl bg-white/5",
-                className
-            )}
-            {...props}
-        >
+        <div className={cn("flex items-center justify-between rounded-xl bg-white/5 p-4", className)} {...props}>
             <div className="flex items-center gap-3">
-                {Icon && <Icon className="h-5 w-5 text-muted-foreground" />}
+                {Icon ? <Icon className="text-muted-foreground h-5 w-5" /> : null}
                 <div>
                     <span className="font-medium">{label}</span>
-                    {description && (
-                        <p className="text-xs text-muted-foreground">{description}</p>
-                    )}
+                    {description ? <p className="text-muted-foreground text-xs">{description}</p> : null}
                 </div>
             </div>
             {children}

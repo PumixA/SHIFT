@@ -68,6 +68,10 @@ flowchart LR
 | RuleBuilderModal | Création de règles | `components/game/rule-builder-modal.tsx` |
 | ActionHistory | Historique des actions | `components/game/action-history.tsx` |
 | ChatPanel | Chat en jeu | `components/game/chat-panel.tsx` |
+| InteractiveTutorial | Tutoriel interactif | `components/game/interactive-tutorial.tsx` |
+| TutorialWelcomeModal | Modal de bienvenue | `components/game/tutorial-welcome-modal.tsx` |
+| TutorialHints | Conseils contextuels | `components/game/tutorial-hints.tsx` |
+| TutorialHelpMenu | Menu d'aide segmenté | `components/game/tutorial-help-menu.tsx` |
 
 ### Hooks Critiques
 
@@ -78,6 +82,8 @@ flowchart LR
 | useRuleManagement | CRUD règles | useGameState, Socket |
 | useTurnManagement | Gestion des tours | useGameState |
 | useBotAI | Logique IA | useGameState |
+| useTutorial | État tutoriel interactif | localStorage |
+| useTutorialPreferences | Préférences tutoriel | user-storage |
 
 ### Contextes React
 

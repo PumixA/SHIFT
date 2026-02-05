@@ -4,7 +4,7 @@ import { useState, useCallback, useMemo } from "react"
 import { socket } from "@/services/socket"
 import type { Player, GameStatus } from "./useGameState"
 
-export type TurnPhase = 'ROLL' | 'MOVE_CHOICE' | 'MODIFY' | 'END'
+export type TurnPhase = "ROLL" | "MOVE_CHOICE" | "MODIFY" | "END"
 
 export interface UseTurnManagementProps {
     players: Player[]
@@ -53,7 +53,7 @@ export function useTurnManagement({
     // State
     const [currentTurnId, setCurrentTurnId] = useState<string>("")
     const [localTurnIndex, setLocalTurnIndex] = useState(0)
-    const [turnPhase, setTurnPhase] = useState<TurnPhase>('ROLL')
+    const [turnPhase, setTurnPhase] = useState<TurnPhase>("ROLL")
     const [diceValue, setDiceValue] = useState<number | null>(null)
     const [isRolling, setIsRolling] = useState(false)
 
@@ -62,7 +62,7 @@ export function useTurnManagement({
         if (isLocalMode) {
             return players[localTurnIndex]
         }
-        return players.find(p => String(p.id) === currentTurnId)
+        return players.find((p) => String(p.id) === currentTurnId)
     }, [isLocalMode, players, localTurnIndex, currentTurnId])
 
     const isMyTurn = useMemo(() => {
@@ -74,16 +74,16 @@ export function useTurnManagement({
 
     const canRollDice = useMemo(() => {
         if (!isMyTurn) return false
-        if (gameStatus !== 'playing') return false
+        if (gameStatus !== "playing") return false
         if (isRolling) return false
-        if (turnPhase !== 'ROLL') return false
+        if (turnPhase !== "ROLL") return false
         return true
     }, [isMyTurn, gameStatus, isRolling, turnPhase])
 
     const canModify = useMemo(() => {
         if (!isMyTurn) return false
-        if (gameStatus !== 'playing') return false
-        if (turnPhase !== 'MODIFY') return false
+        if (gameStatus !== "playing") return false
+        if (turnPhase !== "MODIFY") return false
         return true
     }, [isMyTurn, gameStatus, turnPhase])
 
@@ -106,7 +106,7 @@ export function useTurnManagement({
             setLocalTurnIndex(nextIndex)
             setCurrentTurnId(String(players[nextIndex]?.id))
         }
-        setTurnPhase('ROLL')
+        setTurnPhase("ROLL")
         setDiceValue(null)
     }, [isLocalMode, localTurnIndex, players])
 
