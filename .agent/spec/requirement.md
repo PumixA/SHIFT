@@ -1,7 +1,7 @@
 # Exigences Fonctionnelles - SHIFT
 
-> Version: 1.0.0
-> Dernière mise à jour: 2026-02-04
+> Version: 1.0.1
+> Dernière mise à jour: 2026-02-05
 
 ## Vision Produit
 
@@ -10,16 +10,19 @@ SHIFT est un jeu de plateau stratégique où les règles évoluent dynamiquement
 ## Personas Utilisateurs
 
 ### Joueur Casual
+
 - Veut des parties rapides et amusantes
 - Utilise les packs de règles prédéfinis
 - Joue principalement en mode local ou avec des bots
 
 ### Joueur Stratège
+
 - Aime créer des règles complexes
 - Optimise ses packs de règles personnalisés
 - Joue en multijoueur compétitif
 
 ### Hôte de Soirée
+
 - Organise des parties en groupe
 - Configure les paramètres de jeu
 - Gère les invitations et le lobby
@@ -29,18 +32,21 @@ SHIFT est un jeu de plateau stratégique où les règles évoluent dynamiquement
 ### F1: Système de Jeu de Base
 
 #### F1.1: Plateau de Jeu
+
 - Plateau linéaire avec nombre de cases configurable (défaut: 30)
 - Cases numérotées de 1 à N
 - Visualisation des positions des joueurs
 - Support 2-4 joueurs
 
 #### F1.2: Tour de Jeu
+
 - Ordre de jeu rotatif (Cyan → Violet → Orange → Vert)
 - Lancer de dé (1-6)
 - Déplacement automatique du pion
 - Résolution des règles actives
 
 #### F1.3: Condition de Victoire
+
 - Premier joueur à atteindre ou dépasser la dernière case
 - Classement par score en cas d'égalité
 - Historique de partie enregistré
@@ -48,6 +54,7 @@ SHIFT est un jeu de plateau stratégique où les règles évoluent dynamiquement
 ### F2: Système de Règles Dynamiques
 
 #### F2.1: Création de Règles
+
 - Interface de construction visuelle
 - Sélection de déclencheur (trigger)
 - Configuration des conditions
@@ -55,23 +62,26 @@ SHIFT est un jeu de plateau stratégique où les règles évoluent dynamiquement
 - Validation en temps réel
 
 #### F2.2: Déclencheurs Disponibles
-| Catégorie | Déclencheurs |
-|-----------|--------------|
-| Mouvement | ON_MOVE_START, ON_PASS_OVER, ON_LAND, ON_TELEPORT, ON_BACKWARD_MOVE |
-| Tour | ON_TURN_START, ON_TURN_END, ON_DICE_ROLL |
-| Score | ON_SCORE_THRESHOLD, ON_REACH_POSITION, ON_NEAR_VICTORY |
-| Interaction | ON_OVERTAKE, ON_SAME_TILE, ON_PLAYER_BYPASS |
-| Jeu | ON_GAME_START, ON_FIRST_MOVE, ON_CONSECUTIVE_SIX |
+
+| Catégorie   | Déclencheurs                                                        |
+| ----------- | ------------------------------------------------------------------- |
+| Mouvement   | ON_MOVE_START, ON_PASS_OVER, ON_LAND, ON_TELEPORT, ON_BACKWARD_MOVE |
+| Tour        | ON_TURN_START, ON_TURN_END, ON_DICE_ROLL                            |
+| Score       | ON_SCORE_THRESHOLD, ON_REACH_POSITION, ON_NEAR_VICTORY              |
+| Interaction | ON_OVERTAKE, ON_SAME_TILE, ON_PLAYER_BYPASS                         |
+| Jeu         | ON_GAME_START, ON_FIRST_MOVE, ON_CONSECUTIVE_SIX                    |
 
 #### F2.3: Effets Disponibles
-| Catégorie | Effets |
-|-----------|--------|
-| Mouvement | MOVE_RELATIVE, TELEPORT, SWAP_POSITIONS, MOVE_TO_TILE, MOVE_RANDOM |
-| Tour | SKIP_TURN, EXTRA_TURN |
-| Score | MODIFY_SCORE, STEAL_POINTS |
+
+| Catégorie | Effets                                                                             |
+| --------- | ---------------------------------------------------------------------------------- |
+| Mouvement | MOVE_RELATIVE, TELEPORT, SWAP_POSITIONS, MOVE_TO_TILE, MOVE_RANDOM                 |
+| Tour      | SKIP_TURN, EXTRA_TURN                                                              |
+| Score     | MODIFY_SCORE, STEAL_POINTS                                                         |
 | Power-ups | APPLY_DOUBLE_DICE, APPLY_SHIELD, APPLY_SPEED_BOOST, APPLY_SLOW, APPLY_INVISIBILITY |
 
 #### F2.4: Packs de Règles
+
 - 10+ packs prédéfinis (Vanilla, Classic, Challenge, etc.)
 - Création de packs personnalisés
 - Partage de packs entre utilisateurs
@@ -80,17 +90,20 @@ SHIFT est un jeu de plateau stratégique où les règles évoluent dynamiquement
 ### F3: Modes de Jeu
 
 #### F3.1: Multijoueur en Ligne
+
 - Création de salons avec code d'accès
 - Matchmaking par invitation
 - Chat en temps réel
 - Synchronisation WebSocket
 
 #### F3.2: Mode Local/Hors Ligne
+
 - Partie sur un seul appareil
 - Support hors connexion (PWA)
 - Bots IA (facile, moyen, difficile)
 
 #### F3.3: Sauvegarde et Reprise
+
 - Sauvegarde automatique de l'état
 - Reprise de partie interrompue
 - Historique des parties terminées
@@ -98,18 +111,21 @@ SHIFT est un jeu de plateau stratégique où les règles évoluent dynamiquement
 ### F4: Social et Communauté
 
 #### F4.1: Système d'Amis
+
 - Recherche par nom d'utilisateur
 - Demandes d'amitié
 - Liste d'amis avec statut
 - Blocage d'utilisateurs
 
 #### F4.2: Chat en Jeu
+
 - Messages texte
 - Réactions emoji
 - Messages système
 - Historique de conversation
 
 #### F4.3: Invitations
+
 - Invitation d'amis à une partie
 - Notifications push
 - Statut des invitations
@@ -117,11 +133,13 @@ SHIFT est un jeu de plateau stratégique où les règles évoluent dynamiquement
 ### F5: Profil et Statistiques
 
 #### F5.1: Profil Utilisateur
+
 - Avatar personnalisable
 - Nom d'utilisateur unique
 - Préférences de jeu
 
 #### F5.2: Statistiques
+
 - Nombre de parties jouées
 - Victoires / Défaites
 - Score total cumulé
@@ -131,23 +149,27 @@ SHIFT est un jeu de plateau stratégique où les règles évoluent dynamiquement
 ## Exigences Non Fonctionnelles
 
 ### Performance
+
 - Temps de chargement initial < 3s
 - Latence réseau < 100ms pour les actions
 - Support de 100 parties simultanées par serveur
 
 ### Accessibilité
+
 - Navigation au clavier complète
 - Support manettes de jeu
 - Responsive mobile
 - Mode sombre natif
 
 ### Sécurité
+
 - Validation côté serveur de toutes les actions
 - Protection contre la triche
 - Données utilisateur chiffrées
 - Sessions sécurisées
 
 ### Disponibilité
+
 - Mode hors ligne fonctionnel
 - PWA installable
 - Reconnexion automatique
@@ -157,11 +179,13 @@ SHIFT est un jeu de plateau stratégique où les règles évoluent dynamiquement
 ### F6: Système de Tutoriel
 
 #### F6.1: Onboarding Non-Intrusif
+
 - Modal de bienvenue au premier lancement
 - Option "Ne plus demander" persistante
 - Consentement utilisateur requis avant tutoriel
 
 #### F6.2: Tutoriel Interactif
+
 - Navigation libre (précédent/suivant)
 - 11 étapes réparties en 4 sections
 - Overlay semi-transparent (50% opacité)
@@ -169,25 +193,29 @@ SHIFT est un jeu de plateau stratégique où les règles évoluent dynamiquement
 - Raccourcis clavier (flèches, Échap)
 
 #### F6.3: Sections du Tutoriel
-| Section | Nom | Contenu |
-|---------|-----|---------|
-| basics | Les bases | Bienvenue, Dé, Déplacement |
-| rules | Les règles | Règles dynamiques, Déclencheurs, Création |
-| board | Le plateau | Modification, Effets |
-| advanced | Avancé | Victoire, Contrôles, Fin |
+
+| Section  | Nom        | Contenu                                   |
+| -------- | ---------- | ----------------------------------------- |
+| basics   | Les bases  | Bienvenue, Dé, Déplacement                |
+| rules    | Les règles | Règles dynamiques, Déclencheurs, Création |
+| board    | Le plateau | Modification, Effets                      |
+| advanced | Avancé     | Victoire, Contrôles, Fin                  |
 
 #### F6.4: Accès Segmenté
+
 - Onglet "Aide" dans les paramètres
 - Relancer une section spécifique
 - Relancer le tutoriel complet
 - Visualisation des sections vues (badges)
 
 #### F6.5: Conseils Contextuels
+
 - Hints non-bloquants via toasts
 - Activables/désactivables dans les paramètres
 - Déclenchés par phase de jeu et actions
 
 #### F6.6: Persistance
+
 - Préférences dans LocalStorage (`shift_settings`)
 - Migration automatique de l'ancien flag
 - Réinitialisation possible

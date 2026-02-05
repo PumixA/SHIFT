@@ -1,7 +1,7 @@
 # Stack Technique - SHIFT
 
-> Version: 1.0.0
-> Dernière mise à jour: 2026-02-04
+> Version: 1.1.0
+> Dernière mise à jour: 2026-02-05
 
 Ce document liste les versions EXACTES des dépendances. Les agents IA DOIVENT utiliser ces versions pour éviter les API dépréciées ou inexistantes.
 
@@ -13,60 +13,73 @@ Ce document liste les versions EXACTES des dépendances. Les agents IA DOIVENT u
 
 | Package    | Version | Notes                                      |
 | ---------- | ------- | ------------------------------------------ |
-| next       | 16.0.10 | App Router UNIQUEMENT, pas de Pages Router |
-| react      | 19.2.0  | Composants fonctionnels + hooks            |
-| react-dom  | 19.2.0  | -                                          |
-| typescript | 5.9.3+  | Mode strict activé                         |
+| next       | ^16.1.6 | App Router UNIQUEMENT, pas de Pages Router |
+| react      | ^19.2.4 | Composants fonctionnels + hooks            |
+| react-dom  | ^19.2.4 | -                                          |
+| typescript | ^5      | Mode strict activé                         |
 
 ### UI Components (Radix UI)
 
-| Package                       | Version | Usage                 |
-| ----------------------------- | ------- | --------------------- |
-| @radix-ui/react-accordion     | ^1.2.2  | Panneaux dépliables   |
-| @radix-ui/react-alert-dialog  | ^1.1.4  | Dialogues d'alerte    |
-| @radix-ui/react-avatar        | ^1.1.2  | Avatars utilisateurs  |
-| @radix-ui/react-checkbox      | ^1.1.3  | Cases à cocher        |
-| @radix-ui/react-dialog        | ^1.1.4  | Modales               |
-| @radix-ui/react-dropdown-menu | ^2.1.4  | Menus déroulants      |
-| @radix-ui/react-label         | ^2.1.1  | Labels de formulaire  |
-| @radix-ui/react-popover       | ^1.1.4  | Popovers              |
-| @radix-ui/react-progress      | ^1.1.1  | Barres de progression |
-| @radix-ui/react-scroll-area   | ^1.2.2  | Zones scrollables     |
-| @radix-ui/react-select        | ^2.1.4  | Sélecteurs            |
-| @radix-ui/react-separator     | ^1.1.1  | Séparateurs           |
-| @radix-ui/react-slider        | ^1.2.2  | Sliders               |
-| @radix-ui/react-slot          | ^1.1.1  | Composition           |
-| @radix-ui/react-switch        | ^1.1.2  | Switches toggle       |
-| @radix-ui/react-tabs          | ^1.1.2  | Onglets               |
-| @radix-ui/react-toast         | ^1.2.4  | Notifications toast   |
-| @radix-ui/react-tooltip       | ^1.1.6  | Tooltips              |
+| Package                         | Version | Usage                 |
+| ------------------------------- | ------- | --------------------- |
+| @radix-ui/react-accordion       | 1.2.12  | Panneaux dépliables   |
+| @radix-ui/react-alert-dialog    | 1.1.15  | Dialogues d'alerte    |
+| @radix-ui/react-aspect-ratio    | 1.1.8   | Aspect ratio          |
+| @radix-ui/react-avatar          | 1.1.11  | Avatars utilisateurs  |
+| @radix-ui/react-checkbox        | 1.3.3   | Cases à cocher        |
+| @radix-ui/react-collapsible     | 1.1.12  | Panneaux collapsibles |
+| @radix-ui/react-context-menu    | 2.2.16  | Menus contextuels     |
+| @radix-ui/react-dialog          | 1.1.15  | Modales               |
+| @radix-ui/react-dropdown-menu   | 2.1.16  | Menus déroulants      |
+| @radix-ui/react-hover-card      | 1.1.15  | Cartes hover          |
+| @radix-ui/react-label           | 2.1.8   | Labels de formulaire  |
+| @radix-ui/react-menubar         | 1.1.16  | Barres de menu        |
+| @radix-ui/react-navigation-menu | 1.2.14  | Menus de navigation   |
+| @radix-ui/react-popover         | 1.1.15  | Popovers              |
+| @radix-ui/react-progress        | 1.1.8   | Barres de progression |
+| @radix-ui/react-radio-group     | 1.3.8   | Groupes radio         |
+| @radix-ui/react-scroll-area     | 1.2.10  | Zones scrollables     |
+| @radix-ui/react-select          | 2.2.6   | Sélecteurs            |
+| @radix-ui/react-separator       | 1.1.8   | Séparateurs           |
+| @radix-ui/react-slider          | 1.3.6   | Sliders               |
+| @radix-ui/react-slot            | 1.2.4   | Composition           |
+| @radix-ui/react-switch          | 1.2.6   | Switches toggle       |
+| @radix-ui/react-tabs            | 1.1.13  | Onglets               |
+| @radix-ui/react-toast           | 1.2.15  | Notifications toast   |
+| @radix-ui/react-toggle          | 1.1.10  | Boutons toggle        |
+| @radix-ui/react-toggle-group    | 1.1.11  | Groupes toggle        |
+| @radix-ui/react-tooltip         | 1.2.8   | Tooltips              |
 
 ### Styling
 
-| Package                  | Version | Notes                     |
-| ------------------------ | ------- | ------------------------- |
-| tailwindcss              | 4.1.9   | Configuration Tailwind v4 |
-| postcss                  | 8.4.49  | -                         |
-| class-variance-authority | ^0.7.1  | Variants de classes       |
-| clsx                     | ^2.1.1  | Conditionnels de classes  |
-| tailwind-merge           | ^2.6.0  | Merge intelligent         |
+| Package                  | Version  | Notes                     |
+| ------------------------ | -------- | ------------------------- |
+| tailwindcss              | ^4.1.9   | Configuration Tailwind v4 |
+| @tailwindcss/postcss     | ^4.1.9   | Plugin PostCSS Tailwind   |
+| postcss                  | ^8.5     | -                         |
+| autoprefixer             | ^10.4.24 | Préfixes CSS automatiques |
+| class-variance-authority | ^0.7.1   | Variants de classes       |
+| clsx                     | ^2.1.1   | Conditionnels de classes  |
+| tailwind-merge           | ^3.3.1   | Merge intelligent         |
+| tailwindcss-animate      | ^1.0.7   | Animations Tailwind       |
+| tw-animate-css           | 1.3.3    | Animations CSS            |
 
 ### Formulaires et Validation
 
 | Package             | Version | Notes                 |
 | ------------------- | ------- | --------------------- |
-| react-hook-form     | ^7.54.2 | Gestion formulaires   |
-| zod                 | ^3.24.1 | Validation de schémas |
-| @hookform/resolvers | ^3.9.1  | Intégration Zod       |
+| react-hook-form     | ^7.60.0 | Gestion formulaires   |
+| zod                 | 3.25.76 | Validation de schémas |
+| @hookform/resolvers | ^3.10.0 | Intégration Zod       |
 
 ### Animation et Visualisation
 
 | Package              | Version  | Notes                   |
 | -------------------- | -------- | ----------------------- |
 | framer-motion        | ^11.15.0 | Animations React        |
-| recharts             | ^2.15.4  | Graphiques statistiques |
+| recharts             | 2.15.4   | Graphiques statistiques |
 | lucide-react         | ^0.454.0 | Icônes SVG              |
-| embla-carousel-react | ^8.5.1   | Carrousels              |
+| embla-carousel-react | 8.5.1    | Carrousels              |
 
 ### Temps Réel
 
@@ -78,13 +91,15 @@ Ce document liste les versions EXACTES des dépendances. Les agents IA DOIVENT u
 
 | Package                | Version | Notes                      |
 | ---------------------- | ------- | -------------------------- |
-| next-themes            | ^0.4.4  | Thème dark/light           |
+| @vercel/analytics      | 1.3.1   | Analytics Vercel           |
+| next-themes            | ^0.4.6  | Thème dark/light           |
 | react-resizable-panels | ^2.1.7  | Panneaux redimensionnables |
-| sonner                 | ^1.7.2  | Notifications              |
-| cmdk                   | ^1.0.4  | Command palette            |
-| input-otp              | ^1.4.1  | Inputs OTP                 |
+| sonner                 | ^1.7.4  | Notifications              |
+| cmdk                   | 1.0.4   | Command palette            |
+| input-otp              | ^1.4.2  | Inputs OTP                 |
 | vaul                   | ^1.1.2  | Drawers mobile             |
-| date-fns               | ^4.1.0  | Manipulation dates         |
+| date-fns               | 4.1.0   | Manipulation dates         |
+| react-day-picker       | 9.8.0   | Sélecteur de date          |
 
 ---
 
@@ -95,7 +110,7 @@ Ce document liste les versions EXACTES des dépendances. Les agents IA DOIVENT u
 | Package    | Version | Notes                |
 | ---------- | ------- | -------------------- |
 | express    | ^5.2.1  | Framework HTTP       |
-| typescript | ^5.6.3  | Mode strict          |
+| typescript | ^5.9.3  | Mode strict          |
 | ts-node    | ^10.9.2 | Exécution TS directe |
 
 ### Base de Données
@@ -117,17 +132,65 @@ Ce document liste les versions EXACTES des dépendances. Les agents IA DOIVENT u
 
 | Package | Version | Notes                     |
 | ------- | ------- | ------------------------- |
-| dotenv  | ^16.4.5 | Variables d'environnement |
+| dotenv  | ^17.2.3 | Variables d'environnement |
 | cors    | ^2.8.5  | Cross-Origin              |
 
 ### Développement
 
 | Package        | Version | Notes         |
 | -------------- | ------- | ------------- |
-| nodemon        | ^3.1.7  | Hot reload    |
-| @types/express | ^5.0.0  | Types Express |
-| @types/cors    | ^2.8.17 | Types CORS    |
-| @types/node    | ^22.9.0 | Types Node.js |
+| nodemon        | ^3.1.11 | Hot reload    |
+| @types/express | ^5.0.6  | Types Express |
+| @types/cors    | ^2.8.19 | Types CORS    |
+| @types/node    | ^25.2.0 | Types Node.js |
+
+---
+
+## Structure npm Workspaces
+
+Le projet utilise **npm workspaces** pour gérer les dépendances de manière centralisée.
+
+### Configuration (package.json racine)
+
+```json
+{
+  "workspaces": ["client", "server"]
+}
+```
+
+### Fichiers de lock
+
+| Fichier                    | Emplacement | Usage                                      |
+| -------------------------- | ----------- | ------------------------------------------ |
+| `package-lock.json`        | Racine      | **Utilisé par npm ci** - fichier principal |
+| `client/package-lock.json` | client/     | Ignoré par npm ci (legacy)                 |
+| `server/package-lock.json` | server/     | Ignoré par npm ci (legacy)                 |
+
+### Commandes importantes
+
+```bash
+# Installer toutes les dépendances (workspaces)
+npm install
+
+# Installer une dépendance dans un workspace spécifique
+npm install <package>@<version> -w client
+npm install <package>@<version> -w server
+
+# En cas de conflits de peer dependencies
+npm install <package>@<version> -w client --legacy-peer-deps
+```
+
+### Point d'attention : Dependabot
+
+Dependabot met à jour uniquement les `package-lock.json` des workspaces individuels (client/, server/), mais **pas** le `package-lock.json` racine utilisé par `npm ci` en CI.
+
+**Solution** : Créer des branches manuelles avec :
+
+```bash
+npm install <package>@<version> -w client --legacy-peer-deps
+git add client/package.json package-lock.json
+git commit -m "chore(deps): bump <package> from X to Y"
+```
 
 ---
 
@@ -234,9 +297,11 @@ NEXT_PUBLIC_SOCKET_URL=http://localhost:3001
 
 | Outil                       | Version | Usage                  |
 | --------------------------- | ------- | ---------------------- |
-| ESLint                      | 9.0.0   | Linting code           |
-| Prettier                    | 3.4.0   | Formatage code         |
-| prettier-plugin-tailwindcss | ^0.6.9  | Ordre classes Tailwind |
+| ESLint                      | ^9.0.0  | Linting code           |
+| eslint-config-next          | ^15.0.0 | Config ESLint Next.js  |
+| @eslint/eslintrc            | ^3.2.0  | Config ESLint          |
+| Prettier                    | ^3.4.0  | Formatage code         |
+| prettier-plugin-tailwindcss | ^0.6.0  | Ordre classes Tailwind |
 
 ---
 

@@ -5,28 +5,33 @@
 ## Navigation Rapide
 
 ### Gouvernance et Règles
-| Document | Description | Priorité |
-|----------|-------------|----------|
-| [AGENT.md](./AGENT.md) | Directives globales, règles impératives | **LIRE EN PREMIER** |
-| [../.cursorrules](../.cursorrules) | Règles spécifiques Cursor AI | Haute |
+
+| Document                           | Description                             | Priorité            |
+| ---------------------------------- | --------------------------------------- | ------------------- |
+| [AGENT.md](./AGENT.md)             | Directives globales, règles impératives | **LIRE EN PREMIER** |
+| [../.cursorrules](../.cursorrules) | Règles spécifiques Cursor AI            | Haute               |
 
 ### Spécifications Fonctionnelles
-| Document | Description |
-|----------|-------------|
-| [spec/requirement.md](./spec/requirement.md) | Exigences produit, User Stories |
-| [spec/design.md](./spec/design.md) | Architecture système, diagrammes |
-| [spec/features/](./spec/features/) | Scénarios BDD (Gherkin) |
+
+| Document                                     | Description                      |
+| -------------------------------------------- | -------------------------------- |
+| [spec/requirement.md](./spec/requirement.md) | Exigences produit, User Stories  |
+| [spec/design.md](./spec/design.md)           | Architecture système, diagrammes |
+| [spec/features/](./spec/features/)           | Scénarios BDD (Gherkin)          |
 
 ### Domaine Métier
-| Document | Description |
-|----------|-------------|
+
+| Document                           | Description                    |
+| ---------------------------------- | ------------------------------ |
 | [wiki/domain.md](./wiki/domain.md) | Glossaire, Ubiquitous Language |
 
 ### Technique
-| Document | Description |
-|----------|-------------|
-| [tech/stack.md](./tech/stack.md) | Versions exactes des dépendances |
-| [links/resources.md](./links/resources.md) | Documentation externe, APIs |
+
+| Document                                   | Description                         |
+| ------------------------------------------ | ----------------------------------- |
+| [tech/stack.md](./tech/stack.md)           | Versions exactes des dépendances    |
+| [spec/cicd.md](./spec/cicd.md)             | Pipeline CI/CD, Dependabot, GitFlow |
+| [links/resources.md](./links/resources.md) | Documentation externe, APIs         |
 
 ---
 
@@ -63,11 +68,11 @@ Quelle tâche dois-je accomplir?
 
 ## Fichiers Gherkin Disponibles
 
-| Fichier | Domaine | Scénarios |
-|---------|---------|-----------|
-| [game-core.feature](./spec/features/game-core.feature) | Mécanique de jeu | Dé, mouvement, victoire |
-| [rules-system.feature](./spec/features/rules-system.feature) | Règles dynamiques | CRUD, triggers, effets |
-| [social.feature](./spec/features/social.feature) | Social/Multiplayer | Amis, invitations, chat |
+| Fichier                                                      | Domaine            | Scénarios               |
+| ------------------------------------------------------------ | ------------------ | ----------------------- |
+| [game-core.feature](./spec/features/game-core.feature)       | Mécanique de jeu   | Dé, mouvement, victoire |
+| [rules-system.feature](./spec/features/rules-system.feature) | Règles dynamiques  | CRUD, triggers, effets  |
+| [social.feature](./spec/features/social.feature)             | Social/Multiplayer | Amis, invitations, chat |
 
 ---
 
