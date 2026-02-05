@@ -242,7 +242,7 @@ export default function OptionsPage() {
                             </div>
                             <Slider
                                 value={[options.audio.masterVolume]}
-                                onValueChange={([v]) => updateOption("audio", "masterVolume", v)}
+                                onValueChange={([v]: number[]) => updateOption("audio", "masterVolume", v)}
                                 max={100}
                                 step={1}
                                 disabled={options.audio.muted}
@@ -260,7 +260,7 @@ export default function OptionsPage() {
                             </div>
                             <Slider
                                 value={[options.audio.musicVolume]}
-                                onValueChange={([v]) => updateOption("audio", "musicVolume", v)}
+                                onValueChange={([v]: number[]) => updateOption("audio", "musicVolume", v)}
                                 max={100}
                                 step={1}
                                 disabled={options.audio.muted}
@@ -278,7 +278,7 @@ export default function OptionsPage() {
                             </div>
                             <Slider
                                 value={[options.audio.sfxVolume]}
-                                onValueChange={([v]) => updateOption("audio", "sfxVolume", v)}
+                                onValueChange={([v]: number[]) => updateOption("audio", "sfxVolume", v)}
                                 max={100}
                                 step={1}
                                 disabled={options.audio.muted}
@@ -295,7 +295,7 @@ export default function OptionsPage() {
                             </div>
                             <Switch
                                 checked={options.audio.muted}
-                                onCheckedChange={(v) => updateOption("audio", "muted", v)}
+                                onCheckedChange={(v: boolean) => updateOption("audio", "muted", v)}
                             />
                         </div>
                     </CardContent>
@@ -322,7 +322,7 @@ export default function OptionsPage() {
                             </div>
                             <Switch
                                 checked={options.controls.gamepadEnabled}
-                                onCheckedChange={(v) => updateOption("controls", "gamepadEnabled", v)}
+                                onCheckedChange={(v: boolean) => updateOption("controls", "gamepadEnabled", v)}
                             />
                         </div>
 
@@ -337,7 +337,7 @@ export default function OptionsPage() {
                             </div>
                             <Switch
                                 checked={options.controls.gamepadVibration}
-                                onCheckedChange={(v) => updateOption("controls", "gamepadVibration", v)}
+                                onCheckedChange={(v: boolean) => updateOption("controls", "gamepadVibration", v)}
                                 disabled={!options.controls.gamepadEnabled}
                             />
                         </div>
@@ -353,7 +353,7 @@ export default function OptionsPage() {
                             </div>
                             <Switch
                                 checked={options.controls.keyboardShortcuts}
-                                onCheckedChange={(v) => updateOption("controls", "keyboardShortcuts", v)}
+                                onCheckedChange={(v: boolean) => updateOption("controls", "keyboardShortcuts", v)}
                             />
                         </div>
 
@@ -421,7 +421,7 @@ export default function OptionsPage() {
                             <Label>Thème</Label>
                             <Select
                                 value={options.display.theme}
-                                onValueChange={(v) =>
+                                onValueChange={(v: string) =>
                                     updateOption("display", "theme", v as "dark" | "light" | "system")
                                 }
                             >
@@ -459,7 +459,7 @@ export default function OptionsPage() {
                             </div>
                             <Switch
                                 checked={options.display.animations}
-                                onCheckedChange={(v) => updateOption("display", "animations", v)}
+                                onCheckedChange={(v: boolean) => updateOption("display", "animations", v)}
                             />
                         </div>
 
@@ -468,7 +468,7 @@ export default function OptionsPage() {
                             <Label>Qualité des effets</Label>
                             <Select
                                 value={options.display.effectsQuality}
-                                onValueChange={(v) =>
+                                onValueChange={(v: string) =>
                                     updateOption("display", "effectsQuality", v as "low" | "medium" | "high")
                                 }
                             >
@@ -491,7 +491,7 @@ export default function OptionsPage() {
                             </div>
                             <Switch
                                 checked={options.display.showFps}
-                                onCheckedChange={(v) => updateOption("display", "showFps", v)}
+                                onCheckedChange={(v: boolean) => updateOption("display", "showFps", v)}
                             />
                         </div>
                     </CardContent>
@@ -514,7 +514,7 @@ export default function OptionsPage() {
                             </div>
                             <Switch
                                 checked={options.notifications.pushEnabled}
-                                onCheckedChange={(v) => updateOption("notifications", "pushEnabled", v)}
+                                onCheckedChange={(v: boolean) => updateOption("notifications", "pushEnabled", v)}
                             />
                         </div>
 
@@ -525,7 +525,7 @@ export default function OptionsPage() {
                             </div>
                             <Switch
                                 checked={options.notifications.soundEnabled}
-                                onCheckedChange={(v) => updateOption("notifications", "soundEnabled", v)}
+                                onCheckedChange={(v: boolean) => updateOption("notifications", "soundEnabled", v)}
                             />
                         </div>
 
@@ -536,7 +536,7 @@ export default function OptionsPage() {
                             </div>
                             <Switch
                                 checked={options.notifications.vibrationEnabled}
-                                onCheckedChange={(v) => updateOption("notifications", "vibrationEnabled", v)}
+                                onCheckedChange={(v: boolean) => updateOption("notifications", "vibrationEnabled", v)}
                             />
                         </div>
 
@@ -547,7 +547,7 @@ export default function OptionsPage() {
                             </div>
                             <Switch
                                 checked={options.notifications.turnReminder}
-                                onCheckedChange={(v) => updateOption("notifications", "turnReminder", v)}
+                                onCheckedChange={(v: boolean) => updateOption("notifications", "turnReminder", v)}
                             />
                         </div>
                     </CardContent>
@@ -571,7 +571,7 @@ export default function OptionsPage() {
                             </Label>
                             <Select
                                 value={options.accessibility.colorBlindMode}
-                                onValueChange={(v) =>
+                                onValueChange={(v: string) =>
                                     updateOption(
                                         "accessibility",
                                         "colorBlindMode",
@@ -601,7 +601,7 @@ export default function OptionsPage() {
                             </div>
                             <Switch
                                 checked={options.accessibility.largeText}
-                                onCheckedChange={(v) => updateOption("accessibility", "largeText", v)}
+                                onCheckedChange={(v: boolean) => updateOption("accessibility", "largeText", v)}
                             />
                         </div>
 
@@ -612,7 +612,7 @@ export default function OptionsPage() {
                             </div>
                             <Switch
                                 checked={options.accessibility.reduceMotion}
-                                onCheckedChange={(v) => updateOption("accessibility", "reduceMotion", v)}
+                                onCheckedChange={(v: boolean) => updateOption("accessibility", "reduceMotion", v)}
                             />
                         </div>
 
@@ -623,7 +623,7 @@ export default function OptionsPage() {
                             </div>
                             <Switch
                                 checked={options.accessibility.highContrast}
-                                onCheckedChange={(v) => updateOption("accessibility", "highContrast", v)}
+                                onCheckedChange={(v: boolean) => updateOption("accessibility", "highContrast", v)}
                             />
                         </div>
                     </CardContent>

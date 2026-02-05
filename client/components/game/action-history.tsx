@@ -268,7 +268,11 @@ export function ActionHistory({ roomId, currentPlayerId, onReplayAction }: Actio
                 </div>
 
                 {/* View mode toggle */}
-                <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "timeline" | "list")} className="mb-3">
+                <Tabs
+                    value={viewMode}
+                    onValueChange={(v: string) => setViewMode(v as "timeline" | "list")}
+                    className="mb-3"
+                >
                     <TabsList className="grid h-8 w-full grid-cols-2">
                         <TabsTrigger value="timeline" className="text-xs">
                             Timeline

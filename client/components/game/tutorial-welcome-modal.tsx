@@ -64,7 +64,7 @@ export function TutorialWelcomeModal({ open, onStartTutorial, onSkip, onNeverAsk
                         <Checkbox
                             id="never-ask"
                             checked={neverAskChecked}
-                            onCheckedChange={(checked) => setNeverAskChecked(checked === true)}
+                            onCheckedChange={(checked: boolean) => setNeverAskChecked(checked === true)}
                         />
                         <Label htmlFor="never-ask" className="text-muted-foreground cursor-pointer text-sm">
                             Ne plus me demander

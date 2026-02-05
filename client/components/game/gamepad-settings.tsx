@@ -185,7 +185,7 @@ export function GamepadSettings({ players, onAssignGamepad, gamepadAssignments }
                                         <Label className="text-muted-foreground text-xs">Assigner au joueur :</Label>
                                         <Select
                                             value={gamepadAssignments[gamepad.index] || "none"}
-                                            onValueChange={(value) =>
+                                            onValueChange={(value: string) =>
                                                 onAssignGamepad(gamepad.index, value === "none" ? null : value)
                                             }
                                         >
@@ -238,7 +238,7 @@ export function GamepadSettings({ players, onAssignGamepad, gamepadAssignments }
                     </div>
                     <Slider
                         value={[deadzone]}
-                        onValueChange={([v]) => setDeadzone(v)}
+                        onValueChange={([v]: number[]) => setDeadzone(v)}
                         min={0.05}
                         max={0.3}
                         step={0.01}
@@ -251,7 +251,13 @@ export function GamepadSettings({ players, onAssignGamepad, gamepadAssignments }
                         <Label>Fréquence de polling</Label>
                         <span className="text-muted-foreground text-sm">{pollRate}ms</span>
                     </div>
-                    <Slider value={[pollRate]} onValueChange={([v]) => setPollRate(v)} min={8} max={32} step={8} />
+                    <Slider
+                        value={[pollRate]}
+                        onValueChange={([v]: number[]) => setPollRate(v)}
+                        min={8}
+                        max={32}
+                        step={8}
+                    />
                     <p className="text-muted-foreground text-xs">
                         Intervalle de lecture des entrées (plus bas = plus réactif)
                     </p>

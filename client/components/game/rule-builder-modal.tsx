@@ -401,7 +401,7 @@ export function RuleBuilderModal({
                                 <div className="space-y-4 rounded-lg border-2 border-yellow-400/50 bg-yellow-400/5 p-4">
                                     <Select
                                         value={triggerType}
-                                        onValueChange={(value) => setTriggerType(value as TriggerType)}
+                                        onValueChange={(value: string) => setTriggerType(value as TriggerType)}
                                     >
                                         <SelectTrigger className="bg-secondary border-yellow-400/30">
                                             <SelectValue />
@@ -506,7 +506,9 @@ export function RuleBuilderModal({
                                                 <div className="flex flex-wrap items-center gap-2">
                                                     <Select
                                                         value={effect.type}
-                                                        onValueChange={(value) => updateEffect(index, "type", value)}
+                                                        onValueChange={(value: string) =>
+                                                            updateEffect(index, "type", value)
+                                                        }
                                                     >
                                                         <SelectTrigger className="bg-secondary min-w-[200px] flex-1 border-green-400/30">
                                                             <SelectValue />
@@ -551,7 +553,9 @@ export function RuleBuilderModal({
 
                                                     <Select
                                                         value={effect.target}
-                                                        onValueChange={(value) => updateEffect(index, "target", value)}
+                                                        onValueChange={(value: string) =>
+                                                            updateEffect(index, "target", value)
+                                                        }
                                                     >
                                                         <SelectTrigger className="bg-secondary w-[150px] border-green-400/30">
                                                             <SelectValue />
@@ -662,7 +666,7 @@ export function RuleBuilderModal({
                                 <div className="space-y-3 rounded-lg border border-yellow-400/30 bg-yellow-400/5 p-4">
                                     <Select
                                         value={triggerType}
-                                        onValueChange={(value) => setTriggerType(value as TriggerType)}
+                                        onValueChange={(value: string) => setTriggerType(value as TriggerType)}
                                     >
                                         <SelectTrigger className="bg-secondary border-yellow-400/30">
                                             <SelectValue />
@@ -749,7 +753,9 @@ export function RuleBuilderModal({
 
                                                     <Select
                                                         value={condition.type}
-                                                        onValueChange={(value) => updateCondition(index, "type", value)}
+                                                        onValueChange={(value: string) =>
+                                                            updateCondition(index, "type", value)
+                                                        }
                                                     >
                                                         <SelectTrigger className="bg-secondary w-[140px] border-orange-400/30">
                                                             <SelectValue />
@@ -765,7 +771,7 @@ export function RuleBuilderModal({
 
                                                     <Select
                                                         value={condition.operator}
-                                                        onValueChange={(value) =>
+                                                        onValueChange={(value: string) =>
                                                             updateCondition(index, "operator", value)
                                                         }
                                                     >
@@ -843,7 +849,9 @@ export function RuleBuilderModal({
                                                 <div className="flex flex-wrap items-center gap-2">
                                                     <Select
                                                         value={effect.type}
-                                                        onValueChange={(value) => updateEffect(index, "type", value)}
+                                                        onValueChange={(value: string) =>
+                                                            updateEffect(index, "type", value)
+                                                        }
                                                     >
                                                         <SelectTrigger className="bg-secondary w-[180px] border-green-400/30">
                                                             <SelectValue />
@@ -882,7 +890,9 @@ export function RuleBuilderModal({
 
                                                     <Select
                                                         value={effect.target}
-                                                        onValueChange={(value) => updateEffect(index, "target", value)}
+                                                        onValueChange={(value: string) =>
+                                                            updateEffect(index, "target", value)
+                                                        }
                                                     >
                                                         <SelectTrigger className="bg-secondary w-[130px] border-green-400/30">
                                                             <SelectValue />
