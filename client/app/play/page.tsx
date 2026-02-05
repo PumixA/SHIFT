@@ -286,7 +286,7 @@ export default function PlayPage() {
             </header>
 
             <main className="relative z-10 container mx-auto max-w-2xl px-4 py-6">
-                <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "games" | "create")}>
+                <Tabs value={activeTab} onValueChange={(v: string) => setActiveTab(v as "games" | "create")}>
                     <TabsList className="mb-6 grid w-full grid-cols-2">
                         <TabsTrigger value="games" className="flex items-center gap-2">
                             <Gamepad2 className="h-4 w-4" />
@@ -497,7 +497,7 @@ export default function PlayPage() {
                                                     <Switch
                                                         id={`bot-${index}`}
                                                         checked={player.isBot}
-                                                        onCheckedChange={(checked) =>
+                                                        onCheckedChange={(checked: boolean) =>
                                                             updatePlayer(index, { isBot: checked })
                                                         }
                                                     />
@@ -506,7 +506,7 @@ export default function PlayPage() {
                                                 {player.isBot ? (
                                                     <Select
                                                         value={player.botDifficulty || "medium"}
-                                                        onValueChange={(v) =>
+                                                        onValueChange={(v: string) =>
                                                             updatePlayer(index, {
                                                                 botDifficulty: v as "easy" | "medium" | "hard",
                                                             })

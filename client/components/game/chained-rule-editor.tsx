@@ -221,7 +221,7 @@ export function ChainedRuleEditor({ initialRule, onSave, onCancel, existingRules
                         <Label>Déclencheur</Label>
                         <Select
                             value={rule.trigger}
-                            onValueChange={(v) => setRule((prev) => ({ ...prev, trigger: v as TriggerType }))}
+                            onValueChange={(v: string) => setRule((prev) => ({ ...prev, trigger: v as TriggerType }))}
                         >
                             <SelectTrigger>
                                 <SelectValue />
@@ -271,7 +271,7 @@ export function ChainedRuleEditor({ initialRule, onSave, onCancel, existingRules
                                         <span className="text-muted-foreground">Combiner avec :</span>
                                         <Select
                                             value={rule.conditionLogic}
-                                            onValueChange={(v) =>
+                                            onValueChange={(v: string) =>
                                                 setRule((prev) => ({
                                                     ...prev,
                                                     conditionLogic: v as "AND" | "OR",
@@ -307,7 +307,7 @@ export function ChainedRuleEditor({ initialRule, onSave, onCancel, existingRules
 
                                             <Select
                                                 value={condition.type}
-                                                onValueChange={(v) =>
+                                                onValueChange={(v: string) =>
                                                     updateCondition(condition.id, {
                                                         type: v as ConditionType,
                                                     })
@@ -327,7 +327,7 @@ export function ChainedRuleEditor({ initialRule, onSave, onCancel, existingRules
 
                                             <Select
                                                 value={condition.operator}
-                                                onValueChange={(v) =>
+                                                onValueChange={(v: string) =>
                                                     updateCondition(condition.id, {
                                                         operator: v as ConditionOperator,
                                                     })
@@ -372,7 +372,7 @@ export function ChainedRuleEditor({ initialRule, onSave, onCancel, existingRules
                                 </div>
 
                                 {/* Add condition button */}
-                                <Select onValueChange={(v) => addCondition(v)}>
+                                <Select onValueChange={(v: string) => addCondition(v)}>
                                     <SelectTrigger className="w-full border-dashed">
                                         <div className="text-muted-foreground flex items-center gap-2">
                                             <Plus className="h-4 w-4" />
@@ -442,7 +442,7 @@ export function ChainedRuleEditor({ initialRule, onSave, onCancel, existingRules
 
                                             <Select
                                                 value={action.type}
-                                                onValueChange={(v) =>
+                                                onValueChange={(v: string) =>
                                                     updateAction("then", action.id, {
                                                         type: v as ActionType,
                                                     })
@@ -487,7 +487,7 @@ export function ChainedRuleEditor({ initialRule, onSave, onCancel, existingRules
                                     ))}
                                 </div>
 
-                                <Select onValueChange={(v) => addAction("then", v)}>
+                                <Select onValueChange={(v: string) => addAction("then", v)}>
                                     <SelectTrigger className="w-full border-dashed">
                                         <div className="text-muted-foreground flex items-center gap-2">
                                             <Plus className="h-4 w-4" />
@@ -571,7 +571,7 @@ export function ChainedRuleEditor({ initialRule, onSave, onCancel, existingRules
 
                                                         <Select
                                                             value={action.type}
-                                                            onValueChange={(v) =>
+                                                            onValueChange={(v: string) =>
                                                                 updateAction("else", action.id, {
                                                                     type: v as ActionType,
                                                                 })
@@ -616,7 +616,7 @@ export function ChainedRuleEditor({ initialRule, onSave, onCancel, existingRules
                                                 ))}
                                             </div>
 
-                                            <Select onValueChange={(v) => addAction("else", v)}>
+                                            <Select onValueChange={(v: string) => addAction("else", v)}>
                                                 <SelectTrigger className="w-full border-dashed">
                                                     <div className="text-muted-foreground flex items-center gap-2">
                                                         <Plus className="h-4 w-4" />
