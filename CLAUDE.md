@@ -9,6 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### 1. TOUJOURS consulter `.agent/` avant toute action
 
 Avant d'implémenter, modifier ou analyser quoi que ce soit:
+
 1. Lire `.agent/AGENT.md` pour les règles globales
 2. Lire `.agent/spec/requirement.md` pour les exigences fonctionnelles
 3. Lire `.agent/wiki/domain.md` pour le glossaire métier (nommage correct)
@@ -19,29 +20,95 @@ Avant d'implémenter, modifier ou analyser quoi que ce soit:
 
 Chaque modification de code DOIT déclencher une mise à jour de la documentation:
 
-| Type de modification | Fichiers `.agent/` à mettre à jour |
-|---------------------|-----------------------------------|
-| Nouvelle fonctionnalité | `spec/requirement.md` + nouveau `.feature` |
-| Changement d'architecture | `spec/design.md` |
-| Nouveau terme métier | `wiki/domain.md` |
-| Nouvelle dépendance | `tech/stack.md` |
-| Nouvelle ressource externe | `links/resources.md` |
+| Type de modification       | Fichiers `.agent/` à mettre à jour         |
+| -------------------------- | ------------------------------------------ |
+| Nouvelle fonctionnalité    | `spec/requirement.md` + nouveau `.feature` |
+| Changement d'architecture  | `spec/design.md`                           |
+| Nouveau terme métier       | `wiki/domain.md`                           |
+| Nouvelle dépendance        | `tech/stack.md`                            |
+| Nouvelle ressource externe | `links/resources.md`                       |
 
 ### 3. Principes du Protocole IA-First (2025)
 
 - **Machine Readability First**: La documentation doit être structurée, sémantiquement dense, sans contexte tacite
 - **Spécifications Gherkin**: Tout comportement doit être décrit en `.feature` (Given/When/Then)
 - **Documentation-as-Code**: La doc est versionnée, revue, et synchronisée avec le code
-- **Trunk-Based Development**: Commits fréquents sur `main`, Feature Flags pour code incomplet
-- **Conventional Commits**: Format `<type>(<scope>): <description>`
+- **Blue-Green Deployment**: `main` = production, `dev` = pre-production
+- **Conventional Commits**: Format `<type>(<scope>): <description>` (sujet tout en minuscules)
 
-### 4. Checklist obligatoire (chaque prompt)
+### 4. TOUJOURS commit et push après chaque modification
+
+Après CHAQUE modification de code ou de documentation, tu DOIS :
+
+1. **Ajouter les fichiers modifiés** : `git add <fichiers>`
+2. **Commiter avec un message valide** : Respecter Conventional Commits
+3. **Pousser sur la branche** : `git push origin <branche>`
+
+#### Format de commit OBLIGATOIRE
+
+```
+<type>(<scope>): <description en minuscules>
+
+[corps optionnel]
+
+Co-Authored-By: Claude <assistant>@anthropic.com <noreply@anthropic.com>
+```
+
+**Types** : `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `ci`, `build`, `perf`
+
+**Scopes** : `client`, `server`, `engine`, `rules`, `board`, `player`, `bot`, `ui`, `auth`, `socket`, `db`, `ci`, `docs`, `deps`
+
+**Règles** :
+
+- Le sujet doit être **entièrement en minuscules** (pas de majuscules)
+- Maximum 72 caractères pour le sujet
+- Pas de point à la fin du sujet
+
+#### Exemples valides
+
+```bash
+feat(rules): add swap position effect
+fix(client): resolve typescript errors in game viewport
+docs(agent): update cicd documentation
+chore(deps): bump prisma to 5.23
+```
+
+### 5. TOUJOURS suivre le GitFlow
+
+#### Architecture des branches
+
+```
+main (production) ← PR depuis dev uniquement (ou hotfix/*)
+  ↑
+dev (pre-production) ← PR depuis feat/*, fix/*, etc.
+  ↑
+feat/*, fix/*, docs/*, refactor/*, test/*, chore/*
+```
+
+#### Règles de workflow
+
+| Action           | Commande                                              |
+| ---------------- | ----------------------------------------------------- |
+| Nouvelle feature | `git checkout dev && git checkout -b feat/ma-feature` |
+| Bug fix          | `git checkout dev && git checkout -b fix/mon-bug`     |
+| Merge vers dev   | Créer une PR sur GitHub                               |
+| Release          | PR de `dev` vers `main`                               |
+| Hotfix urgent    | `git checkout main && git checkout -b hotfix/urgent`  |
+
+**IMPORTANT** :
+
+- JAMAIS push directement sur `main` ou `dev`
+- TOUJOURS créer une branche de travail
+- TOUJOURS passer par une PR pour merger
+
+### 6. Checklist obligatoire (chaque prompt)
 
 - [ ] J'ai lu les fichiers `.agent/` pertinents
 - [ ] Mon code respecte `tech/stack.md` (versions exactes)
 - [ ] Mon nommage respecte `wiki/domain.md` (Ubiquitous Language)
 - [ ] J'ai mis à jour `.agent/` si j'ai modifié le comportement
 - [ ] J'ai ajouté/modifié le `.feature` correspondant si applicable
+- [ ] J'ai fait `git add`, `git commit` et `git push` après mes modifications
 
 ---
 
@@ -139,6 +206,7 @@ cd server && npx prisma generate  # Regenerate Prisma client
 ## Additional Documentation
 
 The `.agent/` directory contains AI-optimized documentation:
+
 - `AGENT.md` - Global directives and rules
 - `spec/requirement.md` - Functional requirements
 - `spec/design.md` - System architecture diagrams
