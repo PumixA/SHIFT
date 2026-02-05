@@ -1,7 +1,7 @@
 # CI/CD Pipeline - SHIFT
 
-> Version: 1.0.0
-> Dernière mise à jour: 2026-02-04
+> Version: 1.1.0
+> Dernière mise à jour: 2026-02-05
 
 ## Vue d'ensemble
 
@@ -180,11 +180,14 @@ npm install
 
 Configuration automatique des mises à jour :
 
+- **Branche cible** : `dev` (pas main)
 - Client: hebdomadaire (lundi 9h)
 - Server: hebdomadaire (lundi 9h)
 - GitHub Actions: hebdomadaire
 
 Les PR sont groupées par catégorie (radix-ui, prisma, etc.).
+
+Les mises à jour passent d'abord par `dev` pour être testées avant d'atteindre `main`.
 
 ## Protection des branches (GitHub Settings)
 
