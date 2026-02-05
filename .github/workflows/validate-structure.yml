@@ -25,6 +25,12 @@ jobs:
           BRANCH_NAME="${GITHUB_REF#refs/heads/}"
           echo "Branch name: $BRANCH_NAME"
 
+          # Allow Dependabot branches
+          if [[ "$BRANCH_NAME" =~ ^dependabot/ ]]; then
+            echo "Dependabot branch detected, skipping validation"
+            exit 0
+          fi
+
           # Pattern for valid branch names
           VALID_PATTERN="^(feat|fix|docs|refactor|test|chore|hotfix)\/[a-z0-9._-]+$"
 
@@ -190,6 +196,17 @@ jobs:
           TARGET_BRANCH="${{ github.base_ref }}"
 
           echo "Source: $SOURCE_BRANCH -> Target: $TARGET_BRANCH"
+
+          # Allow Dependabot branches to target dev
+          if [[ "$SOURCE_BRANCH" =~ ^dependabot/ ]]; then
+            if [[ "$TARGET_BRANCH" == "dev" ]]; then
+              echo "Dependabot PR targeting dev, allowed"
+              exit 0
+            else
+              echo "::error::Dependabot PRs must target 'dev', not '$TARGET_BRANCH'"
+              exit 1
+            fi
+          fi
 
           # Extract branch type
           BRANCH_TYPE=$(echo "$SOURCE_BRANCH" | cut -d'/' -f1)

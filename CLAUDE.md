@@ -36,13 +36,19 @@ Chaque modification de code DOIT déclencher une mise à jour de la documentatio
 - **Blue-Green Deployment**: `main` = production, `dev` = pre-production
 - **Conventional Commits**: Format `<type>(<scope>): <description>` (sujet tout en minuscules)
 
-### 4. TOUJOURS commit et push après chaque modification
+### 4. Workflow Git avec validation utilisateur
 
-Après CHAQUE modification de code ou de documentation, tu DOIS :
+#### Actions AUTOMATIQUES (pas de permission requise)
 
-1. **Ajouter les fichiers modifiés** : `git add <fichiers>`
-2. **Commiter avec un message valide** : Respecter Conventional Commits
-3. **Pousser sur la branche** : `git push origin <branche>`
+- `git add <fichiers>` - Ajouter les fichiers modifiés
+- `git commit` - Commiter avec un message Conventional Commits
+
+#### Actions AVEC PERMISSION (demander avant d'exécuter)
+
+- **Changement de branche** : TOUJOURS demander avant `git checkout` ou `git checkout -b`
+- **Push** : TOUJOURS demander avant `git push`
+
+> **IMPORTANT** : Ne jamais enchaîner checkout/push sans interruption. Attendre la validation utilisateur entre chaque étape sensible.
 
 #### Format de commit OBLIGATOIRE
 
@@ -108,7 +114,8 @@ feat/*, fix/*, docs/*, refactor/*, test/*, chore/*
 - [ ] Mon nommage respecte `wiki/domain.md` (Ubiquitous Language)
 - [ ] J'ai mis à jour `.agent/` si j'ai modifié le comportement
 - [ ] J'ai ajouté/modifié le `.feature` correspondant si applicable
-- [ ] J'ai fait `git add`, `git commit` et `git push` après mes modifications
+- [ ] J'ai fait `git add` et `git commit` après mes modifications
+- [ ] J'ai demandé permission avant `git checkout` et `git push`
 
 ---
 
