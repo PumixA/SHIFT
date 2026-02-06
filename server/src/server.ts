@@ -174,7 +174,20 @@ io.on("connection", (socket) => {
 
   socket.on("get_user_profile", async (data: { userId: string }) => {
     const user = await userService.getUserById(data.userId)
-    const stats = await gameHistoryService.getStats(data.userId)
+    const rawStats = await gameHistoryService.getStats(data.userId)
+    const streak = await gameHistoryService.getWinStreak(data.userId)
+
+    // Transform stats to match client expected format
+    const stats = {
+      gamesPlayed: rawStats.totalGames,
+      gamesWon: rawStats.wins,
+      totalScore: rawStats.averageScore * rawStats.totalGames, // Approximate total
+      winRate: rawStats.winRate,
+      avgScore: rawStats.averageScore,
+      currentStreak: streak.current,
+      bestStreak: streak.best,
+    }
+
     socket.emit("user_profile", { user, stats })
   })
 
