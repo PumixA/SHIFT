@@ -4,6 +4,13 @@ import { useCallback, useState } from "react"
 import { socket } from "@/services/socket"
 import { toast } from "sonner"
 import type { Tile, TileDirection } from "./useGameState"
+
+const OPPOSITE_DIRECTION: Record<TileDirection, TileDirection> = {
+    up: "down",
+    down: "up",
+    left: "right",
+    right: "left",
+}
 import type { TurnPhase } from "./useTurnManagement"
 import type { GameAction } from "@/components/game/action-history"
 
@@ -91,17 +98,35 @@ export function useTileManagement({
                 return
             }
 
+            // New tile gets the opposite direction (link back to source)
+            const oppositeDir = OPPOSITE_DIRECTION[direction]
+            const newDirections: TileDirection[] =
+                direction === "right" || direction === "left" ? [oppositeDir] : [oppositeDir, "right"]
+
             const newTile: Tile = {
                 id: `tile-${Date.now()}`,
                 x: newX,
                 y: newY,
                 type: "normal",
-                connections: [tiles.find((t) => t.x === baseTile.x && t.y === baseTile.y)?.id || ""],
-                directions: ["right"],
+                connections: [],
+                directions: newDirections,
             }
 
             if (isLocalMode) {
-                setTiles((prev) => [...prev, newTile])
+                const baseTileId = tiles.find((t) => t.x === baseTile.x && t.y === baseTile.y)?.id
+                setTiles((prev) => {
+                    const withNewTile = [...prev, newTile]
+                    // Add the direction to the source tile so it connects to the new tile
+                    if (baseTileId) {
+                        return withNewTile.map((t) => {
+                            if (t.id === baseTileId && !t.directions.includes(direction)) {
+                                return { ...t, directions: [...t.directions, direction] }
+                            }
+                            return t
+                        })
+                    }
+                    return withNewTile
+                })
                 toast.success("Case ajoutée !")
                 markModificationDone()
 
@@ -154,7 +179,26 @@ export function useTileManagement({
 
             if (isLocalMode) {
                 const removedTile = tiles.find((t) => t.id === tileId)
-                setTiles((prev) => prev.filter((t) => t.id !== tileId))
+                setTiles((prev) => {
+                    const without = prev.filter((t) => t.id !== tileId)
+                    if (!removedTile) return without
+                    // Remove directions pointing toward the removed tile from neighbors
+                    return without.map((t) => {
+                        const dx = removedTile.x - t.x
+                        const dy = removedTile.y - t.y
+                        let dirToRemoved: TileDirection | null = null
+                        if (dx === 1 && dy === 0) dirToRemoved = "right"
+                        else if (dx === -1 && dy === 0) dirToRemoved = "left"
+                        else if (dx === 0 && dy === 1) dirToRemoved = "down"
+                        else if (dx === 0 && dy === -1) dirToRemoved = "up"
+                        if (dirToRemoved && t.directions.includes(dirToRemoved)) {
+                            const newDirs = t.directions.filter((d) => d !== dirToRemoved)
+                            // Keep at least one direction if possible
+                            return { ...t, directions: newDirs.length > 0 ? newDirs : t.directions }
+                        }
+                        return t
+                    })
+                })
                 toast.success("Case supprimée")
                 markModificationDone()
 
