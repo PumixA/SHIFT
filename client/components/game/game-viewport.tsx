@@ -300,9 +300,11 @@ export const GameViewport = forwardRef<GameViewportRef, GameViewportProps>(
                                                 }}
                                                 rules={tileRules}
                                                 showExpandButtons={
-                                                    canModifyTiles &&
-                                                    selectedTileForExpand?.x === tile.x &&
-                                                    selectedTileForExpand?.y === tile.y
+                                                    !!(
+                                                        canModifyTiles &&
+                                                        selectedTileForExpand?.x === tile.x &&
+                                                        selectedTileForExpand?.y === tile.y
+                                                    )
                                                 }
                                                 availableDirections={availableDirections}
                                                 onAddTile={(dir) => handleAddTileFromTile(tile, dir)}
