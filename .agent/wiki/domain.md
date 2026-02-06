@@ -34,7 +34,10 @@ type TileDirection = "up" | "down" | "left" | "right"
 
 - Une case peut avoir 1 à 4 directions simultanément
 - La direction par défaut est `["right"]`
+- Les connexions sont **unidirectionnelles** : une direction sur une case crée une sortie uniquement depuis cette case
 - Modifier les directions consomme 1 modification par tour
+- À l'ajout d'une case, la case source et la nouvelle case reçoivent automatiquement les directions réciproques
+- À la suppression d'une case, les directions voisines pointant vers elle sont nettoyées
 
 ### Player (Joueur)
 
