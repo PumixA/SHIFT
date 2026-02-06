@@ -1,7 +1,7 @@
 # Exigences Fonctionnelles - SHIFT
 
-> Version: 1.0.1
-> Dernière mise à jour: 2026-02-05
+> Version: 1.1.0
+> Dernière mise à jour: 2026-02-06
 
 ## Vision Produit
 
@@ -137,14 +137,46 @@ SHIFT est un jeu de plateau stratégique où les règles évoluent dynamiquement
 - Avatar personnalisable
 - Nom d'utilisateur unique
 - Préférences de jeu
+- Date d'inscription ("Membre depuis")
 
 #### F5.2: Statistiques
 
 - Nombre de parties jouées
 - Victoires / Défaites
 - Score total cumulé
-- Temps de jeu total
 - Taux de victoire
+- Score moyen par partie
+- Série de victoires (actuelle et meilleure)
+
+### F7: Authentification
+
+#### F7.1: Inscription
+
+- Création de compte avec email/mot de passe
+- Validation du nom d'utilisateur (3-20 caractères, unique)
+- Validation du mot de passe (minimum 6 caractères)
+- Vérification unicité de l'email
+
+#### F7.2: Connexion
+
+- Connexion par email/mot de passe
+- Stockage du userId en localStorage
+- Session persistante jusqu'à déconnexion
+
+#### F7.3: Réinitialisation de Mot de Passe
+
+- Demande de réinitialisation par email
+- Génération de token sécurisé (32 bytes)
+- Expiration du token après 1 heure
+- Page de réinitialisation avec validation du token
+- Email de réinitialisation avec template HTML
+
+#### F7.4: Services Backend
+
+- `AuthService`: gestion register/login/reset password
+- `EmailService`: envoi d'emails via nodemailer
+- Hachage bcrypt avec 10 rounds de salage
+- Modèle `PasswordReset` en base de données
 
 ## Exigences Non Fonctionnelles
 

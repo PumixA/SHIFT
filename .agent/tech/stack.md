@@ -1,7 +1,7 @@
 # Stack Technique - SHIFT
 
-> Version: 1.1.1
-> Dernière mise à jour: 2026-02-05
+> Version: 1.2.0
+> Dernière mise à jour: 2026-02-06
 
 Ce document liste les versions EXACTES des dépendances. Les agents IA DOIVENT utiliser ces versions pour éviter les API dépréciées ou inexistantes.
 
@@ -128,6 +128,13 @@ Ce document liste les versions EXACTES des dépendances. Les agents IA DOIVENT u
 | --------- | ------- | ----------------- |
 | socket.io | ^4.8.3  | Serveur WebSocket |
 
+### Authentification
+
+| Package    | Version | Notes                           |
+| ---------- | ------- | ------------------------------- |
+| bcryptjs   | ^2.4.3  | Hachage de mots de passe        |
+| nodemailer | ^6.10.1 | Envoi d'emails (reset password) |
+
 ### Configuration
 
 | Package | Version | Notes                     |
@@ -218,6 +225,14 @@ services:
 DATABASE_URL="postgresql://shift_user:shift_password@localhost:5432/shift_game"
 PORT=3001
 NODE_ENV=development
+
+# Email (optionnel - sans config, les liens s'affichent en console)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASS=your-app-password
+EMAIL_FROM=SHIFT Game <noreply@shift-game.com>
+APP_URL=http://localhost:3000
 ```
 
 ```bash

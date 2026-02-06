@@ -68,11 +68,12 @@ Quelle tâche dois-je accomplir?
 
 ## Fichiers Gherkin Disponibles
 
-| Fichier                                                      | Domaine            | Scénarios               |
-| ------------------------------------------------------------ | ------------------ | ----------------------- |
-| [game-core.feature](./spec/features/game-core.feature)       | Mécanique de jeu   | Dé, mouvement, victoire |
-| [rules-system.feature](./spec/features/rules-system.feature) | Règles dynamiques  | CRUD, triggers, effets  |
-| [social.feature](./spec/features/social.feature)             | Social/Multiplayer | Amis, invitations, chat |
+| Fichier                                                      | Domaine            | Scénarios                     |
+| ------------------------------------------------------------ | ------------------ | ----------------------------- |
+| [game-core.feature](./spec/features/game-core.feature)       | Mécanique de jeu   | Dé, mouvement, victoire       |
+| [rules-system.feature](./spec/features/rules-system.feature) | Règles dynamiques  | CRUD, triggers, effets        |
+| [social.feature](./spec/features/social.feature)             | Social/Multiplayer | Amis, invitations, chat       |
+| [auth.feature](./spec/features/auth.feature)                 | Authentification   | Register, login, reset passwd |
 
 ---
 

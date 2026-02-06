@@ -1,7 +1,7 @@
 # Glossaire du Domaine - SHIFT
 
-> Version: 1.0.1
-> Dernière mise à jour: 2026-02-05
+> Version: 1.1.0
+> Dernière mise à jour: 2026-02-06
 > Langue: Français (termes techniques en anglais)
 
 Ce glossaire définit le langage ubiquitaire (Ubiquitous Language) du projet SHIFT. Tous les agents IA et développeurs DOIVENT utiliser ces termes exactement comme définis.
@@ -272,6 +272,42 @@ Demande de rejoindre une partie.
 - `senderId: string` - Expéditeur
 - `receiverId: string` - Destinataire
 - `status: InvitationStatus` - État
+
+---
+
+## Authentification
+
+### AuthService
+
+Service backend gérant l'authentification des utilisateurs.
+
+- Emplacement: `server/src/services/AuthService.ts`
+- Méthodes: `register()`, `login()`, `forgotPassword()`, `resetPassword()`, `validateResetToken()`, `changePassword()`
+
+### EmailService
+
+Service backend pour l'envoi d'emails.
+
+- Emplacement: `server/src/services/EmailService.ts`
+- Méthodes: `sendPasswordResetEmail()`, `sendWelcomeEmail()`
+- Transport: nodemailer avec SMTP
+
+### PasswordReset (Token de Réinitialisation)
+
+Entité stockant les demandes de réinitialisation de mot de passe.
+
+- `id: string` - Identifiant unique
+- `userId: string` - Utilisateur concerné
+- `token: string` - Token sécurisé (32 bytes hex)
+- `expiresAt: Date` - Date d'expiration (1 heure)
+- `used: boolean` - Déjà utilisé ou non
+
+### AuthModal
+
+Composant modal pour l'authentification côté client.
+
+- Emplacement: `client/components/auth/auth-modal.tsx`
+- Onglets: Login, Register, Forgot Password
 
 ---
 
