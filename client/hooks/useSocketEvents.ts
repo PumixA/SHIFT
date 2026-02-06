@@ -4,12 +4,19 @@ import { useEffect, useState, useCallback } from "react"
 import { socket } from "@/services/socket"
 import { toast } from "sonner"
 import { Rule } from "@/src/types/rules"
-import type { Player, ServerPlayer, GameStatus, Tile } from "./useGameState"
+import type { Player, ServerPlayer, GameStatus, Tile, TileDirection } from "./useGameState"
 import type { TurnPhase } from "./useTurnManagement"
 
 interface ServerGameState {
     roomId: string
-    tiles: { id: string; type: string; index: number; position?: { x: number; y: number }; connections?: string[] }[]
+    tiles: {
+        id: string
+        type: string
+        index: number
+        position?: { x: number; y: number }
+        connections?: string[]
+        directions?: string[]
+    }[]
     players: ServerPlayer[]
     currentTurn: string
     status: "waiting" | "playing" | "finished"
@@ -156,6 +163,7 @@ export function useSocketEvents({
                         y: t.position?.y ?? 0,
                         type: t.type as "normal" | "special" | "start" | "end",
                         connections: t.connections || [],
+                        directions: (t.directions as TileDirection[]) || ["right"],
                     }))
                 )
             }
