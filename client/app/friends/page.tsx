@@ -47,16 +47,18 @@ import { PageHeader, GameCard } from "@/components/ui/design-system"
 
 interface Friend {
     id: string
-    username: string
-    avatarPreset?: string
+    friendId: string
+    friendUsername: string
+    friendAvatarPreset?: string | null
     isOnline: boolean
     currentGame?: string // roomId si en partie
 }
 
 interface FriendRequest {
     id: string
-    username: string
-    avatarPreset?: string
+    friendId: string
+    friendUsername: string
+    friendAvatarPreset?: string | null
     createdAt: string
 }
 
@@ -96,10 +98,14 @@ function FriendCard({
                         <div className="relative">
                             <Avatar className="h-12 w-12 border-2 border-white/10">
                                 <AvatarImage
-                                    src={friend.avatarPreset ? `/avatars/${friend.avatarPreset}.png` : undefined}
+                                    src={
+                                        friend.friendAvatarPreset
+                                            ? `/avatars/${friend.friendAvatarPreset}.png`
+                                            : undefined
+                                    }
                                 />
                                 <AvatarFallback className="bg-gradient-to-br from-cyan-500 to-violet-500 font-bold text-white">
-                                    {friend.username.charAt(0).toUpperCase()}
+                                    {friend.friendUsername.charAt(0).toUpperCase()}
                                 </AvatarFallback>
                             </Avatar>
                             <span
@@ -114,7 +120,7 @@ function FriendCard({
                         </div>
 
                         <div className="min-w-0 flex-1">
-                            <p className="truncate font-bold text-white">{friend.username}</p>
+                            <p className="truncate font-bold text-white">{friend.friendUsername}</p>
                             <p className="text-muted-foreground text-sm">
                                 {friend.currentGame ? (
                                     <span className="flex items-center gap-1 text-orange-400">
@@ -177,7 +183,7 @@ function FriendCard({
             <AlertDialog open={confirmRemove} onOpenChange={setConfirmRemove}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Retirer {friend.username} ?</AlertDialogTitle>
+                        <AlertDialogTitle>Retirer {friend.friendUsername} ?</AlertDialogTitle>
                         <AlertDialogDescription>
                             Cette personne sera retirée de votre liste d'amis. Vous pourrez l'ajouter à nouveau plus
                             tard.
@@ -212,14 +218,16 @@ function RequestCard({
             <GameCard>
                 <div className="flex items-center gap-4">
                     <Avatar className="h-12 w-12">
-                        <AvatarImage src={request.avatarPreset ? `/avatars/${request.avatarPreset}.png` : undefined} />
+                        <AvatarImage
+                            src={request.friendAvatarPreset ? `/avatars/${request.friendAvatarPreset}.png` : undefined}
+                        />
                         <AvatarFallback className="bg-gradient-to-br from-violet-500 to-purple-500 font-bold text-white">
-                            {request.username.charAt(0).toUpperCase()}
+                            {request.friendUsername.charAt(0).toUpperCase()}
                         </AvatarFallback>
                     </Avatar>
 
                     <div className="flex-1">
-                        <p className="font-bold text-white">{request.username}</p>
+                        <p className="font-bold text-white">{request.friendUsername}</p>
                         <p className="text-muted-foreground text-sm">
                             {new Date(request.createdAt).toLocaleDateString("fr-FR", {
                                 day: "numeric",
@@ -366,7 +374,7 @@ export default function FriendsPage() {
         }
     }
 
-    const filteredFriends = friends.filter((f) => f.username.toLowerCase().includes(searchQuery.toLowerCase()))
+    const filteredFriends = friends.filter((f) => f.friendUsername.toLowerCase().includes(searchQuery.toLowerCase()))
 
     const onlineFriends = filteredFriends.filter((f) => f.isOnline)
     const offlineFriends = filteredFriends.filter((f) => !f.isOnline)
@@ -527,11 +535,11 @@ export default function FriendsPage() {
                                         >
                                             {onlineFriends.map((friend) => (
                                                 <FriendCard
-                                                    key={friend.id}
+                                                    key={friend.friendId}
                                                     friend={friend}
-                                                    onInvite={() => inviteToGame(friend.id)}
+                                                    onInvite={() => inviteToGame(friend.friendId)}
                                                     onMessage={() => toast.info("Messagerie bientôt disponible")}
-                                                    onRemove={() => removeFriend(friend.id)}
+                                                    onRemove={() => removeFriend(friend.friendId)}
                                                 />
                                             ))}
                                         </motion.div>
@@ -553,11 +561,11 @@ export default function FriendsPage() {
                                         >
                                             {offlineFriends.map((friend) => (
                                                 <FriendCard
-                                                    key={friend.id}
+                                                    key={friend.friendId}
                                                     friend={friend}
-                                                    onInvite={() => inviteToGame(friend.id)}
+                                                    onInvite={() => inviteToGame(friend.friendId)}
                                                     onMessage={() => toast.info("Messagerie bientôt disponible")}
-                                                    onRemove={() => removeFriend(friend.id)}
+                                                    onRemove={() => removeFriend(friend.friendId)}
                                                 />
                                             ))}
                                         </motion.div>
@@ -582,8 +590,8 @@ export default function FriendsPage() {
                                         key={request.id}
                                         request={request}
                                         type="pending"
-                                        onAccept={() => acceptRequest(request.id)}
-                                        onDecline={() => declineRequest(request.id)}
+                                        onAccept={() => acceptRequest(request.friendId)}
+                                        onDecline={() => declineRequest(request.friendId)}
                                     />
                                 ))}
                             </motion.div>
