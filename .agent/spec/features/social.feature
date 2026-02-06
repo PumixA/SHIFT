@@ -6,13 +6,15 @@ Fonctionnalité: Fonctionnalités sociales
   Afin de créer une communauté et jouer ensemble
 
   @friends @request
-  Scénario: Envoi d'une demande d'ami
+  Scénario: Envoi d'une demande d'ami par ID
     Étant donné je suis connecté en tant que "Alice"
-    Et l'utilisateur "Bob" existe
+    Et l'utilisateur "Bob" existe avec l'ID "bob-123"
     Et "Bob" n'est pas mon ami
-    Quand j'envoie une demande d'ami à "Bob"
+    Quand je copie l'ID de "Bob" depuis la page Amis
+    Et j'envoie une demande d'ami avec l'ID "bob-123"
     Alors "Bob" reçoit une notification de demande d'ami
     Et le statut de la relation est "PENDING"
+    Et la demande apparaît dans l'onglet "Envoyées"
 
   @friends @accept
   Scénario: Acceptation d'une demande d'ami
@@ -29,8 +31,9 @@ Fonctionnalité: Fonctionnalités sociales
     Alors "Alice" n'est pas dans ma liste d'amis
     Et la demande est supprimée
 
-  @friends @block
+  @friends @block @not-implemented
   Scénario: Blocage d'un utilisateur
+    # Non implémenté - prévu pour version future
     Étant donné "Alice" est mon amie
     Quand je bloque "Alice"
     Alors "Alice" n'apparaît plus dans ma liste d'amis
@@ -61,15 +64,17 @@ Fonctionnalité: Fonctionnalités sociales
     Alors je ne rejoins pas la partie
     Et "Alice" est notifiée de mon refus
 
-  @chat @message
+  @chat @message @not-implemented
   Scénario: Envoi de message en jeu
+    # Non implémenté - prévu pour version future
     Étant donné je suis dans une partie avec "Bob"
     Quand j'envoie le message "Bien joué!"
     Alors "Bob" voit mon message dans le chat
     Et le message affiche mon nom et l'heure
 
-  @chat @emoji
+  @chat @emoji @not-implemented
   Scénario: Envoi de réaction emoji
+    # Non implémenté - prévu pour version future
     Étant donné je suis dans une partie avec "Bob"
     Quand j'envoie l'emoji "👍"
     Alors "Bob" voit ma réaction emoji
@@ -99,8 +104,27 @@ Fonctionnalité: Fonctionnalités sociales
 
   @profile @stats
   Scénario: Consultation des statistiques
+    Étant donné je suis connecté
     Quand je consulte mon profil
     Alors je vois mon nombre de parties jouées
     Et je vois mon nombre de victoires
     Et je vois mon score total
-    Et je vois mon temps de jeu total
+    Et je vois mon taux de victoire
+    Et je vois mon score moyen
+    Et je vois ma série de victoires actuelle et meilleure
+
+  @friends @auth
+  Scénario: Redirection si non connecté sur page Amis
+    Étant donné je ne suis pas connecté
+    Quand j'accède à la page Amis
+    Alors je suis redirigé vers la page Profil
+    Et je vois le formulaire de connexion
+
+  @friends @remove
+  Scénario: Retrait d'un ami
+    Étant donné je suis connecté
+    Et "Alice" est mon amie
+    Quand je clique sur le bouton retirer pour "Alice"
+    Et je confirme le retrait
+    Alors "Alice" n'apparaît plus dans ma liste d'amis
+    Et un message de confirmation s'affiche
