@@ -56,7 +56,7 @@ SHIFT est un jeu de plateau stratégique où les règles évoluent dynamiquement
 
 - Chaque case possède une propriété `directions` (1 à 4 directions simultanées)
 - Direction par défaut: `["right"]`
-- Une direction crée une connexion bidirectionnelle avec la case adjacente
+- Une direction définit une sortie possible (unidirectionnelle) vers la case adjacente
 - Le joueur peut modifier les directions d'une case pendant la phase MODIFY
 - Changer les directions consomme 1 modification par tour (atomique)
 - L'éditeur de directions est accessible via le modal de détails de case

@@ -45,7 +45,8 @@ function directionOffset(dir: TileDirection): { dx: number; dy: number } {
 
 /**
  * Construit un graphe de connexions à partir des cases et de leurs directions.
- * Une direction crée une connexion bidirectionnelle avec la case adjacente.
+ * Les directions définissent les sorties possibles d'une case (unidirectionnel).
+ * Si une case a directions: ["right"], on ne peut quitter cette case que vers la droite.
  */
 export function buildTileGraph(tiles: TileNode[]): Map<string, TileNode> {
     const graph = new Map<string, TileNode>()
@@ -61,19 +62,14 @@ export function buildTileGraph(tiles: TileNode[]): Map<string, TileNode> {
         tile.connections = []
     })
 
+    // Each tile's connections = neighbors reachable via its own directions
     tiles.forEach((tile) => {
         if (tile.directions && tile.directions.length > 0) {
             for (const dir of tile.directions) {
                 const { dx, dy } = directionOffset(dir)
                 const neighbor = coordMap.get(`${tile.x + dx},${tile.y + dy}`)
-                if (neighbor) {
-                    // Bidirectional: add connection on both sides
-                    if (!tile.connections.includes(neighbor.id)) {
-                        tile.connections.push(neighbor.id)
-                    }
-                    if (!neighbor.connections.includes(tile.id)) {
-                        neighbor.connections.push(tile.id)
-                    }
+                if (neighbor && !tile.connections.includes(neighbor.id)) {
+                    tile.connections.push(neighbor.id)
                 }
             }
         }

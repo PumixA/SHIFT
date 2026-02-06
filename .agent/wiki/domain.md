@@ -26,7 +26,7 @@ Unité de position sur le **Board**. Identifiée par son index (1-based).
 
 ### TileDirection (Direction de Case)
 
-Direction de connexion d'une case vers une case adjacente. Crée un lien bidirectionnel.
+Direction de sortie d'une case. Définit vers quelle case adjacente le joueur peut se déplacer.
 
 ```typescript
 type TileDirection = "up" | "down" | "left" | "right"
