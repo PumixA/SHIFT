@@ -269,10 +269,15 @@ export function ActionHistory({
     const turnGroups = groupByTurn(filteredActions)
     const sortedTurns = Array.from(turnGroups.keys()).sort((a, b) => b - a)
 
+    // Count rule-related actions (added, modified, deleted)
+    const ruleActionsCount = actions.filter((a) =>
+        ["rule_added", "rule_modified", "rule_deleted", "rule_triggered"].includes(a.type)
+    ).length
+
     return (
-        <div className="flex h-full flex-col">
-            {/* Header */}
-            <div className="border-b border-white/10 p-4">
+        <div className="flex h-full flex-col overflow-hidden">
+            {/* Header - Fixed */}
+            <div className="shrink-0 border-b border-white/10 p-4">
                 <div className="mb-3 flex items-center justify-between">
                     <h3 className="flex items-center gap-2 font-semibold">
                         <Clock className="h-4 w-4 text-cyan-400" />
@@ -316,8 +321,8 @@ export function ActionHistory({
                 </div>
             </div>
 
-            {/* Content */}
-            <ScrollArea className="flex-1" ref={scrollRef}>
+            {/* Content - Scrollable */}
+            <ScrollArea className="min-h-0 flex-1" ref={scrollRef}>
                 {actions.length === 0 ? (
                     <div className="p-8 text-center">
                         <Clock className="text-muted-foreground/30 mx-auto mb-4 h-12 w-12" />
@@ -484,16 +489,14 @@ export function ActionHistory({
                 )}
             </ScrollArea>
 
-            {/* Summary Footer */}
-            {actions.length > 0 && (
-                <div className="border-t border-white/10 bg-white/5 p-3">
-                    <div className="text-muted-foreground flex justify-between text-xs">
-                        <span>Tours: {sortedTurns.length}</span>
-                        <span>Règles: {actions.filter((a) => a.type === "rule_triggered").length}</span>
-                        <span>Dés: {actions.filter((a) => a.type === "dice_roll").length}</span>
-                    </div>
+            {/* Summary Footer - Fixed */}
+            <div className="shrink-0 border-t border-white/10 bg-slate-900/95 p-3">
+                <div className="text-muted-foreground flex justify-between text-xs">
+                    <span>Tours: {sortedTurns.length}</span>
+                    <span>Règles: {ruleActionsCount}</span>
+                    <span>Dés: {actions.filter((a) => a.type === "dice_roll").length}</span>
                 </div>
-            )}
+            </div>
         </div>
     )
 }
