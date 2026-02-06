@@ -82,6 +82,7 @@ const ActionHistory = dynamic(() => import("./game/action-history").then((m) => 
 import { useTutorial } from "./game/interactive-tutorial"
 import { useTutorialPreferences } from "@/hooks/use-tutorial-preferences"
 import { buildTileGraph, calculatePossiblePaths, type PathOption, type TileNode } from "@/lib/path-utils"
+import { useAudio } from "@/contexts/AudioContext"
 
 // Hooks
 import {
@@ -343,6 +344,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
         completeTutorial,
     } = useTutorial()
     const tutorialPrefs = useTutorialPreferences()
+    const { playDiceRoll, playGameAction, play } = useAudio()
     const [welcomeModalOpen, setWelcomeModalOpen] = useState(false)
     const { triggerAnimation } = useRuleAnimations()
 
@@ -393,6 +395,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
             const finalTileIndex = tiles.findIndex((t) => t.id === finalTile.id)
 
             if (finalTileIndex >= tiles.length - 1) {
+                play("victory")
                 setWinner({ id: String(player.id), name: player.name, color: player.color })
                 setGameStatus("finished")
                 return
@@ -401,7 +404,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
             setTurnPhase("MODIFY")
             toast.info(`${player.name} avance de ${diceVal} cases`, { icon: "🎲" })
         },
-        [localTurnIndex, tiles, setPlayers, setWinner, setGameStatus, setTurnPhase]
+        [localTurnIndex, tiles, setPlayers, setWinner, setGameStatus, setTurnPhase, play]
     )
 
     const handlePathSelected = useCallback(
@@ -423,6 +426,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
             const player = players[localTurnIndex]
             if (!player) return
 
+            playDiceRoll()
             setIsRolling(true)
             let rolls = 0
             const finalValue = Math.floor(Math.random() * 6) + 1
@@ -497,6 +501,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
         setDiceValue,
         setPlayers,
         setTurnPhase,
+        playDiceRoll,
     ])
 
     // ===========================================
@@ -831,6 +836,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
         }
 
         const onDiceResult = (data: { diceValue: number; players: any[]; currentTurn: string }) => {
+            playDiceRoll()
             setIsRolling(true)
             let rolls = 0
             const interval = setInterval(() => {
@@ -850,6 +856,8 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
 
         const onGameOver = (data: { winnerId: string; winnerName: string }) => {
             const winningPlayer = players.find((p) => String(p.id) === data.winnerId)
+            const isMe = data.winnerId === socket.id
+            play(isMe ? "victory" : "defeat")
             setWinner({ id: data.winnerId, name: data.winnerName, color: winningPlayer?.color })
             setGameStatus("finished")
         }
@@ -925,6 +933,8 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
         setCoreRules,
         setTiles,
         setWinner,
+        playDiceRoll,
+        play,
     ])
 
     // ===========================================
