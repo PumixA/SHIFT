@@ -261,6 +261,30 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
     } = turnManagement
 
     // ===========================================
+    // LOCAL ACTION TRACKING
+    // ===========================================
+    const addLocalAction = useCallback(
+        (action: Omit<GameAction, "id" | "timestamp">) => {
+            if (!isLocalMode) return
+
+            const newAction: GameAction = {
+                ...action,
+                id: `local-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+                timestamp: new Date().toISOString(),
+            }
+            setLocalActions((prev) => {
+                const updated = [...prev, newAction]
+                // Keep only last 100 actions
+                return updated.slice(-100)
+            })
+        },
+        [isLocalMode]
+    )
+
+    // Current player for action tracking
+    const currentPlayerForTracking = players[localTurnIndex]
+
+    // ===========================================
     // HOOKS - Rule Management
     // ===========================================
     const ruleManagement = useRuleManagement({
@@ -271,6 +295,9 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
         rules,
         setRules,
         markModificationDone,
+        onLocalAction: addLocalAction,
+        currentPlayer: currentPlayerForTracking,
+        turnNumber: localTurnNumberRef.current,
     })
 
     const {
@@ -300,6 +327,9 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
         tiles,
         setTiles,
         markModificationDone,
+        onLocalAction: addLocalAction,
+        currentPlayer: currentPlayerForTracking,
+        turnNumber: localTurnNumberRef.current,
     })
 
     const {
@@ -388,27 +418,6 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
             return Number(triggerValue) === selectedTileIndex
         })
     }, [allRules, selectedTileIndex])
-
-    // ===========================================
-    // LOCAL ACTION TRACKING
-    // ===========================================
-    const addLocalAction = useCallback(
-        (action: Omit<GameAction, "id" | "timestamp">) => {
-            if (!isLocalMode) return
-
-            const newAction: GameAction = {
-                ...action,
-                id: `local-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-                timestamp: new Date().toISOString(),
-            }
-            setLocalActions((prev) => {
-                const updated = [...prev, newAction]
-                // Keep only last 100 actions
-                return updated.slice(-100)
-            })
-        },
-        [isLocalMode]
-    )
 
     // ===========================================
     // DICE & MOVEMENT
@@ -1377,7 +1386,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
             />
 
             <Sheet open={actionHistoryOpen} onOpenChange={setActionHistoryOpen}>
-                <SheetContent side="left" className="!w-full p-0 sm:!max-w-md">
+                <SheetContent side="left" className="p-0" style={{ width: "100%", maxWidth: "28rem" }}>
                     <SheetTitle className="sr-only">Historique des actions</SheetTitle>
                     <ActionHistory
                         roomId={activeRoom || "local"}
