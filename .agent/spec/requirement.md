@@ -119,8 +119,9 @@ SHIFT est un jeu de plateau stratégique où les règles évoluent dynamiquement
 
 #### F3.5: Sauvegarde et Reprise
 
-- Sauvegarde manuelle uniquement (via le menu en jeu)
-- Reprise de partie sauvegardée
+- Sauvegarde automatique à la création (nouvelles parties uniquement)
+- Sauvegarde manuelle via le menu en jeu (met à jour la sauvegarde existante)
+- Chargement d'une partie ne crée pas de nouvelle sauvegarde
 - Import/Export de sauvegardes (JSON)
 - Historique des parties terminées
 
