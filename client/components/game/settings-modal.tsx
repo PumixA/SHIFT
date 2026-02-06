@@ -42,6 +42,7 @@ import {
 import { GamepadSettings } from "./gamepad-settings"
 import { TutorialHelpMenu } from "./tutorial-help-menu"
 import { GAME_SHORTCUTS } from "@/hooks/useKeyboardShortcuts"
+import { cn } from "@/lib/utils"
 import type { TutorialSection } from "./interactive-tutorial"
 
 interface Player {
@@ -140,67 +141,86 @@ export function SettingsModal({
     return (
         <>
             <Dialog open={open} onOpenChange={onOpenChange}>
-                <DialogContent className="bg-background/95 max-h-[90vh] overflow-y-auto border-white/10 backdrop-blur-xl sm:max-w-[550px]">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2 text-xl font-black">
-                            <Settings className="text-muted-foreground h-5 w-5" />
+                <DialogContent className="max-h-[90vh] overflow-y-auto border-white/[0.08] bg-slate-900/95 backdrop-blur-xl sm:max-w-[560px]">
+                    <DialogHeader className="pb-2">
+                        <DialogTitle className="flex items-center gap-3 text-lg font-semibold tracking-tight">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-slate-700 to-slate-800 shadow-lg">
+                                <Settings className="h-5 w-5 text-white/70" />
+                            </div>
                             Paramètres de la partie
                         </DialogTitle>
                     </DialogHeader>
 
-                    <Tabs defaultValue="game" className="mt-4">
-                        <TabsList className="grid w-full grid-cols-5">
-                            <TabsTrigger value="game" className="text-xs">
-                                <Settings className="mr-1 h-4 w-4" />
+                    <Tabs defaultValue="game" className="mt-2">
+                        <TabsList className="grid h-11 w-full grid-cols-5 rounded-xl bg-white/5 p-1">
+                            <TabsTrigger
+                                value="game"
+                                className="rounded-lg text-xs data-[state=active]:bg-white/10 data-[state=active]:shadow-sm"
+                            >
+                                <Settings className="mr-1.5 h-3.5 w-3.5" />
                                 Partie
                             </TabsTrigger>
-                            <TabsTrigger value="players" className="text-xs">
-                                <Users className="mr-1 h-4 w-4" />
+                            <TabsTrigger
+                                value="players"
+                                className="rounded-lg text-xs data-[state=active]:bg-white/10 data-[state=active]:shadow-sm"
+                            >
+                                <Users className="mr-1.5 h-3.5 w-3.5" />
                                 Joueurs
                             </TabsTrigger>
-                            <TabsTrigger value="gamepad" className="text-xs">
-                                <Gamepad2 className="mr-1 h-4 w-4" />
+                            <TabsTrigger
+                                value="gamepad"
+                                className="rounded-lg text-xs data-[state=active]:bg-white/10 data-[state=active]:shadow-sm"
+                            >
+                                <Gamepad2 className="mr-1.5 h-3.5 w-3.5" />
                                 Manettes
                             </TabsTrigger>
-                            <TabsTrigger value="shortcuts" className="text-xs">
-                                <Keyboard className="mr-1 h-4 w-4" />
+                            <TabsTrigger
+                                value="shortcuts"
+                                className="rounded-lg text-xs data-[state=active]:bg-white/10 data-[state=active]:shadow-sm"
+                            >
+                                <Keyboard className="mr-1.5 h-3.5 w-3.5" />
                                 Touches
                             </TabsTrigger>
-                            <TabsTrigger value="help" className="text-xs">
-                                <HelpCircle className="mr-1 h-4 w-4" />
+                            <TabsTrigger
+                                value="help"
+                                className="rounded-lg text-xs data-[state=active]:bg-white/10 data-[state=active]:shadow-sm"
+                            >
+                                <HelpCircle className="mr-1.5 h-3.5 w-3.5" />
                                 Aide
                             </TabsTrigger>
                         </TabsList>
 
                         {/* Onglet Partie */}
-                        <TabsContent value="game" className="mt-4 space-y-4">
+                        <TabsContent value="game" className="mt-5 space-y-5">
                             {/* Paramètres du créateur */}
                             {isHost ? (
-                                <Card className="border-yellow-500/30 bg-yellow-500/10">
-                                    <CardHeader className="pb-2">
-                                        <CardTitle className="flex items-center gap-2 text-sm">
-                                            <Crown className="h-4 w-4 text-yellow-400" />
-                                            Paramètres de l'hôte
-                                        </CardTitle>
-                                        <CardDescription className="text-xs">
-                                            Ces paramètres affectent tous les joueurs
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent className="space-y-3">
+                                <div className="rounded-2xl border border-amber-500/20 bg-gradient-to-br from-amber-500/10 to-transparent p-4">
+                                    <div className="mb-4 flex items-center gap-3">
+                                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/20">
+                                            <Crown className="h-4 w-4 text-amber-400" />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-sm font-medium text-amber-200">Paramètres de l'hôte</h4>
+                                            <p className="text-xs text-amber-200/60">Affectent tous les joueurs</p>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
                                         {/* Édition de règles */}
                                         {onToggleRuleEdit ? (
-                                            <div className="flex items-center justify-between rounded-lg bg-white/5 p-3">
+                                            <div className="flex items-center justify-between rounded-xl bg-white/5 p-3 transition-colors hover:bg-white/[0.07]">
                                                 <div className="flex items-center gap-3">
-                                                    <Pencil className="h-5 w-5 text-cyan-400" />
+                                                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500/20">
+                                                        <Pencil className="h-4 w-4 text-cyan-400" />
+                                                    </div>
                                                     <div>
                                                         <Label
                                                             htmlFor="rule-edit"
-                                                            className="cursor-pointer font-medium"
+                                                            className="cursor-pointer text-sm font-medium"
                                                         >
                                                             Édition de règles
                                                         </Label>
-                                                        <p className="text-muted-foreground text-xs">
-                                                            Permettre aux joueurs de créer/modifier des règles
+                                                        <p className="text-xs text-white/50">
+                                                            Créer et modifier des règles
                                                         </p>
                                                     </div>
                                                 </div>
@@ -214,18 +234,20 @@ export function SettingsModal({
 
                                         {/* Modification du plateau */}
                                         {onToggleTileEdit ? (
-                                            <div className="flex items-center justify-between rounded-lg bg-white/5 p-3">
+                                            <div className="flex items-center justify-between rounded-xl bg-white/5 p-3 transition-colors hover:bg-white/[0.07]">
                                                 <div className="flex items-center gap-3">
-                                                    <LayoutGrid className="h-5 w-5 text-violet-400" />
+                                                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-500/20">
+                                                        <LayoutGrid className="h-4 w-4 text-violet-400" />
+                                                    </div>
                                                     <div>
                                                         <Label
                                                             htmlFor="tile-edit"
-                                                            className="cursor-pointer font-medium"
+                                                            className="cursor-pointer text-sm font-medium"
                                                         >
                                                             Modification du plateau
                                                         </Label>
-                                                        <p className="text-muted-foreground text-xs">
-                                                            Permettre d'ajouter/supprimer des cases
+                                                        <p className="text-xs text-white/50">
+                                                            Ajouter ou supprimer des cases
                                                         </p>
                                                     </div>
                                                 </div>
@@ -236,68 +258,85 @@ export function SettingsModal({
                                                 />
                                             </div>
                                         ) : null}
-                                    </CardContent>
-                                </Card>
+                                    </div>
+                                </div>
                             ) : null}
 
                             {/* Paramètres audio */}
                             <div className="space-y-3">
-                                <Label className="text-muted-foreground text-sm font-bold tracking-wider uppercase">
-                                    Audio
-                                </Label>
+                                <h4 className="text-xs font-semibold tracking-wider text-white/40 uppercase">Audio</h4>
 
-                                <div className="flex items-center justify-between rounded-lg bg-white/5 p-3">
-                                    <div className="flex items-center gap-3">
-                                        {soundEnabled ? (
-                                            <Volume2 className="text-muted-foreground h-5 w-5" />
-                                        ) : (
-                                            <VolumeX className="text-muted-foreground h-5 w-5" />
-                                        )}
-                                        <Label htmlFor="sound" className="cursor-pointer">
-                                            Effets sonores
-                                        </Label>
-                                    </div>
-                                    <Switch id="sound" checked={soundEnabled} onCheckedChange={setSoundEnabled} />
-                                </div>
-
-                                <div className="flex items-center justify-between rounded-lg bg-white/5 p-3">
-                                    <div className="flex items-center gap-3">
-                                        <Gamepad2 className="text-muted-foreground h-5 w-5" />
-                                        <div>
-                                            <Label htmlFor="vibration" className="cursor-pointer">
-                                                Vibrations
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between rounded-xl bg-white/5 p-3 transition-colors hover:bg-white/[0.07]">
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10">
+                                                {soundEnabled ? (
+                                                    <Volume2 className="h-4 w-4 text-white/70" />
+                                                ) : (
+                                                    <VolumeX className="h-4 w-4 text-white/40" />
+                                                )}
+                                            </div>
+                                            <Label htmlFor="sound" className="cursor-pointer text-sm font-medium">
+                                                Effets sonores
                                             </Label>
-                                            <p className="text-muted-foreground text-xs">Retour haptique manette</p>
                                         </div>
+                                        <Switch id="sound" checked={soundEnabled} onCheckedChange={setSoundEnabled} />
                                     </div>
-                                    <Switch
-                                        id="vibration"
-                                        checked={vibrationEnabled}
-                                        onCheckedChange={setVibrationEnabled}
-                                    />
+
+                                    <div className="flex items-center justify-between rounded-xl bg-white/5 p-3 transition-colors hover:bg-white/[0.07]">
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10">
+                                                <Gamepad2 className="h-4 w-4 text-white/70" />
+                                            </div>
+                                            <div>
+                                                <Label
+                                                    htmlFor="vibration"
+                                                    className="cursor-pointer text-sm font-medium"
+                                                >
+                                                    Vibrations
+                                                </Label>
+                                                <p className="text-xs text-white/50">Retour haptique manette</p>
+                                            </div>
+                                        </div>
+                                        <Switch
+                                            id="vibration"
+                                            checked={vibrationEnabled}
+                                            onCheckedChange={setVibrationEnabled}
+                                        />
+                                    </div>
                                 </div>
                             </div>
 
                             {/* Mode Focus */}
                             {onToggleFocusMode ? (
                                 <div className="space-y-3">
-                                    <Label className="text-muted-foreground text-sm font-bold tracking-wider uppercase">
+                                    <h4 className="text-xs font-semibold tracking-wider text-white/40 uppercase">
                                         Affichage
-                                    </Label>
+                                    </h4>
 
-                                    <div className="flex items-center justify-between rounded-lg bg-white/5 p-3">
+                                    <div className="flex items-center justify-between rounded-xl bg-white/5 p-3 transition-colors hover:bg-white/[0.07]">
                                         <div className="flex items-center gap-3">
-                                            {focusMode ? (
-                                                <Eye className="h-5 w-5 text-cyan-400" />
-                                            ) : (
-                                                <EyeOff className="text-muted-foreground h-5 w-5" />
-                                            )}
+                                            <div
+                                                className={cn(
+                                                    "flex h-8 w-8 items-center justify-center rounded-lg",
+                                                    focusMode ? "bg-cyan-500/20" : "bg-white/10"
+                                                )}
+                                            >
+                                                {focusMode ? (
+                                                    <Eye className="h-4 w-4 text-cyan-400" />
+                                                ) : (
+                                                    <EyeOff className="h-4 w-4 text-white/40" />
+                                                )}
+                                            </div>
                                             <div>
-                                                <Label htmlFor="focus-mode" className="cursor-pointer">
+                                                <Label
+                                                    htmlFor="focus-mode"
+                                                    className="cursor-pointer text-sm font-medium"
+                                                >
                                                     Mode Focus
                                                 </Label>
-                                                <p className="text-muted-foreground text-xs">
-                                                    Masquer les éléments secondaires pour se concentrer sur le plateau
+                                                <p className="text-xs text-white/50">
+                                                    Masquer les éléments secondaires
                                                 </p>
                                             </div>
                                         </div>
@@ -310,21 +349,30 @@ export function SettingsModal({
                                 </div>
                             ) : null}
 
-                            <Separator />
+                            <div className="h-px bg-white/[0.06]" />
 
-                            {/* Sauvegarder */}
-                            {onSaveGame ? (
-                                <Button variant="outline" className="w-full" onClick={onSaveGame}>
-                                    <Save className="mr-2 h-4 w-4" />
-                                    Sauvegarder la partie
+                            {/* Actions */}
+                            <div className="space-y-2">
+                                {onSaveGame ? (
+                                    <Button
+                                        variant="outline"
+                                        className="h-11 w-full justify-start rounded-xl border-white/10 bg-white/5 font-medium hover:bg-white/10"
+                                        onClick={onSaveGame}
+                                    >
+                                        <Save className="mr-3 h-4 w-4 text-cyan-400" />
+                                        Sauvegarder la partie
+                                    </Button>
+                                ) : null}
+
+                                <Button
+                                    variant="ghost"
+                                    className="h-11 w-full justify-start rounded-xl font-medium text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                                    onClick={onLeaveGame}
+                                >
+                                    <LogOut className="mr-3 h-4 w-4" />
+                                    Quitter la partie
                                 </Button>
-                            ) : null}
-
-                            {/* Quitter */}
-                            <Button variant="destructive" className="w-full" onClick={onLeaveGame}>
-                                <LogOut className="mr-2 h-4 w-4" />
-                                Quitter la partie
-                            </Button>
+                            </div>
                         </TabsContent>
 
                         {/* Onglet Joueurs */}

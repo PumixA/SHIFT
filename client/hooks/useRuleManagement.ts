@@ -5,6 +5,7 @@ import { socket } from "@/services/socket"
 import { toast } from "sonner"
 import { Rule, TriggerType } from "@/src/types/rules"
 import type { TurnPhase } from "./useTurnManagement"
+import type { GameAction } from "@/components/game/action-history"
 
 export interface UseRuleManagementProps {
     isLocalMode: boolean
@@ -14,6 +15,9 @@ export interface UseRuleManagementProps {
     rules: Rule[]
     setRules: React.Dispatch<React.SetStateAction<Rule[]>>
     markModificationDone: () => void
+    onLocalAction?: (action: Omit<GameAction, "id" | "timestamp">) => void
+    currentPlayer?: { id: string | number; name: string; color: string }
+    turnNumber?: number
 }
 
 export interface UseRuleManagementReturn {
@@ -45,6 +49,9 @@ export function useRuleManagement({
     rules,
     setRules,
     markModificationDone,
+    onLocalAction,
+    currentPlayer,
+    turnNumber,
 }: UseRuleManagementProps): UseRuleManagementReturn {
     const [ruleBuilderOpen, setRuleBuilderOpen] = useState(false)
     const [editingRule, setEditingRule] = useState<Rule | null>(null)
@@ -59,7 +66,8 @@ export function useRuleManagement({
             }
 
             if (isLocalMode) {
-                if (editingRule) {
+                const isEditing = !!editingRule
+                if (isEditing) {
                     setRules((prev) => prev.map((r) => (r.id === editingRule.id ? rule : r)))
                     toast.success(`Règle "${rule.title}" modifiée !`)
                 } else {
@@ -67,6 +75,21 @@ export function useRuleManagement({
                     toast.success(`Règle "${rule.title}" créée !`)
                 }
                 markModificationDone()
+
+                // Track action
+                if (onLocalAction && currentPlayer) {
+                    onLocalAction({
+                        type: isEditing ? "rule_modified" : "rule_added",
+                        playerId: String(currentPlayer.id),
+                        playerName: currentPlayer.name,
+                        playerColor: currentPlayer.color,
+                        description: isEditing
+                            ? `${currentPlayer.name} modifie la règle "${rule.title}"`
+                            : `${currentPlayer.name} crée la règle "${rule.title}"`,
+                        details: { ruleName: rule.title, ruleId: rule.id },
+                        turnNumber,
+                    })
+                }
             } else if (activeRoom) {
                 socket.emit("create_rule", rule)
             }
@@ -75,7 +98,17 @@ export function useRuleManagement({
             setDraftRule(null)
             setRuleBuilderOpen(false)
         },
-        [canModifyRulesNow, isLocalMode, activeRoom, editingRule, markModificationDone, setRules]
+        [
+            canModifyRulesNow,
+            isLocalMode,
+            activeRoom,
+            editingRule,
+            markModificationDone,
+            setRules,
+            onLocalAction,
+            currentPlayer,
+            turnNumber,
+        ]
     )
 
     const handleDeleteRule = useCallback(
@@ -86,14 +119,38 @@ export function useRuleManagement({
             }
 
             if (isLocalMode) {
+                const deletedRule = rules.find((r) => r.id === ruleId)
                 setRules((prev) => prev.filter((r) => r.id !== ruleId))
                 toast.info("Règle supprimée")
                 markModificationDone()
+
+                // Track action
+                if (onLocalAction && currentPlayer && deletedRule) {
+                    onLocalAction({
+                        type: "rule_deleted",
+                        playerId: String(currentPlayer.id),
+                        playerName: currentPlayer.name,
+                        playerColor: currentPlayer.color,
+                        description: `${currentPlayer.name} supprime la règle "${deletedRule.title}"`,
+                        details: { ruleName: deletedRule.title, ruleId },
+                        turnNumber,
+                    })
+                }
             } else if (activeRoom) {
                 socket.emit("delete_rule", { ruleId })
             }
         },
-        [canModifyRulesNow, isLocalMode, activeRoom, markModificationDone, setRules]
+        [
+            canModifyRulesNow,
+            isLocalMode,
+            activeRoom,
+            markModificationDone,
+            setRules,
+            rules,
+            onLocalAction,
+            currentPlayer,
+            turnNumber,
+        ]
     )
 
     const handleEditRule = useCallback(
@@ -131,8 +188,21 @@ export function useRuleManagement({
             setRules((prev) => [...prev, rule])
             toast.success(`Règle "${rule.title}" ajoutée !`)
             markModificationDone()
+
+            // Track action
+            if (onLocalAction && currentPlayer) {
+                onLocalAction({
+                    type: "rule_added",
+                    playerId: String(currentPlayer.id),
+                    playerName: currentPlayer.name,
+                    playerColor: currentPlayer.color,
+                    description: `${currentPlayer.name} ajoute la règle "${rule.title}" depuis un modèle`,
+                    details: { ruleName: rule.title, ruleId: rule.id },
+                    turnNumber,
+                })
+            }
         },
-        [canModifyRulesNow, turnPhase, markModificationDone, setRules]
+        [canModifyRulesNow, turnPhase, markModificationDone, setRules, onLocalAction, currentPlayer, turnNumber]
     )
 
     const handleStartTileSelection = useCallback((currentData: Partial<Rule>) => {

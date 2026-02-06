@@ -401,35 +401,47 @@ export function InteractiveTutorial({
 
                 {/* Tutorial card */}
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                    initial={{ opacity: 0, scale: 0.95, y: 10 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                    exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
                     className={cn(
-                        "absolute z-10 w-[400px] max-w-[90vw]",
-                        "bg-gradient-to-br from-slate-900 to-slate-800",
-                        "rounded-2xl border border-white/10 shadow-2xl"
+                        "absolute z-10 w-[420px] max-w-[92vw]",
+                        "bg-slate-900/95 backdrop-blur-xl",
+                        "rounded-2xl border border-white/[0.08] shadow-2xl shadow-black/50"
                     )}
                     style={getTooltipPosition()}
                 >
                     {/* Progress bar */}
-                    <div className="px-6 pt-4">
-                        <div className="text-muted-foreground mb-2 flex items-center justify-between text-xs">
-                            {currentSectionMode ? (
-                                <span>
-                                    {TUTORIAL_SECTIONS[currentSectionMode].title} - Étape{" "}
-                                    {currentStep - TUTORIAL_SECTIONS[currentSectionMode].stepRange[0] + 1} /{" "}
-                                    {TUTORIAL_SECTIONS[currentSectionMode].stepRange[1] -
-                                        TUTORIAL_SECTIONS[currentSectionMode].stepRange[0] +
-                                        1}
-                                </span>
-                            ) : (
-                                <span>
-                                    Étape {currentStep + 1} / {TUTORIAL_STEPS.length}
-                                </span>
-                            )}
-                            <span>{Math.round(progress)}%</span>
+                    <div className="px-6 pt-5">
+                        <div className="mb-3 flex items-center justify-between">
+                            <span className="text-xs font-medium text-white/60">
+                                {currentSectionMode ? (
+                                    <>
+                                        {TUTORIAL_SECTIONS[currentSectionMode].title} ·{" "}
+                                        {currentStep - TUTORIAL_SECTIONS[currentSectionMode].stepRange[0] + 1}/
+                                        {TUTORIAL_SECTIONS[currentSectionMode].stepRange[1] -
+                                            TUTORIAL_SECTIONS[currentSectionMode].stepRange[0] +
+                                            1}
+                                    </>
+                                ) : (
+                                    <>
+                                        Étape {currentStep + 1} sur {TUTORIAL_STEPS.length}
+                                    </>
+                                )}
+                            </span>
+                            <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-xs font-semibold text-cyan-400">
+                                {Math.round(progress)}%
+                            </span>
                         </div>
-                        <Progress value={progress} className="h-1" />
+                        <div className="h-1 overflow-hidden rounded-full bg-white/10">
+                            <motion.div
+                                className="h-full bg-gradient-to-r from-cyan-500 to-blue-500"
+                                initial={{ width: 0 }}
+                                animate={{ width: `${progress}%` }}
+                                transition={{ duration: 0.3 }}
+                            />
+                        </div>
                     </div>
 
                     {/* Content */}
@@ -437,28 +449,30 @@ export function InteractiveTutorial({
                         <div className="flex items-start gap-4">
                             <div
                                 className={cn(
-                                    "flex h-12 w-12 items-center justify-center rounded-xl",
-                                    "bg-gradient-to-br from-cyan-500/20 to-blue-500/20",
-                                    "border border-cyan-500/30"
+                                    "flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl",
+                                    "bg-gradient-to-br from-cyan-500/20 via-blue-500/10 to-transparent",
+                                    "border border-cyan-500/20 shadow-lg shadow-cyan-500/10"
                                 )}
                             >
-                                <Icon className="h-6 w-6 text-cyan-400" />
+                                <Icon className="h-7 w-7 text-cyan-400" />
                             </div>
-                            <div className="flex-1">
-                                <h3 className="mb-2 text-xl font-bold">{step.title}</h3>
-                                <p className="text-muted-foreground text-sm leading-relaxed">{step.description}</p>
+                            <div className="flex-1 space-y-2">
+                                <h3 className="text-lg font-semibold tracking-tight text-white">{step.title}</h3>
+                                <p className="text-sm leading-relaxed text-white/60">{step.description}</p>
                             </div>
                         </div>
 
                         {/* Action indicator */}
                         {step.action ? (
                             <motion.div
-                                className="mt-4 flex items-center gap-2 rounded-lg border border-cyan-500/20 bg-cyan-500/10 p-3"
-                                animate={{ scale: [1, 1.02, 1] }}
-                                transition={{ duration: 1, repeat: Infinity }}
+                                className="mt-5 flex items-center gap-3 rounded-xl border border-cyan-500/20 bg-cyan-500/5 px-4 py-3"
+                                animate={{ opacity: [0.8, 1, 0.8] }}
+                                transition={{ duration: 2, repeat: Infinity }}
                             >
-                                <MousePointer className="h-4 w-4 text-cyan-400" />
-                                <span className="text-sm text-cyan-400">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500/20">
+                                    <MousePointer className="h-4 w-4 text-cyan-400" />
+                                </div>
+                                <span className="text-sm font-medium text-cyan-300">
                                     {step.action === "click" && "Cliquez sur l'élément en surbrillance"}
                                     {step.action === "drag" && "Glissez-déposez l'élément"}
                                     {step.action === "hover" && "Survolez l'élément"}
@@ -469,33 +483,41 @@ export function InteractiveTutorial({
 
                         {/* Tip */}
                         {step.tip ? (
-                            <div className="mt-4 flex items-start gap-2 rounded-lg border border-yellow-500/20 bg-yellow-500/10 p-3">
-                                <HelpCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-400" />
-                                <span className="text-sm text-yellow-400/80">{step.tip}</span>
+                            <div className="mt-4 flex items-start gap-3 rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-3">
+                                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/20">
+                                    <HelpCircle className="h-4 w-4 text-amber-400" />
+                                </div>
+                                <span className="text-sm text-amber-200/80">{step.tip}</span>
                             </div>
                         ) : null}
                     </div>
 
                     {/* Navigation */}
-                    <div className="flex items-center justify-between border-t border-white/10 p-4">
+                    <div className="flex items-center justify-between border-t border-white/[0.06] bg-white/[0.02] px-5 py-4">
                         <Button
                             variant="ghost"
                             size="sm"
                             onClick={handleSkip}
-                            className="text-muted-foreground hover:text-white"
+                            className="h-9 text-white/50 hover:bg-white/5 hover:text-white/80"
                         >
                             <SkipForward className="mr-2 h-4 w-4" />
                             Passer
                         </Button>
 
-                        <div className="flex gap-2">
-                            <Button variant="outline" size="sm" onClick={handlePrev} disabled={isFirstStep}>
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handlePrev}
+                                disabled={isFirstStep}
+                                className="h-9 w-9 border-white/10 bg-white/5 p-0 hover:bg-white/10 disabled:opacity-30"
+                            >
                                 <ChevronLeft className="h-4 w-4" />
                             </Button>
                             <Button
                                 size="sm"
                                 onClick={handleNext}
-                                className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500"
+                                className="h-9 bg-gradient-to-r from-cyan-600 to-blue-600 px-4 font-medium shadow-lg shadow-cyan-500/25 hover:from-cyan-500 hover:to-blue-500"
                             >
                                 {isLastStep ? (
                                     <>
@@ -513,7 +535,7 @@ export function InteractiveTutorial({
                     </div>
 
                     {/* Step dots */}
-                    <div className="flex justify-center gap-1 pb-4">
+                    <div className="flex justify-center gap-1.5 pb-5">
                         {(currentSectionMode
                             ? TUTORIAL_STEPS.slice(
                                   TUTORIAL_SECTIONS[currentSectionMode].stepRange[0],
@@ -529,12 +551,12 @@ export function InteractiveTutorial({
                                     key={actualIndex}
                                     onClick={() => setCurrentStep(actualIndex)}
                                     className={cn(
-                                        "h-2 w-2 rounded-full transition-all",
+                                        "h-1.5 rounded-full transition-all duration-200",
                                         actualIndex === currentStep
-                                            ? "w-4 bg-cyan-400"
+                                            ? "w-6 bg-cyan-400"
                                             : actualIndex < currentStep
-                                              ? "bg-cyan-400/50"
-                                              : "bg-white/20"
+                                              ? "w-1.5 bg-cyan-400/40"
+                                              : "w-1.5 bg-white/20 hover:bg-white/30"
                                     )}
                                 />
                             )

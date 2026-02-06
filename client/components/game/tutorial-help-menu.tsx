@@ -32,37 +32,33 @@ function SectionCard({
     return (
         <div
             className={cn(
-                "relative rounded-lg border p-4 transition-all",
-                "bg-slate-800/50 hover:bg-slate-800",
-                isCompleted ? "border-cyan-500/30" : "border-white/10 hover:border-white/20"
+                "group relative rounded-2xl border p-4 transition-all duration-200",
+                "bg-white/[0.03] hover:bg-white/[0.06]",
+                isCompleted ? "border-cyan-500/20" : "border-white/[0.06] hover:border-white/10"
             )}
         >
             {isCompleted ? (
-                <Badge
-                    variant="secondary"
-                    className="absolute -top-2 -right-2 border-cyan-500/30 bg-cyan-500/20 text-cyan-400"
-                >
-                    <CheckCircle2 className="mr-1 h-3 w-3" />
+                <div className="absolute -top-2 -right-2 flex h-6 items-center gap-1 rounded-full border border-cyan-500/30 bg-cyan-500/20 px-2 text-[10px] font-medium text-cyan-400">
+                    <CheckCircle2 className="h-3 w-3" />
                     Vu
-                </Badge>
+                </div>
             ) : null}
 
             <div className="flex items-start gap-3">
                 <div
                     className={cn(
-                        "flex h-10 w-10 items-center justify-center rounded-lg",
-                        "bg-gradient-to-br",
+                        "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-colors",
                         isCompleted
-                            ? "border border-cyan-500/30 from-cyan-500/20 to-blue-500/20"
-                            : "border border-white/10 from-slate-700 to-slate-600"
+                            ? "bg-gradient-to-br from-cyan-500/20 to-blue-500/10 shadow-lg shadow-cyan-500/10"
+                            : "bg-white/5 group-hover:bg-white/10"
                     )}
                 >
-                    <Icon className={cn("h-5 w-5", isCompleted ? "text-cyan-400" : "text-white/70")} />
+                    <Icon className={cn("h-5 w-5", isCompleted ? "text-cyan-400" : "text-white/60")} />
                 </div>
 
                 <div className="min-w-0 flex-1">
-                    <h4 className="text-sm font-medium">{section.title}</h4>
-                    <p className="text-muted-foreground mt-0.5 text-xs">{section.description}</p>
+                    <h4 className="text-sm font-medium text-white/90">{section.title}</h4>
+                    <p className="mt-0.5 text-xs text-white/50">{section.description}</p>
                 </div>
             </div>
 
@@ -70,12 +66,14 @@ function SectionCard({
                 size="sm"
                 variant={isCompleted ? "outline" : "default"}
                 className={cn(
-                    "mt-3 w-full",
-                    !isCompleted && "bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500"
+                    "mt-4 h-9 w-full rounded-xl text-xs font-medium",
+                    isCompleted
+                        ? "border-white/10 bg-white/5 hover:bg-white/10"
+                        : "bg-gradient-to-r from-cyan-600 to-blue-600 shadow-lg shadow-cyan-500/20 hover:from-cyan-500 hover:to-blue-500"
                 )}
                 onClick={onStart}
             >
-                <Play className="mr-1 h-3 w-3" />
+                <Play className="mr-1.5 h-3 w-3" />
                 {isCompleted ? "Revoir" : "Commencer"}
             </Button>
         </div>
@@ -94,7 +92,7 @@ export function TutorialHelpMenu({
     const allCompleted = sections.every((s) => completedSections.includes(s.id))
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-5">
             {/* Section Grid */}
             <div className="grid grid-cols-2 gap-3">
                 {sections.map((section) => (
@@ -107,29 +105,34 @@ export function TutorialHelpMenu({
                 ))}
             </div>
 
-            <Separator className="bg-white/10" />
+            <div className="h-px bg-white/[0.06]" />
 
             {/* Full Tutorial */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between rounded-xl bg-white/[0.03] p-3">
                 <div>
-                    <p className="text-sm font-medium">Tutoriel complet</p>
-                    <p className="text-muted-foreground text-xs">Revoir toutes les étapes</p>
+                    <p className="text-sm font-medium text-white/90">Tutoriel complet</p>
+                    <p className="text-xs text-white/50">Revoir toutes les étapes</p>
                 </div>
-                <Button variant="outline" size="sm" onClick={onStartFull}>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-9 rounded-lg border-white/10 bg-white/5 hover:bg-white/10"
+                    onClick={onStartFull}
+                >
                     <BookOpen className="mr-2 h-4 w-4" />
                     Relancer
                 </Button>
             </div>
 
-            <Separator className="bg-white/10" />
+            <div className="h-px bg-white/[0.06]" />
 
             {/* Hints Toggle */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between rounded-xl bg-white/[0.03] p-3">
                 <div>
-                    <Label htmlFor="hints-toggle" className="text-sm font-medium">
+                    <Label htmlFor="hints-toggle" className="text-sm font-medium text-white/90">
                         Conseils contextuels
                     </Label>
-                    <p className="text-muted-foreground text-xs">Afficher des conseils pendant le jeu</p>
+                    <p className="text-xs text-white/50">Afficher des conseils pendant le jeu</p>
                 </div>
                 <Switch id="hints-toggle" checked={hintsEnabled} onCheckedChange={onToggleHints} />
             </div>
@@ -137,11 +140,11 @@ export function TutorialHelpMenu({
             {/* Reset Progress */}
             {allCompleted ? (
                 <>
-                    <Separator className="bg-white/10" />
+                    <div className="h-px bg-white/[0.06]" />
                     <Button
                         variant="ghost"
                         size="sm"
-                        className="text-muted-foreground hover:text-foreground w-full"
+                        className="h-9 w-full rounded-lg text-white/50 hover:bg-white/5 hover:text-white/70"
                         onClick={onReset}
                     >
                         <RotateCcw className="mr-2 h-4 w-4" />

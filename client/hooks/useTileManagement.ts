@@ -5,6 +5,7 @@ import { socket } from "@/services/socket"
 import { toast } from "sonner"
 import type { Tile } from "./useGameState"
 import type { TurnPhase } from "./useTurnManagement"
+import type { GameAction } from "@/components/game/action-history"
 
 export interface UseTileManagementProps {
     isLocalMode: boolean
@@ -14,6 +15,9 @@ export interface UseTileManagementProps {
     tiles: Tile[]
     setTiles: React.Dispatch<React.SetStateAction<Tile[]>>
     markModificationDone: () => void
+    onLocalAction?: (action: Omit<GameAction, "id" | "timestamp">) => void
+    currentPlayer?: { id: string | number; name: string; color: string }
+    turnNumber?: number
 }
 
 export interface UseTileManagementReturn {
@@ -42,6 +46,9 @@ export function useTileManagement({
     tiles,
     setTiles,
     markModificationDone,
+    onLocalAction,
+    currentPlayer,
+    turnNumber,
 }: UseTileManagementProps): UseTileManagementReturn {
     const [tileSelectionModalOpen, setTileSelectionModalOpen] = useState(false)
     const [tileSelectionMode, setTileSelectionMode] = useState<"add" | "remove">("add")
@@ -95,11 +102,35 @@ export function useTileManagement({
                 setTiles((prev) => [...prev, newTile])
                 toast.success("Case ajoutée !")
                 markModificationDone()
+
+                // Track action
+                if (onLocalAction && currentPlayer) {
+                    onLocalAction({
+                        type: "tile_added",
+                        playerId: String(currentPlayer.id),
+                        playerName: currentPlayer.name,
+                        playerColor: currentPlayer.color,
+                        description: `${currentPlayer.name} ajoute une case en position (${newX}, ${newY})`,
+                        details: { tileId: newTile.id, x: newX, y: newY, direction },
+                        turnNumber,
+                    })
+                }
             } else if (activeRoom) {
                 socket.emit("modify_tile", { type: "add", position: { x: newX, y: newY }, tileType: "normal" })
             }
         },
-        [canModifyTilesNow, turnPhase, tiles, isLocalMode, activeRoom, markModificationDone, setTiles]
+        [
+            canModifyTilesNow,
+            turnPhase,
+            tiles,
+            isLocalMode,
+            activeRoom,
+            markModificationDone,
+            setTiles,
+            onLocalAction,
+            currentPlayer,
+            turnNumber,
+        ]
     )
 
     const handleRemoveTile = useCallback(
@@ -120,14 +151,39 @@ export function useTileManagement({
             }
 
             if (isLocalMode) {
+                const removedTile = tiles.find((t) => t.id === tileId)
                 setTiles((prev) => prev.filter((t) => t.id !== tileId))
                 toast.success("Case supprimée")
                 markModificationDone()
+
+                // Track action
+                if (onLocalAction && currentPlayer && removedTile) {
+                    onLocalAction({
+                        type: "tile_removed",
+                        playerId: String(currentPlayer.id),
+                        playerName: currentPlayer.name,
+                        playerColor: currentPlayer.color,
+                        description: `${currentPlayer.name} supprime une case en position (${removedTile.x}, ${removedTile.y})`,
+                        details: { tileId, x: removedTile.x, y: removedTile.y },
+                        turnNumber,
+                    })
+                }
             } else if (activeRoom) {
                 socket.emit("modify_tile", { type: "remove", tileId })
             }
         },
-        [canModifyTilesNow, turnPhase, tiles, isLocalMode, activeRoom, markModificationDone, setTiles]
+        [
+            canModifyTilesNow,
+            turnPhase,
+            tiles,
+            isLocalMode,
+            activeRoom,
+            markModificationDone,
+            setTiles,
+            onLocalAction,
+            currentPlayer,
+            turnNumber,
+        ]
     )
 
     const openTileSelectionModal = useCallback(
