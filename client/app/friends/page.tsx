@@ -12,7 +12,6 @@ import {
     Check,
     Search,
     UserX,
-    MessageCircle,
     Gamepad2,
     Copy,
     ExternalLink,
@@ -77,17 +76,7 @@ const itemVariants = {
 }
 
 // Friend Card Component
-function FriendCard({
-    friend,
-    onInvite,
-    onMessage,
-    onRemove,
-}: {
-    friend: Friend
-    onInvite: () => void
-    onMessage: () => void
-    onRemove: () => void
-}) {
+function FriendCard({ friend, onInvite, onRemove }: { friend: Friend; onInvite: () => void; onRemove: () => void }) {
     const [confirmRemove, setConfirmRemove] = useState(false)
 
     return (
@@ -157,15 +146,6 @@ function FriendCard({
                                     <ExternalLink className="h-4 w-4" />
                                 </Button>
                             ) : null}
-                            <Button
-                                size="icon"
-                                variant="ghost"
-                                onClick={onMessage}
-                                className="h-9 w-9 hover:bg-white/10"
-                                title="Message"
-                            >
-                                <MessageCircle className="h-4 w-4" />
-                            </Button>
                             <Button
                                 size="icon"
                                 variant="ghost"
@@ -538,7 +518,6 @@ export default function FriendsPage() {
                                                     key={friend.friendId}
                                                     friend={friend}
                                                     onInvite={() => inviteToGame(friend.friendId)}
-                                                    onMessage={() => toast.info("Messagerie bientôt disponible")}
                                                     onRemove={() => removeFriend(friend.friendId)}
                                                 />
                                             ))}
@@ -564,7 +543,6 @@ export default function FriendsPage() {
                                                     key={friend.friendId}
                                                     friend={friend}
                                                     onInvite={() => inviteToGame(friend.friendId)}
-                                                    onMessage={() => toast.info("Messagerie bientôt disponible")}
                                                     onRemove={() => removeFriend(friend.friendId)}
                                                 />
                                             ))}
