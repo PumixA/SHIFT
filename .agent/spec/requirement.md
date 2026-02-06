@@ -103,7 +103,6 @@ SHIFT est un jeu de plateau stratégique où les règles évoluent dynamiquement
 - Nombre de joueurs illimité (minimum 2)
 - Configuration des joueurs (nom, IA, difficulté)
 - Options d'édition de règles et de plateau
-- Sauvegarde automatique dès la création
 
 #### F3.3: Multijoueur en Ligne
 
@@ -120,9 +119,9 @@ SHIFT est un jeu de plateau stratégique où les règles évoluent dynamiquement
 
 #### F3.5: Sauvegarde et Reprise
 
-- Sauvegarde automatique à la création
-- Sauvegarde manuelle pendant la partie
-- Reprise de partie interrompue
+- Sauvegarde manuelle uniquement (via le menu en jeu)
+- Reprise de partie sauvegardée
+- Import/Export de sauvegardes (JSON)
 - Historique des parties terminées
 
 ### F4: Social et Communauté
