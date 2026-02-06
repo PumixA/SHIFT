@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { motion } from "framer-motion"
 import { Lock, Eye, EyeOff, Loader2, AlertCircle, CheckCircle, ArrowLeft, KeyRound } from "lucide-react"
@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { socket } from "@/services/socket"
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const token = searchParams.get("token")
@@ -275,5 +275,24 @@ export default function ResetPasswordPage() {
                 </p>
             </motion.div>
         </div>
+    )
+}
+
+function LoadingFallback() {
+    return (
+        <div className="bg-background flex min-h-screen items-center justify-center">
+            <div className="text-center">
+                <Loader2 className="mx-auto mb-4 h-12 w-12 animate-spin text-violet-500" />
+                <p className="text-muted-foreground">Chargement...</p>
+            </div>
+        </div>
+    )
+}
+
+export default function ResetPasswordPage() {
+    return (
+        <Suspense fallback={<LoadingFallback />}>
+            <ResetPasswordContent />
+        </Suspense>
     )
 }
