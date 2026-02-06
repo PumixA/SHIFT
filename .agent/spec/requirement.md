@@ -112,12 +112,16 @@ SHIFT est un jeu de plateau stratégique où les règles évoluent dynamiquement
 
 #### F4.1: Système d'Amis
 
-- Recherche par nom d'utilisateur
-- Demandes d'amitié
-- Liste d'amis avec statut
-- Blocage d'utilisateurs
+- Ajout d'ami par ID utilisateur (copie depuis la page Amis)
+- Demandes d'amitié (envoi, réception, acceptation, refus)
+- Liste d'amis avec statut en ligne/hors ligne
+- Retrait d'ami
+- Redirection vers /profile si non connecté
+- Blocage d'utilisateurs (non implémenté)
 
-#### F4.2: Chat en Jeu
+#### F4.2: Chat en Jeu (Non implémenté)
+
+> Cette fonctionnalité est prévue pour une version future.
 
 - Messages texte
 - Réactions emoji
@@ -127,8 +131,8 @@ SHIFT est un jeu de plateau stratégique où les règles évoluent dynamiquement
 #### F4.3: Invitations
 
 - Invitation d'amis à une partie
-- Notifications push
-- Statut des invitations
+- Bouton "Inviter à jouer" visible uniquement pour les amis en ligne
+- Bouton "Rejoindre la partie" pour les amis en partie
 
 ### F5: Profil et Statistiques
 
@@ -177,6 +181,28 @@ SHIFT est un jeu de plateau stratégique où les règles évoluent dynamiquement
 - `EmailService`: envoi d'emails via nodemailer
 - Hachage bcrypt avec 10 rounds de salage
 - Modèle `PasswordReset` en base de données
+
+### F8: Options et Paramètres
+
+#### F8.1: Audio
+
+- Volume principal (0-100%)
+- Volume musique (0-100%)
+- Volume effets sonores (0-100%)
+- Mode muet global
+
+#### F8.2: Contrôles
+
+- Support manette (activable)
+- Vibrations manette (activable)
+- Raccourcis clavier (activable)
+
+#### F8.3: Notifications
+
+- Notifications push (activable)
+- Sons de notification (activable)
+- Vibrations de notification (activable)
+- Rappel de tour (activable)
 
 ## Exigences Non Fonctionnelles
 

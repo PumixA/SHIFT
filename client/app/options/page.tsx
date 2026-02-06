@@ -9,27 +9,18 @@ import {
     VolumeX,
     Gamepad2,
     Keyboard,
-    Monitor,
     Bell,
-    Accessibility,
     RotateCcw,
-    ChevronRight,
     Music,
     Zap,
-    Sun,
-    Moon,
-    Eye,
-    Type,
     Vibrate,
     Settings,
     Save,
-    Check,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Slider } from "@/components/ui/slider"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
@@ -50,23 +41,11 @@ interface GameOptions {
         gamepadVibration: boolean
         keyboardShortcuts: boolean
     }
-    display: {
-        theme: "dark" | "light" | "system"
-        animations: boolean
-        effectsQuality: "low" | "medium" | "high"
-        showFps: boolean
-    }
     notifications: {
         pushEnabled: boolean
         soundEnabled: boolean
         vibrationEnabled: boolean
         turnReminder: boolean
-    }
-    accessibility: {
-        colorBlindMode: "none" | "protanopia" | "deuteranopia" | "tritanopia"
-        largeText: boolean
-        reduceMotion: boolean
-        highContrast: boolean
     }
 }
 
@@ -82,23 +61,11 @@ const DEFAULT_OPTIONS: GameOptions = {
         gamepadVibration: true,
         keyboardShortcuts: true,
     },
-    display: {
-        theme: "dark",
-        animations: true,
-        effectsQuality: "high",
-        showFps: false,
-    },
     notifications: {
         pushEnabled: true,
         soundEnabled: true,
         vibrationEnabled: true,
         turnReminder: true,
-    },
-    accessibility: {
-        colorBlindMode: "none",
-        largeText: false,
-        reduceMotion: false,
-        highContrast: false,
     },
 }
 
@@ -406,97 +373,6 @@ export default function OptionsPage() {
                     </CardContent>
                 </Card>
 
-                {/* Display */}
-                <Card className="border-white/10 bg-white/5">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-3">
-                            <Monitor className="h-5 w-5 text-orange-400" />
-                            Affichage
-                        </CardTitle>
-                        <CardDescription>Thème et effets visuels</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        {/* Theme */}
-                        <div className="space-y-2">
-                            <Label>Thème</Label>
-                            <Select
-                                value={options.display.theme}
-                                onValueChange={(v: string) =>
-                                    updateOption("display", "theme", v as "dark" | "light" | "system")
-                                }
-                            >
-                                <SelectTrigger className="bg-white/5">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="dark">
-                                        <span className="flex items-center gap-2">
-                                            <Moon className="h-4 w-4" />
-                                            Sombre
-                                        </span>
-                                    </SelectItem>
-                                    <SelectItem value="light">
-                                        <span className="flex items-center gap-2">
-                                            <Sun className="h-4 w-4" />
-                                            Clair
-                                        </span>
-                                    </SelectItem>
-                                    <SelectItem value="system">
-                                        <span className="flex items-center gap-2">
-                                            <Monitor className="h-4 w-4" />
-                                            Système
-                                        </span>
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        {/* Animations */}
-                        <div className="flex items-center justify-between rounded-xl bg-white/5 p-4">
-                            <div>
-                                <Label>Animations</Label>
-                                <p className="text-muted-foreground text-xs">Activer les animations de l'interface</p>
-                            </div>
-                            <Switch
-                                checked={options.display.animations}
-                                onCheckedChange={(v: boolean) => updateOption("display", "animations", v)}
-                            />
-                        </div>
-
-                        {/* Effects Quality */}
-                        <div className="space-y-2">
-                            <Label>Qualité des effets</Label>
-                            <Select
-                                value={options.display.effectsQuality}
-                                onValueChange={(v: string) =>
-                                    updateOption("display", "effectsQuality", v as "low" | "medium" | "high")
-                                }
-                            >
-                                <SelectTrigger className="bg-white/5">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="low">Basse</SelectItem>
-                                    <SelectItem value="medium">Moyenne</SelectItem>
-                                    <SelectItem value="high">Haute</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        {/* Show FPS */}
-                        <div className="flex items-center justify-between rounded-xl bg-white/5 p-4">
-                            <div>
-                                <Label>Afficher les FPS</Label>
-                                <p className="text-muted-foreground text-xs">Compteur de performance</p>
-                            </div>
-                            <Switch
-                                checked={options.display.showFps}
-                                onCheckedChange={(v: boolean) => updateOption("display", "showFps", v)}
-                            />
-                        </div>
-                    </CardContent>
-                </Card>
-
                 {/* Notifications */}
                 <Card className="border-white/10 bg-white/5">
                     <CardHeader>
@@ -548,82 +424,6 @@ export default function OptionsPage() {
                             <Switch
                                 checked={options.notifications.turnReminder}
                                 onCheckedChange={(v: boolean) => updateOption("notifications", "turnReminder", v)}
-                            />
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Accessibility */}
-                <Card className="border-white/10 bg-white/5">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-3">
-                            <Accessibility className="h-5 w-5 text-blue-400" />
-                            Accessibilité
-                        </CardTitle>
-                        <CardDescription>Options d'accessibilité</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        {/* Color Blind Mode */}
-                        <div className="space-y-2">
-                            <Label className="flex items-center gap-2">
-                                <Eye className="h-4 w-4" />
-                                Mode daltonien
-                            </Label>
-                            <Select
-                                value={options.accessibility.colorBlindMode}
-                                onValueChange={(v: string) =>
-                                    updateOption(
-                                        "accessibility",
-                                        "colorBlindMode",
-                                        v as GameOptions["accessibility"]["colorBlindMode"]
-                                    )
-                                }
-                            >
-                                <SelectTrigger className="bg-white/5">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="none">Désactivé</SelectItem>
-                                    <SelectItem value="protanopia">Protanopie (rouge)</SelectItem>
-                                    <SelectItem value="deuteranopia">Deutéranopie (vert)</SelectItem>
-                                    <SelectItem value="tritanopia">Tritanopie (bleu)</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        <div className="flex items-center justify-between rounded-xl bg-white/5 p-4">
-                            <div className="flex items-center gap-3">
-                                <Type className="text-muted-foreground h-5 w-5" />
-                                <div>
-                                    <Label>Texte agrandi</Label>
-                                    <p className="text-muted-foreground text-xs">Augmenter la taille du texte</p>
-                                </div>
-                            </div>
-                            <Switch
-                                checked={options.accessibility.largeText}
-                                onCheckedChange={(v: boolean) => updateOption("accessibility", "largeText", v)}
-                            />
-                        </div>
-
-                        <div className="flex items-center justify-between rounded-xl bg-white/5 p-4">
-                            <div>
-                                <Label>Réduire les mouvements</Label>
-                                <p className="text-muted-foreground text-xs">Minimiser les animations</p>
-                            </div>
-                            <Switch
-                                checked={options.accessibility.reduceMotion}
-                                onCheckedChange={(v: boolean) => updateOption("accessibility", "reduceMotion", v)}
-                            />
-                        </div>
-
-                        <div className="flex items-center justify-between rounded-xl bg-white/5 p-4">
-                            <div>
-                                <Label>Contraste élevé</Label>
-                                <p className="text-muted-foreground text-xs">Améliorer la lisibilité</p>
-                            </div>
-                            <Switch
-                                checked={options.accessibility.highContrast}
-                                onCheckedChange={(v: boolean) => updateOption("accessibility", "highContrast", v)}
                             />
                         </div>
                     </CardContent>
