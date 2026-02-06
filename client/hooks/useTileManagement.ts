@@ -5,16 +5,7 @@ import { socket } from "@/services/socket"
 import { toast } from "sonner"
 import type { Tile } from "./useGameState"
 import type { TurnPhase } from "./useTurnManagement"
-
-export interface LocalAction {
-    type: string
-    playerId: string
-    playerName?: string
-    playerColor?: string
-    description: string
-    details?: Record<string, unknown>
-    turnNumber?: number
-}
+import type { GameAction } from "@/components/game/action-history"
 
 export interface UseTileManagementProps {
     isLocalMode: boolean
@@ -24,7 +15,7 @@ export interface UseTileManagementProps {
     tiles: Tile[]
     setTiles: React.Dispatch<React.SetStateAction<Tile[]>>
     markModificationDone: () => void
-    onLocalAction?: (action: LocalAction) => void
+    onLocalAction?: (action: Omit<GameAction, "id" | "timestamp">) => void
     currentPlayer?: { id: string | number; name: string; color: string }
     turnNumber?: number
 }
