@@ -1,6 +1,14 @@
 // Game-related hooks
 export { useGameState } from "./useGameState"
-export type { Tile, Player, GameConfig, ServerPlayer, GameStatus, UseGameStateReturn } from "./useGameState"
+export type {
+    Tile,
+    TileDirection,
+    Player,
+    GameConfig,
+    ServerPlayer,
+    GameStatus,
+    UseGameStateReturn,
+} from "./useGameState"
 
 export { useTurnManagement } from "./useTurnManagement"
 export type { TurnPhase, UseTurnManagementProps, UseTurnManagementReturn } from "./useTurnManagement"

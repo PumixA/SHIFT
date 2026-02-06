@@ -22,6 +22,19 @@ Surface de jeu linéaire composée de **Tiles**. Configuré par `boardSize` (nom
 Unité de position sur le **Board**. Identifiée par son index (1-based).
 
 - `position: number` - Index de la case (1 à boardSize)
+- `directions: TileDirection[]` - Directions de connexion (défaut: `["right"]`)
+
+### TileDirection (Direction de Case)
+
+Direction de connexion d'une case vers une case adjacente. Crée un lien bidirectionnel.
+
+```typescript
+type TileDirection = "up" | "down" | "left" | "right"
+```
+
+- Une case peut avoir 1 à 4 directions simultanément
+- La direction par défaut est `["right"]`
+- Modifier les directions consomme 1 modification par tour
 
 ### Player (Joueur)
 

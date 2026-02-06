@@ -2,12 +2,15 @@
  * Utilitaires pour la gestion des chemins sur le plateau
  */
 
+import type { TileDirection } from "@/hooks/useGameState"
+
 export interface TileNode {
     id: string
     x: number
     y: number
     type: string
     connections: string[] // IDs des cases adjacentes connectées
+    directions: TileDirection[]
 }
 
 export interface PathStep {
@@ -25,19 +28,58 @@ export interface PathOption {
 }
 
 /**
- * Construit un graphe de connexions à partir des cases
+ * Renvoie le décalage (dx, dy) pour une direction donnée
+ */
+function directionOffset(dir: TileDirection): { dx: number; dy: number } {
+    switch (dir) {
+        case "up":
+            return { dx: 0, dy: -1 }
+        case "down":
+            return { dx: 0, dy: 1 }
+        case "left":
+            return { dx: -1, dy: 0 }
+        case "right":
+            return { dx: 1, dy: 0 }
+    }
+}
+
+/**
+ * Construit un graphe de connexions à partir des cases et de leurs directions.
+ * Une direction crée une connexion bidirectionnelle avec la case adjacente.
  */
 export function buildTileGraph(tiles: TileNode[]): Map<string, TileNode> {
     const graph = new Map<string, TileNode>()
+    const coordMap = new Map<string, TileNode>()
+
+    // Index tiles by coordinates for fast lookup
+    tiles.forEach((tile) => {
+        coordMap.set(`${tile.x},${tile.y}`, tile)
+    })
+
+    // Reset connections and compute from directions
+    tiles.forEach((tile) => {
+        tile.connections = []
+    })
 
     tiles.forEach((tile) => {
-        // Auto-générer les connexions si non définies (basé sur la proximité)
-        if (!tile.connections || tile.connections.length === 0) {
-            const adjacentTiles = tiles.filter(
-                (t) => t.id !== tile.id && Math.abs(t.x - tile.x) + Math.abs(t.y - tile.y) === 1
-            )
-            tile.connections = adjacentTiles.map((t) => t.id)
+        if (tile.directions && tile.directions.length > 0) {
+            for (const dir of tile.directions) {
+                const { dx, dy } = directionOffset(dir)
+                const neighbor = coordMap.get(`${tile.x + dx},${tile.y + dy}`)
+                if (neighbor) {
+                    // Bidirectional: add connection on both sides
+                    if (!tile.connections.includes(neighbor.id)) {
+                        tile.connections.push(neighbor.id)
+                    }
+                    if (!neighbor.connections.includes(tile.id)) {
+                        neighbor.connections.push(tile.id)
+                    }
+                }
+            }
         }
+    })
+
+    tiles.forEach((tile) => {
         graph.set(tile.id, tile)
     })
 

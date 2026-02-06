@@ -1,21 +1,87 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { ArrowRight, Zap, Shield, Shuffle, SkipForward, Target, Star, Flag, Home, AlertTriangle } from "lucide-react"
+import {
+    ArrowRight,
+    ArrowUp,
+    ArrowDown,
+    ArrowLeft,
+    Zap,
+    Shield,
+    Shuffle,
+    SkipForward,
+    Target,
+    Star,
+    Flag,
+    Home,
+    AlertTriangle,
+    Check,
+} from "lucide-react"
 import { Rule, ActionType, TriggerType, TRIGGER_INFO, ACTION_INFO } from "@/src/types/rules"
+import type { TileDirection } from "@/hooks/useGameState"
+import { cn } from "@/lib/utils"
 
 interface TileDetailModalProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     tileIndex: number
     tileType: "normal" | "special" | "start" | "end"
+    tileId?: string
+    tileDirections?: TileDirection[]
     rules: Rule[]
+    canModifyDirections?: boolean
+    onChangeDirections?: (tileId: string, dirs: TileDirection[]) => void
 }
 
-export function TileDetailModal({ open, onOpenChange, tileIndex, tileType, rules }: TileDetailModalProps) {
+const DIRECTION_CONFIG: { dir: TileDirection; label: string; icon: typeof ArrowUp; position: string }[] = [
+    { dir: "up", label: "Haut", icon: ArrowUp, position: "col-start-2 row-start-1" },
+    { dir: "left", label: "Gauche", icon: ArrowLeft, position: "col-start-1 row-start-2" },
+    { dir: "right", label: "Droite", icon: ArrowRight, position: "col-start-3 row-start-2" },
+    { dir: "down", label: "Bas", icon: ArrowDown, position: "col-start-2 row-start-3" },
+]
+
+export function TileDetailModal({
+    open,
+    onOpenChange,
+    tileIndex,
+    tileType,
+    tileId,
+    tileDirections = ["right"],
+    rules,
+    canModifyDirections,
+    onChangeDirections,
+}: TileDetailModalProps) {
+    const [draftDirections, setDraftDirections] = useState<TileDirection[]>(tileDirections)
+
+    useEffect(() => {
+        setDraftDirections(tileDirections)
+    }, [tileDirections, open])
+
+    const hasChanges =
+        draftDirections.length !== tileDirections.length || draftDirections.some((d) => !tileDirections.includes(d))
+
+    const toggleDirection = (dir: TileDirection) => {
+        setDraftDirections((prev) => {
+            if (prev.includes(dir)) {
+                if (prev.length <= 1) return prev
+                return prev.filter((d) => d !== dir)
+            }
+            return [...prev, dir]
+        })
+    }
+
+    const handleApply = () => {
+        if (tileId && onChangeDirections && hasChanges) {
+            onChangeDirections(tileId, draftDirections)
+            onOpenChange(false)
+        }
+    }
+
     const getTileIcon = () => {
         switch (tileType) {
             case "start":
@@ -63,7 +129,6 @@ export function TileDetailModal({ open, onOpenChange, tileIndex, tileType, rules
     const getEffectColor = (type: string, value: number | string) => {
         const numValue = Number(value)
 
-        // Negative effects
         if (
             type === ActionType.BACK_TO_START ||
             type === ActionType.SKIP_TURN ||
@@ -74,7 +139,6 @@ export function TileDetailModal({ open, onOpenChange, tileIndex, tileType, rules
             return "text-red-400 bg-red-500/10 border-red-500/30"
         }
 
-        // Positive effects
         if (
             type === ActionType.EXTRA_TURN ||
             type === ActionType.APPLY_SHIELD ||
@@ -86,7 +150,6 @@ export function TileDetailModal({ open, onOpenChange, tileIndex, tileType, rules
             return "text-green-400 bg-green-500/10 border-green-500/30"
         }
 
-        // Neutral effects
         return "text-yellow-400 bg-yellow-500/10 border-yellow-500/30"
     }
 
@@ -171,7 +234,64 @@ export function TileDetailModal({ open, onOpenChange, tileIndex, tileType, rules
 
                 <Separator />
 
-                <ScrollArea className="max-h-[400px]">
+                {/* Direction Editor */}
+                <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                        <h4 className="text-sm font-semibold">Directions</h4>
+                        <Badge variant="outline" className="text-[10px]">
+                            {draftDirections.length}/4
+                        </Badge>
+                    </div>
+
+                    <div className="grid grid-cols-3 grid-rows-3 place-items-center gap-2">
+                        {DIRECTION_CONFIG.map(({ dir, label, icon: Icon, position }) => {
+                            const isActive = draftDirections.includes(dir)
+                            const isDisabled = !canModifyDirections
+                            return (
+                                <button
+                                    key={dir}
+                                    onClick={() => !isDisabled && toggleDirection(dir)}
+                                    disabled={isDisabled}
+                                    className={cn(
+                                        "flex h-10 w-10 items-center justify-center rounded-lg border-2 transition-all",
+                                        position,
+                                        isActive
+                                            ? "border-cyan-400 bg-cyan-500/20 text-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.3)]"
+                                            : "border-white/10 bg-white/5 text-white/30",
+                                        !isDisabled && "cursor-pointer hover:scale-110",
+                                        isDisabled && "cursor-not-allowed opacity-50"
+                                    )}
+                                    title={label}
+                                >
+                                    <Icon className="h-5 w-5" />
+                                </button>
+                            )
+                        })}
+                        {/* Center tile indicator */}
+                        <div className="col-start-2 row-start-2 flex h-10 w-10 items-center justify-center rounded-lg border-2 border-white/20 bg-white/10">
+                            <div className="h-3 w-3 rounded-sm bg-white/40" />
+                        </div>
+                    </div>
+
+                    {canModifyDirections && hasChanges ? (
+                        <Button
+                            size="sm"
+                            onClick={handleApply}
+                            className="w-full border border-cyan-500/30 bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30"
+                        >
+                            <Check className="mr-2 h-4 w-4" />
+                            Appliquer les directions
+                        </Button>
+                    ) : null}
+
+                    {!canModifyDirections ? (
+                        <p className="text-muted-foreground text-center text-xs">Modifiable en phase de modification</p>
+                    ) : null}
+                </div>
+
+                <Separator />
+
+                <ScrollArea className="max-h-[300px]">
                     {rules.length === 0 ? (
                         <div className="text-muted-foreground flex flex-col items-center justify-center py-8">
                             <Target className="mb-3 h-12 w-12 opacity-30" />
@@ -180,7 +300,7 @@ export function TileDetailModal({ open, onOpenChange, tileIndex, tileType, rules
                         </div>
                     ) : (
                         <div className="space-y-4 p-1">
-                            {rules.map((rule, index) => (
+                            {rules.map((rule) => (
                                 <div key={rule.id} className="border-border/50 overflow-hidden rounded-lg border">
                                     {/* Rule Header */}
                                     <div className="bg-card/50 border-border/50 border-b px-4 py-2">

@@ -46,6 +46,7 @@ export interface GameAction {
         | "rule_deleted"
         | "tile_added"
         | "tile_removed"
+        | "tile_direction_changed"
         | "victory"
         | "turn_start"
         | "turn_end"
@@ -159,6 +160,7 @@ export function ActionHistory({
                 return <Book className="h-4 w-4" />
             case "tile_added":
             case "tile_removed":
+            case "tile_direction_changed":
                 return <Grid className="h-4 w-4" />
             case "chat":
                 return <MessageCircle className="h-4 w-4" />
@@ -196,6 +198,8 @@ export function ActionHistory({
                 return "text-green-400 border-green-500/50 bg-green-500/10"
             case "tile_removed":
                 return "text-orange-400 border-orange-500/50 bg-orange-500/10"
+            case "tile_direction_changed":
+                return "text-blue-400 border-blue-500/50 bg-blue-500/10"
             case "turn_start":
             case "turn_end":
                 return "text-white/70 border-white/30 bg-white/5"

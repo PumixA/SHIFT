@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react"
 import { socket } from "@/services/socket"
 import { toast } from "sonner"
-import type { Tile } from "./useGameState"
+import type { Tile, TileDirection } from "./useGameState"
 import type { TurnPhase } from "./useTurnManagement"
 import type { GameAction } from "@/components/game/action-history"
 
@@ -34,6 +34,7 @@ export interface UseTileManagementReturn {
     // Actions
     handleAddTile: (direction: "up" | "down" | "left" | "right", fromTile?: { x: number; y: number }) => void
     handleRemoveTile: (tileId: string) => void
+    handleChangeDirections: (tileId: string, newDirections: TileDirection[]) => void
     openTileSelectionModal: (mode: "add" | "remove") => void
     handleTileDetails: (index: number) => void
 }
@@ -96,6 +97,7 @@ export function useTileManagement({
                 y: newY,
                 type: "normal",
                 connections: [tiles.find((t) => t.x === baseTile.x && t.y === baseTile.y)?.id || ""],
+                directions: ["right"],
             }
 
             if (isLocalMode) {
@@ -202,6 +204,56 @@ export function useTileManagement({
         [canModifyTilesNow, turnPhase]
     )
 
+    const handleChangeDirections = useCallback(
+        (tileId: string, newDirections: TileDirection[]) => {
+            if (!canModifyTilesNow) {
+                if (turnPhase === "ROLL") {
+                    toast.warning("Lancez le dé d'abord")
+                } else {
+                    toast.error("Vous ne pouvez pas modifier le plateau maintenant")
+                }
+                return
+            }
+
+            if (newDirections.length === 0) {
+                toast.error("Au moins une direction doit rester active")
+                return
+            }
+
+            const tile = tiles.find((t) => t.id === tileId)
+            if (!tile) return
+
+            if (isLocalMode) {
+                setTiles((prev) => prev.map((t) => (t.id === tileId ? { ...t, directions: newDirections } : t)))
+                toast.success("Directions modifiées !")
+                markModificationDone()
+
+                if (onLocalAction && currentPlayer) {
+                    onLocalAction({
+                        type: "tile_direction_changed",
+                        playerId: String(currentPlayer.id),
+                        playerName: currentPlayer.name,
+                        playerColor: currentPlayer.color,
+                        description: `${currentPlayer.name} modifie les directions de la case (${tile.x}, ${tile.y})`,
+                        details: { tileId, x: tile.x, y: tile.y, directions: newDirections },
+                        turnNumber,
+                    })
+                }
+            }
+        },
+        [
+            canModifyTilesNow,
+            turnPhase,
+            tiles,
+            isLocalMode,
+            markModificationDone,
+            setTiles,
+            onLocalAction,
+            currentPlayer,
+            turnNumber,
+        ]
+    )
+
     const handleTileDetails = useCallback((index: number) => {
         setSelectedTileIndex(index)
         setTileDetailOpen(true)
@@ -218,6 +270,7 @@ export function useTileManagement({
         setSelectedTileIndex,
         handleAddTile,
         handleRemoveTile,
+        handleChangeDirections,
         openTileSelectionModal,
         handleTileDetails,
     }
