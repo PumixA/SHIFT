@@ -133,7 +133,7 @@ SHIFT is a multiplayer web-based board game with dynamic rules that evolve durin
 
 ```bash
 # Start PostgreSQL database
-docker-compose up -d
+docker compose up -d
 
 # Client (from project root)
 cd client && npm run dev      # Start dev server at localhost:3000

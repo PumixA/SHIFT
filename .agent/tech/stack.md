@@ -1,6 +1,6 @@
 # Stack Technique - SHIFT
 
-> Version: 1.1.0
+> Version: 1.1.1
 > Dernière mise à jour: 2026-02-05
 
 Ce document liste les versions EXACTES des dépendances. Les agents IA DOIVENT utiliser ces versions pour éviter les API dépréciées ou inexistantes.
