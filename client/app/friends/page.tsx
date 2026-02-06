@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import {
     ArrowLeft,
     UserPlus,
@@ -43,7 +43,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { socket } from "@/services/socket"
 import { toast } from "sonner"
-import { PageHeader, GameCard, colors } from "@/components/ui/design-system"
+import { PageHeader, GameCard } from "@/components/ui/design-system"
 
 interface Friend {
     id: string
@@ -278,7 +278,7 @@ export default function FriendsPage() {
     useEffect(() => {
         const storedUserId = localStorage.getItem("userId")
         if (!storedUserId) {
-            router.push("/")
+            router.push("/profile")
             return
         }
         setUserId(storedUserId)
