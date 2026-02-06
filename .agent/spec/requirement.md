@@ -47,7 +47,8 @@ SHIFT est un jeu de plateau stratégique où les règles évoluent dynamiquement
 
 #### F1.3: Condition de Victoire
 
-- Premier joueur à atteindre ou dépasser la dernière case
+- Pas de victoire automatique sur la dernière case
+- La partie ne se termine que si une règle de type "Condition de Victoire" est remplie
 - Classement par score en cas d'égalité
 - Historique de partie enregistré
 
@@ -120,9 +121,10 @@ SHIFT est un jeu de plateau stratégique où les règles évoluent dynamiquement
 #### F3.5: Sauvegarde et Reprise
 
 - Sauvegarde automatique à la création (nouvelles parties uniquement)
-- Sauvegarde manuelle via le menu en jeu (met à jour la sauvegarde existante)
+- **Sauvegarde Rapide uniquement** : écrase systématiquement la sauvegarde actuelle
+- Pas de "Sauvegarder sous" ni gestion de multiples slots en jeu
 - Chargement d'une partie ne crée pas de nouvelle sauvegarde
-- Import/Export de sauvegardes (JSON)
+- Import/Export de sauvegardes (JSON) via la page Parties
 - Historique des parties terminées
 
 ### F4: Social et Communauté

@@ -51,10 +51,6 @@ const TileDetailModal = dynamic(
     () => import("./game/tile-detail-modal").then((m) => ({ default: m.TileDetailModal })),
     { ssr: false }
 )
-const SavedGamesModal = dynamic(
-    () => import("./game/saved-games-modal").then((m) => ({ default: m.SavedGamesModal })),
-    { ssr: false }
-)
 const TileSelectionModal = dynamic(
     () => import("./game/tile-selection-modal").then((m) => ({ default: m.TileSelectionModal })),
     { ssr: false }
@@ -192,6 +188,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
     const router = useRouter()
     const viewportRef = useRef<GameViewportRef>(null)
     const [currentSaveId, setCurrentSaveId] = useState<string | null>(null)
+    const [currentSaveName, setCurrentSaveName] = useState<string>("")
     const hasAutoSavedRef = useRef(false)
 
     // ===========================================
@@ -321,7 +318,6 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
     const [mobileRuleBookOpen, setMobileRuleBookOpen] = useState(false)
     const [rulePackModalOpen, setRulePackModalOpen] = useState(false)
     const [settingsModalOpen, setSettingsModalOpen] = useState(false)
-    const [savedGamesModalOpen, setSavedGamesModalOpen] = useState(false)
     const [actionHistoryOpen, setActionHistoryOpen] = useState(false)
 
     // ===========================================
@@ -394,14 +390,8 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
 
             setPlayers((prev) => prev.map((p, idx) => (idx === localTurnIndex ? { ...p, position: newCoords } : p)))
 
-            const finalTileIndex = tiles.findIndex((t) => t.id === finalTile.id)
-
-            if (finalTileIndex >= tiles.length - 1) {
-                play("victory")
-                setWinner({ id: String(player.id), name: player.name, color: player.color })
-                setGameStatus("finished")
-                return
-            }
+            // Victory is now handled only by explicit victory condition rules
+            // No automatic victory when reaching the last tile
 
             setTurnPhase("MODIFY")
             toast.info(`${player.name} avance de ${diceVal} cases`, { icon: "🎲" })
@@ -474,6 +464,13 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
 
                     if (uniquePaths.length === 1) {
                         movePlayerToPath(uniquePaths[0], player, finalValue)
+                        return
+                    }
+
+                    // Bots automatically choose a random path
+                    if (player.isBot) {
+                        const randomPath = uniquePaths[Math.floor(Math.random() * uniquePaths.length)]
+                        movePlayerToPath(randomPath, player, finalValue)
                         return
                     }
 
@@ -606,6 +603,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
                 settings: { allowRuleEdit, allowTileEdit, maxModificationsPerTurn: 1 },
             })
             setCurrentSaveId(saved.id)
+            setCurrentSaveName(name)
         },
         [
             players,
@@ -621,43 +619,11 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
         ]
     )
 
-    const handleLoadGame = useCallback(
-        (savedGame: SavedGame) => {
-            const loadedTiles: Tile[] = savedGame.tiles.map((t) => ({
-                id: t.id,
-                x: t.x,
-                y: t.y,
-                type: t.type,
-                connections: [],
-            }))
-            setTiles(loadedTiles)
-
-            const loadedPlayers: Player[] = savedGame.players.map((p, idx) => {
-                const tile = loadedTiles[p.position] || loadedTiles[0]
-                return {
-                    id: `local-${idx}`,
-                    name: p.name,
-                    avatar: `/cyberpunk-avatar-${idx + 1}.png`,
-                    score: p.score,
-                    color: p.color,
-                    position: { x: tile.x, y: tile.y },
-                }
-            })
-            setPlayers(loadedPlayers)
-            setRules(savedGame.rules)
-            setLocalTurnIndex(savedGame.currentTurnIndex)
-            setCurrentTurnId(String(loadedPlayers[savedGame.currentTurnIndex]?.id))
-            setGameStatus(savedGame.status === "finished" ? "finished" : "playing")
-            setTurnPhase("ROLL")
-            setAllowRuleEdit(savedGame.settings.allowRuleEdit)
-            setAllowTileEdit(savedGame.settings.allowTileEdit)
-            setCurrentSaveId(savedGame.id)
-            hasAutoSavedRef.current = true // Prevent auto-save since we loaded an existing game
-            setSavedGamesModalOpen(false)
-            toast.success(`Partie "${savedGame.name}" chargée !`)
-        },
-        [setTiles, setPlayers, setRules, setLocalTurnIndex, setCurrentTurnId, setGameStatus, setTurnPhase]
-    )
+    const handleQuickSave = useCallback(() => {
+        const name = currentSaveName || gameConfig?.roomName || `Partie du ${new Date().toLocaleDateString("fr-FR")}`
+        handleSaveGame(name)
+        toast.success("Partie sauvegardée")
+    }, [currentSaveName, gameConfig?.roomName, handleSaveGame])
 
     // ===========================================
     // GAMEPAD
@@ -727,6 +693,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
                         // Mark as already saved to prevent auto-save
                         hasAutoSavedRef.current = true
                         setCurrentSaveId(savedGame.id)
+                        setCurrentSaveName(savedGame.name)
 
                         // Load the saved game state
                         const loadedTiles: Tile[] = savedGame.tiles.map((t) => ({
@@ -811,8 +778,9 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
             // Auto-save new game on creation (only once, only for new games)
             if (!hasAutoSavedRef.current) {
                 hasAutoSavedRef.current = true
+                const saveName = gameConfig.roomName || `Partie du ${new Date().toLocaleDateString("fr-FR")}`
                 const saved = saveGame({
-                    name: gameConfig.roomName || `Partie du ${new Date().toLocaleDateString("fr-FR")}`,
+                    name: saveName,
                     mode: "local",
                     players: localPlayers.map((p) => ({
                         name: p.name,
@@ -831,6 +799,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
                     },
                 })
                 setCurrentSaveId(saved.id)
+                setCurrentSaveName(saveName)
             }
 
             // Show welcome modal for first-time users instead of auto-starting tutorial
@@ -1288,7 +1257,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
                 onLeaveGame={handleLeaveGame}
                 onToggleRuleEdit={isHost ? handleToggleRuleEdit : undefined}
                 onToggleTileEdit={isHost ? handleToggleTileEdit : undefined}
-                onSaveGame={() => setSavedGamesModalOpen(true)}
+                onSaveGame={handleQuickSave}
                 gamepadAssignments={gamepadAssignments}
                 onAssignGamepad={(idx, id) => setGamepadAssignments((prev) => ({ ...prev, [idx]: id }))}
                 tutorialCompletedSections={tutorialPrefs.preferences.completedSections}
@@ -1297,23 +1266,6 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
                 onStartFullTutorial={startTutorial}
                 onResetTutorialProgress={tutorialPrefs.resetProgress}
                 onToggleTutorialHints={tutorialPrefs.toggleHints}
-            />
-
-            <SavedGamesModal
-                open={savedGamesModalOpen}
-                onOpenChange={setSavedGamesModalOpen}
-                onLoadGame={handleLoadGame}
-                currentGame={{
-                    players: players.map((p) => ({
-                        name: p.name,
-                        color: p.color,
-                        position: getTileIndexFromCoords(p.position.x, p.position.y),
-                        score: p.score,
-                    })),
-                    tiles: tiles.map((t) => ({ id: t.id, x: t.x, y: t.y, type: t.type })),
-                    rules,
-                }}
-                onSaveCurrentGame={handleSaveGame}
             />
 
             <TileDetailModal
