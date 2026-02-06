@@ -652,6 +652,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
             setAllowRuleEdit(savedGame.settings.allowRuleEdit)
             setAllowTileEdit(savedGame.settings.allowTileEdit)
             setCurrentSaveId(savedGame.id)
+            hasAutoSavedRef.current = true // Prevent auto-save since we loaded an existing game
             setSavedGamesModalOpen(false)
             toast.success(`Partie "${savedGame.name}" chargée !`)
         },
