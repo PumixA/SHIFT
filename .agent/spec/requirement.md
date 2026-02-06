@@ -296,3 +296,48 @@ SHIFT est un jeu de plateau stratégique où les règles évoluent dynamiquement
 - Préférences dans LocalStorage (`shift_settings`)
 - Migration automatique de l'ancien flag
 - Réinitialisation possible
+
+### F9: Historique des Actions
+
+#### F9.1: Panneau d'Historique
+
+- Panneau latéral gauche (Sheet)
+- Accessible via bouton dans la barre supérieure
+- Header fixe avec compteur d'actions
+- Footer fixe avec statistiques (Tours, Règles, Dés)
+- Zone de contenu scrollable
+
+#### F9.2: Modes d'Affichage
+
+- **Timeline** : Actions groupées par tour, extensibles/réductibles
+- **Liste** : Affichage chronologique simple
+
+#### F9.3: Filtres
+
+| Filtre     | Actions incluses                                        |
+| ---------- | ------------------------------------------------------- |
+| Tout       | Toutes les actions                                      |
+| Mouvements | dice_roll, move                                         |
+| Règles     | rule_triggered, rule_added, rule_modified, rule_deleted |
+| Effets     | effect_applied, effect_expired, power_up                |
+| Joueurs    | join, leave, turn_start, turn_end                       |
+
+#### F9.4: Actions Trackées (Mode Local)
+
+- Lancer de dé (`dice_roll`)
+- Déplacement (`move`)
+- Fin de tour (`turn_end`)
+- Création de règle (`rule_added`)
+- Modification de règle (`rule_modified`)
+- Suppression de règle (`rule_deleted`)
+- Ajout de case (`tile_added`)
+- Suppression de case (`tile_removed`)
+
+#### F9.5: Informations par Action
+
+- Type d'action avec icône
+- Nom et couleur du joueur
+- Description de l'action
+- Détails (valeur du dé, position, score, nom de règle)
+- Horodatage
+- Numéro de tour
