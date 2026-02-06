@@ -193,6 +193,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
     const [currentSaveId, setCurrentSaveId] = useState<string | null>(null)
     const [currentSaveName, setCurrentSaveName] = useState<string>("")
     const hasAutoSavedRef = useRef(false)
+    const localTurnNumberRef = useRef(1)
 
     // ===========================================
     // HOOKS - Game State
@@ -357,7 +358,6 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
     // STATE - Local Action History
     // ===========================================
     const [localActions, setLocalActions] = useState<GameAction[]>([])
-    const localTurnNumberRef = useRef(1)
 
     // ===========================================
     // STATE - Bot & Path Choice
