@@ -7,14 +7,14 @@ import ShiftGame from "@/components/shift-game"
 interface GameConfig {
     mode: "local" | "online"
     action?: "create" | "join"
-    players?: { name: string; color: string }[]
+    players?: { name: string; color: string; isBot?: boolean; botDifficulty?: string }[]
     roomName?: string
     roomCode?: string
     password?: string
     maxPlayers?: number
     playerName?: string
     allowRuleEdit?: boolean
-    rulePackId?: string
+    allowTileEdit?: boolean
 }
 
 export default function GamePage() {

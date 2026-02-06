@@ -10,13 +10,10 @@ import {
     Minus,
     User,
     Bot,
-    Package,
     Pencil,
     Users,
-    Globe,
     Gamepad2,
     Mail,
-    Clock,
     UserPlus,
     Wifi,
     WifiOff,
@@ -68,7 +65,7 @@ interface GameInvite {
 
 export default function PlayPage() {
     const router = useRouter()
-    const [activeTab, setActiveTab] = useState<"games" | "create">("games")
+    const [activeTab, setActiveTab] = useState<"games" | "join" | "create">("games")
 
     // Mode de jeu
     const [gameMode, setGameMode] = useState<"local" | "online">("local")
@@ -83,20 +80,11 @@ export default function PlayPage() {
     const [playerName, setPlayerName] = useState("")
     const [allowRuleEdit, setAllowRuleEdit] = useState(true)
     const [allowTileEdit, setAllowTileEdit] = useState(true)
-    const [selectedRulePack, setSelectedRulePack] = useState("default-classic")
-
     // Amis et invitations
     const [friends, setFriends] = useState<Friend[]>([])
     const [selectedFriends, setSelectedFriends] = useState<string[]>([])
     const [invites, setInvites] = useState<GameInvite[]>([])
     const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
-
-    const rulePacks = [
-        { id: "default-vanilla", name: "Vanilla", description: "Sans règles spéciales - plateau vierge" },
-        { id: "default-classic", name: "Classique", description: "Cases bonus et pièges équilibrés" },
-        { id: "default-chaos", name: "Chaos", description: "Téléportations et effets aléatoires" },
-        { id: "default-strategic", name: "Stratégique", description: "Règles tactiques avancées" },
-    ]
 
     // Charger le pseudo sauvegardé
     useEffect(() => {
@@ -150,7 +138,7 @@ export default function PlayPage() {
     }, [])
 
     const updatePlayerCount = (delta: number) => {
-        const newCount = Math.max(2, Math.min(4, playerCount + delta))
+        const newCount = Math.max(2, playerCount + delta)
         setPlayerCount(newCount)
 
         if (newCount > players.length) {
@@ -158,7 +146,7 @@ export default function PlayPage() {
             for (let i = players.length; i < newCount; i++) {
                 newPlayers.push({
                     name: `Joueur ${i + 1}`,
-                    color: PLAYER_COLORS[i],
+                    color: PLAYER_COLORS[i % PLAYER_COLORS.length],
                     isBot: false,
                 })
             }
@@ -190,8 +178,10 @@ export default function PlayPage() {
 
     const startGame = () => {
         if (gameMode === "local") {
+            const storedUsername = localStorage.getItem("username")
             const gameConfig = {
                 mode: "local",
+                roomName: `Partie de ${storedUsername || players[0]?.name || "Joueur"}`,
                 players: players.map((p) => ({
                     name: p.name,
                     color: p.color,
@@ -200,7 +190,6 @@ export default function PlayPage() {
                 })),
                 allowRuleEdit,
                 allowTileEdit,
-                rulePackId: selectedRulePack,
             }
             sessionStorage.setItem("gameConfig", JSON.stringify(gameConfig))
             router.push("/game")
@@ -215,7 +204,6 @@ export default function PlayPage() {
                 playerName: playerName || "Host",
                 allowRuleEdit,
                 allowTileEdit,
-                rulePackId: selectedRulePack,
                 invitedFriends: selectedFriends,
             }
             sessionStorage.setItem("gameConfig", JSON.stringify(gameConfig))
@@ -286,11 +274,15 @@ export default function PlayPage() {
             </header>
 
             <main className="relative z-10 container mx-auto max-w-2xl px-4 py-6">
-                <Tabs value={activeTab} onValueChange={(v: string) => setActiveTab(v as "games" | "create")}>
-                    <TabsList className="mb-6 grid w-full grid-cols-2">
+                <Tabs value={activeTab} onValueChange={(v: string) => setActiveTab(v as "games" | "join" | "create")}>
+                    <TabsList className="mb-6 grid w-full grid-cols-3">
                         <TabsTrigger value="games" className="flex items-center gap-2">
                             <Gamepad2 className="h-4 w-4" />
-                            Mes Parties
+                            Parties
+                        </TabsTrigger>
+                        <TabsTrigger value="join" className="flex items-center gap-2">
+                            <Mail className="h-4 w-4" />
+                            Rejoindre
                             {invites.length > 0 && (
                                 <Badge
                                     variant="destructive"
@@ -306,10 +298,24 @@ export default function PlayPage() {
                         </TabsTrigger>
                     </TabsList>
 
-                    {/* Onglet Mes Parties */}
+                    {/* Onglet Parties */}
                     <TabsContent value="games" className="space-y-6">
-                        {/* Invitations reçues */}
-                        {invites.length > 0 && (
+                        <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+                            <SavedGamesList mode="local" onCreateNew={() => setActiveTab("create")} />
+                        </div>
+                    </TabsContent>
+
+                    {/* Onglet Rejoindre */}
+                    <TabsContent value="join" className="space-y-6">
+                        {invites.length === 0 ? (
+                            <div className="rounded-2xl border border-white/10 bg-white/5 p-12 text-center">
+                                <Mail className="text-muted-foreground/30 mx-auto mb-4 h-16 w-16" />
+                                <p className="text-muted-foreground">Aucune invitation en attente</p>
+                                <p className="text-muted-foreground mt-2 text-sm">
+                                    Les invitations de vos amis apparaîtront ici
+                                </p>
+                            </div>
+                        ) : (
                             <motion.div
                                 initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -317,7 +323,7 @@ export default function PlayPage() {
                             >
                                 <div className="text-muted-foreground flex items-center gap-2 text-sm font-bold tracking-wider uppercase">
                                     <Mail className="h-4 w-4" />
-                                    Invitations reçues
+                                    Invitations reçues ({invites.length})
                                 </div>
                                 {invites.map((invite) => (
                                     <Card key={invite.id} className="border-violet-500/30 bg-violet-500/10">
@@ -353,11 +359,6 @@ export default function PlayPage() {
                                 ))}
                             </motion.div>
                         )}
-
-                        {/* Parties sauvegardées */}
-                        <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                            <SavedGamesList mode="local" onCreateNew={() => setActiveTab("create")} />
-                        </div>
                     </TabsContent>
 
                     {/* Onglet Créer */}
@@ -450,7 +451,6 @@ export default function PlayPage() {
                                         variant="outline"
                                         size="icon"
                                         onClick={() => updatePlayerCount(1)}
-                                        disabled={playerCount >= 4}
                                         className="h-10 w-10"
                                     >
                                         <Plus className="h-4 w-4" />
@@ -634,31 +634,6 @@ export default function PlayPage() {
                             )}
 
                             <Separator />
-
-                            {/* Set de règles */}
-                            <div className="space-y-3">
-                                <Label className="text-muted-foreground flex items-center gap-2 text-sm font-bold tracking-wider uppercase">
-                                    <Package className="h-4 w-4" />
-                                    Set de règles
-                                </Label>
-                                <Select value={selectedRulePack} onValueChange={setSelectedRulePack}>
-                                    <SelectTrigger className="bg-white/5">
-                                        <SelectValue placeholder="Choisir un set" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {rulePacks.map((pack) => (
-                                            <SelectItem key={pack.id} value={pack.id}>
-                                                <div className="flex flex-col">
-                                                    <span className="font-bold">{pack.name}</span>
-                                                    <span className="text-muted-foreground text-xs">
-                                                        {pack.description}
-                                                    </span>
-                                                </div>
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
 
                             {/* Options de partie */}
                             <div className="space-y-3">
