@@ -1304,6 +1304,9 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
 
             <Sheet open={actionHistoryOpen} onOpenChange={setActionHistoryOpen}>
                 <SheetContent side="left" className="w-full p-0 sm:max-w-md">
+                    <SheetHeader className="sr-only">
+                        <SheetTitle>Historique des actions</SheetTitle>
+                    </SheetHeader>
                     <ActionHistory
                         roomId={activeRoom || "local"}
                         currentPlayerId={isLocalMode ? String(players[localTurnIndex]?.id) : socket.id || undefined}
