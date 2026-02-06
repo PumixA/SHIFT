@@ -191,6 +191,7 @@ const GameOverModal = memo(function GameOverModal({
 export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
     const router = useRouter()
     const viewportRef = useRef<GameViewportRef>(null)
+    const hasAutoSavedRef = useRef(false)
 
     // ===========================================
     // HOOKS - Game State
@@ -736,28 +737,31 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
             })
             setBotAIs(newBotAIs)
 
-            // Auto-save game on creation
+            // Auto-save game on creation (only once)
             const roomId = `local-${Date.now()}`
             setActiveRoom(roomId)
-            saveGame({
-                name: gameConfig.roomName || `Partie du ${new Date().toLocaleDateString("fr-FR")}`,
-                mode: "local",
-                players: localPlayers.map((p, idx) => ({
-                    name: p.name,
-                    color: p.color,
-                    position: 0,
-                    score: 0,
-                })),
-                tiles: [],
-                rules: [],
-                currentTurnIndex: 0,
-                status: "playing",
-                settings: {
-                    allowRuleEdit: gameConfig.allowRuleEdit ?? true,
-                    allowTileEdit: gameConfig.allowTileEdit ?? true,
-                    maxModificationsPerTurn: 1,
-                },
-            })
+            if (!hasAutoSavedRef.current) {
+                hasAutoSavedRef.current = true
+                saveGame({
+                    name: gameConfig.roomName || `Partie du ${new Date().toLocaleDateString("fr-FR")}`,
+                    mode: "local",
+                    players: localPlayers.map((p) => ({
+                        name: p.name,
+                        color: p.color,
+                        position: 0,
+                        score: 0,
+                    })),
+                    tiles: [],
+                    rules: [],
+                    currentTurnIndex: 0,
+                    status: "playing",
+                    settings: {
+                        allowRuleEdit: gameConfig.allowRuleEdit ?? true,
+                        allowTileEdit: gameConfig.allowTileEdit ?? true,
+                        maxModificationsPerTurn: 1,
+                    },
+                })
+            }
 
             // Show welcome modal for first-time users instead of auto-starting tutorial
             const shouldShow =
