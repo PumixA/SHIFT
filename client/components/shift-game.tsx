@@ -74,6 +74,9 @@ const ActionHistory = dynamic(() => import("./game/action-history").then((m) => 
     ssr: false,
 })
 
+// Import GameAction type for local action tracking
+import type { GameAction } from "./game/action-history"
+
 // Hooks from tutorial (need to import separately since we lazy load the component)
 import { useTutorial } from "./game/interactive-tutorial"
 import { useTutorialPreferences } from "@/hooks/use-tutorial-preferences"
@@ -321,6 +324,12 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
     const [actionHistoryOpen, setActionHistoryOpen] = useState(false)
 
     // ===========================================
+    // STATE - Local Action History
+    // ===========================================
+    const [localActions, setLocalActions] = useState<GameAction[]>([])
+    const localTurnNumberRef = useRef(1)
+
+    // ===========================================
     // STATE - Bot & Path Choice
     // ===========================================
     const [botAIs, setBotAIs] = useState<Record<string, BotAI>>({})
@@ -381,6 +390,27 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
     }, [allRules, selectedTileIndex])
 
     // ===========================================
+    // LOCAL ACTION TRACKING
+    // ===========================================
+    const addLocalAction = useCallback(
+        (action: Omit<GameAction, "id" | "timestamp">) => {
+            if (!isLocalMode) return
+
+            const newAction: GameAction = {
+                ...action,
+                id: `local-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+                timestamp: new Date().toISOString(),
+            }
+            setLocalActions((prev) => {
+                const updated = [...prev, newAction]
+                // Keep only last 100 actions
+                return updated.slice(-100)
+            })
+        },
+        [isLocalMode]
+    )
+
+    // ===========================================
     // DICE & MOVEMENT
     // ===========================================
     const movePlayerToPath = useCallback(
@@ -388,7 +418,30 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
             const finalTile = path.finalTile
             const newCoords = { x: finalTile.x, y: finalTile.y }
 
+            // Track dice roll action
+            addLocalAction({
+                type: "dice_roll",
+                playerId: String(player.id),
+                playerName: player.name,
+                playerColor: player.color,
+                description: `${player.name} lance le dé et obtient ${diceVal}`,
+                details: { diceValue: diceVal },
+                turnNumber: localTurnNumberRef.current,
+            })
+
             setPlayers((prev) => prev.map((p, idx) => (idx === localTurnIndex ? { ...p, position: newCoords } : p)))
+
+            // Track move action
+            const tileIndex = tiles.findIndex((t) => t.id === finalTile.id)
+            addLocalAction({
+                type: "move",
+                playerId: String(player.id),
+                playerName: player.name,
+                playerColor: player.color,
+                description: `${player.name} avance sur la case ${tileIndex + 1}`,
+                details: { position: tileIndex + 1, diceValue: diceVal },
+                turnNumber: localTurnNumberRef.current,
+            })
 
             // Victory is now handled only by explicit victory condition rules
             // No automatic victory when reaching the last tile
@@ -396,7 +449,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
             setTurnPhase("MODIFY")
             toast.info(`${player.name} avance de ${diceVal} cases`, { icon: "🎲" })
         },
-        [localTurnIndex, tiles, setPlayers, setWinner, setGameStatus, setTurnPhase, play]
+        [localTurnIndex, tiles, setPlayers, setWinner, setGameStatus, setTurnPhase, play, addLocalAction]
     )
 
     const handlePathSelected = useCallback(
@@ -580,6 +633,27 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
         },
         [isLocalMode, activeRoom]
     )
+
+    // ===========================================
+    // TURN END WRAPPER (with action tracking)
+    // ===========================================
+    const handleEndTurnWithTracking = useCallback(() => {
+        if (isLocalMode) {
+            const player = players[localTurnIndex]
+            if (player) {
+                addLocalAction({
+                    type: "turn_end",
+                    playerId: String(player.id),
+                    playerName: player.name,
+                    playerColor: player.color,
+                    description: `Fin du tour ${localTurnNumberRef.current} - ${player.name}`,
+                    turnNumber: localTurnNumberRef.current,
+                })
+                localTurnNumberRef.current += 1
+            }
+        }
+        handleEndTurn()
+    }, [isLocalMode, players, localTurnIndex, addLocalAction, handleEndTurn])
 
     // ===========================================
     // SAVE/LOAD
@@ -1028,12 +1102,12 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
                 setBotThinking(`${player.name} réfléchit...`)
                 setTimeout(() => {
                     setBotThinking(null)
-                    handleEndTurn()
+                    handleEndTurnWithTracking()
                 }, 1000)
             }, 500)
             return () => clearTimeout(timer)
         }
-    }, [isLocalMode, gameStatus, players, localTurnIndex, turnPhase, isRolling, rollDice, handleEndTurn])
+    }, [isLocalMode, gameStatus, players, localTurnIndex, turnPhase, isRolling, rollDice, handleEndTurnWithTracking])
 
     // ===========================================
     // RENDER
@@ -1218,7 +1292,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
                     onAddRule={handleAddRule}
                     onAddTile={() => openTileSelectionModal("add")}
                     onRemoveTile={() => openTileSelectionModal("remove")}
-                    onEndTurn={handleEndTurn}
+                    onEndTurn={handleEndTurnWithTracking}
                 />
             )}
 
@@ -1308,6 +1382,8 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
                     <ActionHistory
                         roomId={activeRoom || "local"}
                         currentPlayerId={isLocalMode ? String(players[localTurnIndex]?.id) : socket.id || undefined}
+                        localActions={localActions}
+                        isLocalMode={isLocalMode}
                     />
                 </SheetContent>
             </Sheet>

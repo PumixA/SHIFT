@@ -62,6 +62,8 @@ interface ActionHistoryProps {
     roomId: string
     currentPlayerId?: string
     onReplayAction?: (action: GameAction) => void
+    localActions?: GameAction[]
+    isLocalMode?: boolean
 }
 
 const DiceIcons = [Dice1, Dice2, Dice3, Dice4, Dice5, Dice6]
@@ -74,15 +76,29 @@ const ACTION_CATEGORIES = {
     players: { label: "Joueurs", icon: UserPlus },
 }
 
-export function ActionHistory({ roomId, currentPlayerId, onReplayAction }: ActionHistoryProps) {
+export function ActionHistory({
+    roomId,
+    currentPlayerId,
+    onReplayAction,
+    localActions,
+    isLocalMode,
+}: ActionHistoryProps) {
     const [actions, setActions] = useState<GameAction[]>([])
     const [filter, setFilter] = useState<keyof typeof ACTION_CATEGORIES>("all")
     const [expandedTurns, setExpandedTurns] = useState<Set<number>>(new Set())
     const [viewMode, setViewMode] = useState<"timeline" | "list">("timeline")
     const scrollRef = useRef<HTMLDivElement>(null)
 
+    // Use local actions in local mode
     useEffect(() => {
-        if (!roomId) return
+        if (isLocalMode && localActions) {
+            setActions(localActions)
+        }
+    }, [isLocalMode, localActions])
+
+    // Fetch from server in online mode
+    useEffect(() => {
+        if (isLocalMode || !roomId) return
 
         socket.emit("get_action_history", { roomId })
 
@@ -115,7 +131,7 @@ export function ActionHistory({ roomId, currentPlayerId, onReplayAction }: Actio
                 socket.off(type, handleNewAction)
             })
         }
-    }, [roomId])
+    }, [roomId, isLocalMode])
 
     const getActionIcon = (action: GameAction) => {
         switch (action.type) {
