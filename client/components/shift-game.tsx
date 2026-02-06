@@ -1303,7 +1303,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
             />
 
             <Sheet open={actionHistoryOpen} onOpenChange={setActionHistoryOpen}>
-                <SheetContent side="left" className="w-full p-0 sm:max-w-md">
+                <SheetContent side="left" className="!w-full p-0 sm:!max-w-md">
                     <SheetTitle className="sr-only">Historique des actions</SheetTitle>
                     <ActionHistory
                         roomId={activeRoom || "local"}
