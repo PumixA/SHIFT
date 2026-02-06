@@ -718,6 +718,69 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
         if (!gameConfig) return
 
         if (isLocalMode && gameConfig.players) {
+            // Check if loading from an existing save
+            if (gameConfig.loadFromSave && gameConfig.savedGameId) {
+                const savedGameData = sessionStorage.getItem("savedGame")
+                if (savedGameData) {
+                    try {
+                        const savedGame: SavedGame = JSON.parse(savedGameData)
+                        // Mark as already saved to prevent auto-save
+                        hasAutoSavedRef.current = true
+                        setCurrentSaveId(savedGame.id)
+
+                        // Load the saved game state
+                        const loadedTiles: Tile[] = savedGame.tiles.map((t) => ({
+                            id: t.id,
+                            x: t.x,
+                            y: t.y,
+                            type: t.type,
+                            connections: [],
+                        }))
+                        setTiles(loadedTiles)
+
+                        const loadedPlayers: Player[] = savedGame.players.map((p, idx) => {
+                            const tile = loadedTiles[p.position] || loadedTiles[0]
+                            return {
+                                id: `local-${idx}`,
+                                name: p.name,
+                                avatar: `/cyberpunk-avatar-${idx + 1}.png`,
+                                score: p.score,
+                                color: p.color,
+                                position: { x: tile.x, y: tile.y },
+                                isBot: gameConfig.players?.[idx]?.isBot,
+                                botDifficulty: gameConfig.players?.[idx]?.botDifficulty as BotDifficulty,
+                            }
+                        })
+                        setPlayers(loadedPlayers)
+                        setRules(savedGame.rules)
+                        setLocalTurnIndex(savedGame.currentTurnIndex)
+                        setCurrentTurnId(String(loadedPlayers[savedGame.currentTurnIndex]?.id))
+                        setGameStatus(savedGame.status === "finished" ? "finished" : "playing")
+                        setTurnPhase("ROLL")
+                        setAllowRuleEdit(savedGame.settings.allowRuleEdit)
+                        setAllowTileEdit(savedGame.settings.allowTileEdit)
+                        setIsHost(true)
+                        setActiveRoom(`local-${Date.now()}`)
+
+                        // Setup bot AIs
+                        const newBotAIs: Record<string, BotAI> = {}
+                        loadedPlayers.forEach((p) => {
+                            if (p.isBot && p.botDifficulty) {
+                                newBotAIs[String(p.id)] = createBotAI(p.botDifficulty)
+                            }
+                        })
+                        setBotAIs(newBotAIs)
+
+                        // Clean up sessionStorage
+                        sessionStorage.removeItem("savedGame")
+                        return
+                    } catch {
+                        // If parsing fails, continue with normal initialization
+                    }
+                }
+            }
+
+            // Normal new game initialization
             const localPlayers: Player[] = gameConfig.players.map((p, idx) => ({
                 id: `local-${idx}`,
                 name: p.name,
