@@ -841,13 +841,15 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
             }
 
             // Normal new game initialization
+            const startTile = tiles[0]
+            const startPos = startTile ? { x: startTile.x, y: startTile.y } : { x: -10, y: 0 }
             const localPlayers: Player[] = gameConfig.players.map((p, idx) => ({
                 id: `local-${idx}`,
                 name: p.name,
                 avatar: `/cyberpunk-avatar-${idx + 1}.png`,
                 score: 0,
                 color: PLAYER_COLORS[idx] || "cyan",
-                position: getCoordinatesFromIndex(0),
+                position: startPos,
                 isBot: p.isBot,
                 botDifficulty: p.botDifficulty as BotDifficulty,
             }))
@@ -907,7 +909,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
             socket.connect()
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [gameConfig, isLocalMode, getCoordinatesFromIndex, setPlayers, setCurrentTurnId, setGameStatus, setTurnPhase])
+    }, [gameConfig, isLocalMode, setPlayers, setCurrentTurnId, setGameStatus, setTurnPhase])
 
     // ===========================================
     // EFFECTS - Socket Events (Online Mode)
