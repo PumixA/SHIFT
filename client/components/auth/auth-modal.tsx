@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { User, LogIn, UserPlus, Loader2, AlertCircle } from "lucide-react"
+import { User, LogIn, UserPlus, Loader2, AlertCircle, Mail, Lock, Eye, EyeOff } from "lucide-react"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,27 +14,62 @@ interface AuthModalProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     onAuthenticated: (userId: string, username: string) => void
+    defaultTab?: "login" | "register"
 }
 
-export function AuthModal({ open, onOpenChange, onAuthenticated }: AuthModalProps) {
-    const [activeTab, setActiveTab] = useState<"login" | "register">("register")
+interface AuthResult {
+    success: boolean
+    message: string
+    user?: {
+        id: string
+        username: string
+        email: string
+    }
+}
+
+export function AuthModal({ open, onOpenChange, onAuthenticated, defaultTab = "login" }: AuthModalProps) {
+    const [activeTab, setActiveTab] = useState<"login" | "register" | "forgot">(defaultTab)
     const [username, setUsername] = useState("")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [confirmPassword, setConfirmPassword] = useState("")
+    const [showPassword, setShowPassword] = useState(false)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [success, setSuccess] = useState<string | null>(null)
+
+    const resetForm = () => {
+        setUsername("")
+        setEmail("")
+        setPassword("")
+        setConfirmPassword("")
+        setError(null)
+        setSuccess(null)
+    }
 
     const handleRegister = () => {
-        if (!username.trim()) {
-            setError("Veuillez entrer un nom d'utilisateur")
+        if (!username.trim() || !email.trim() || !password) {
+            setError("Tous les champs sont requis")
             return
         }
 
-        if (username.length < 3) {
-            setError("Le nom doit contenir au moins 3 caractères")
+        if (username.length < 3 || username.length > 20) {
+            setError("Le nom doit contenir entre 3 et 20 caractères")
             return
         }
 
-        if (username.length > 20) {
-            setError("Le nom ne peut pas dépasser 20 caractères")
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            setError("Adresse email invalide")
+            return
+        }
+
+        if (password.length < 6) {
+            setError("Le mot de passe doit contenir au moins 6 caractères")
+            return
+        }
+
+        if (password !== confirmPassword) {
+            setError("Les mots de passe ne correspondent pas")
             return
         }
 
@@ -43,41 +78,40 @@ export function AuthModal({ open, onOpenChange, onAuthenticated }: AuthModalProp
 
         socket.connect()
 
-        const handleRegistered = (data: { userId: string; user: { username: string } }) => {
-            localStorage.setItem("userId", data.userId)
-            localStorage.setItem("username", data.user.username)
+        const handleResult = (result: AuthResult) => {
             setLoading(false)
-            onAuthenticated(data.userId, data.user.username)
-            onOpenChange(false)
-            socket.off("user_registered", handleRegistered)
-            socket.off("error", handleError)
+            if (result.success && result.user) {
+                localStorage.setItem("userId", result.user.id)
+                localStorage.setItem("username", result.user.username)
+                localStorage.setItem("userEmail", result.user.email)
+                onAuthenticated(result.user.id, result.user.username)
+                onOpenChange(false)
+                resetForm()
+            } else {
+                setError(result.message)
+            }
+            socket.off("auth_result", handleResult)
         }
 
-        const handleError = (data: { message: string }) => {
-            setError(data.message || "Erreur lors de l'inscription")
-            setLoading(false)
-            socket.off("user_registered", handleRegistered)
-            socket.off("error", handleError)
-        }
+        socket.on("auth_result", handleResult)
+        socket.emit("auth_register", {
+            username: username.trim(),
+            email: email.trim().toLowerCase(),
+            password,
+        })
 
-        socket.on("user_registered", handleRegistered)
-        socket.on("error", handleError)
-        socket.emit("register_user", { username: username.trim() })
-
-        // Timeout after 10 seconds
         setTimeout(() => {
             if (loading) {
-                setError("Le serveur ne répond pas. Vérifiez votre connexion.")
+                setError("Le serveur ne répond pas")
                 setLoading(false)
-                socket.off("user_registered", handleRegistered)
-                socket.off("error", handleError)
+                socket.off("auth_result", handleResult)
             }
-        }, 10000)
+        }, 15000)
     }
 
     const handleLogin = () => {
-        if (!username.trim()) {
-            setError("Veuillez entrer votre nom d'utilisateur")
+        if (!email.trim() || !password) {
+            setError("Email et mot de passe requis")
             return
         }
 
@@ -86,49 +120,84 @@ export function AuthModal({ open, onOpenChange, onAuthenticated }: AuthModalProp
 
         socket.connect()
 
-        const handleProfile = (data: { user: { id: string; username: string } | null }) => {
-            if (data.user) {
-                localStorage.setItem("userId", data.user.id)
-                localStorage.setItem("username", data.user.username)
-                setLoading(false)
-                onAuthenticated(data.user.id, data.user.username)
-                onOpenChange(false)
-            } else {
-                setError("Utilisateur introuvable. Vérifiez le nom ou créez un compte.")
-                setLoading(false)
-            }
-            socket.off("user_found", handleProfile)
-            socket.off("error", handleError)
-        }
-
-        const handleError = (data: { message: string }) => {
-            setError(data.message || "Erreur lors de la connexion")
+        const handleResult = (result: AuthResult) => {
             setLoading(false)
-            socket.off("user_found", handleProfile)
-            socket.off("error", handleError)
+            if (result.success && result.user) {
+                localStorage.setItem("userId", result.user.id)
+                localStorage.setItem("username", result.user.username)
+                localStorage.setItem("userEmail", result.user.email)
+                onAuthenticated(result.user.id, result.user.username)
+                onOpenChange(false)
+                resetForm()
+            } else {
+                setError(result.message)
+            }
+            socket.off("auth_result", handleResult)
         }
 
-        socket.on("user_found", handleProfile)
-        socket.on("error", handleError)
-        socket.emit("find_user_by_username", { username: username.trim() })
+        socket.on("auth_result", handleResult)
+        socket.emit("auth_login", {
+            email: email.trim().toLowerCase(),
+            password,
+        })
 
-        // Timeout
         setTimeout(() => {
             if (loading) {
-                setError("Le serveur ne répond pas. Vérifiez votre connexion.")
+                setError("Le serveur ne répond pas")
                 setLoading(false)
-                socket.off("user_found", handleProfile)
-                socket.off("error", handleError)
+                socket.off("auth_result", handleResult)
             }
-        }, 10000)
+        }, 15000)
+    }
+
+    const handleForgotPassword = () => {
+        if (!email.trim()) {
+            setError("Veuillez entrer votre adresse email")
+            return
+        }
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            setError("Adresse email invalide")
+            return
+        }
+
+        setLoading(true)
+        setError(null)
+        setSuccess(null)
+
+        socket.connect()
+
+        const handleResult = (result: { success: boolean; message: string }) => {
+            setLoading(false)
+            if (result.success) {
+                setSuccess(result.message)
+                setError(null)
+            } else {
+                setError(result.message)
+            }
+            socket.off("forgot_password_result", handleResult)
+        }
+
+        socket.on("forgot_password_result", handleResult)
+        socket.emit("auth_forgot_password", { email: email.trim().toLowerCase() })
+
+        setTimeout(() => {
+            if (loading) {
+                setError("Le serveur ne répond pas")
+                setLoading(false)
+                socket.off("forgot_password_result", handleResult)
+            }
+        }, 15000)
     }
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         if (activeTab === "register") {
             handleRegister()
-        } else {
+        } else if (activeTab === "login") {
             handleLogin()
+        } else {
+            handleForgotPassword()
         }
     }
 
@@ -138,24 +207,225 @@ export function AuthModal({ open, onOpenChange, onAuthenticated }: AuthModalProp
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <User className="h-5 w-5 text-violet-500" />
-                        Connexion à SHIFT
+                        {activeTab === "forgot" ? "Mot de passe oublié" : "Connexion à SHIFT"}
                     </DialogTitle>
-                    <DialogDescription>Créez un compte ou connectez-vous pour accéder à votre profil</DialogDescription>
+                    <DialogDescription>
+                        {activeTab === "forgot"
+                            ? "Entrez votre email pour recevoir un lien de réinitialisation"
+                            : "Créez un compte ou connectez-vous pour accéder à votre profil"}
+                    </DialogDescription>
                 </DialogHeader>
 
-                <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "login" | "register")}>
-                    <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="register" className="flex items-center gap-2">
-                            <UserPlus className="h-4 w-4" />
-                            Créer un compte
-                        </TabsTrigger>
-                        <TabsTrigger value="login" className="flex items-center gap-2">
-                            <LogIn className="h-4 w-4" />
-                            Se connecter
-                        </TabsTrigger>
-                    </TabsList>
+                {activeTab !== "forgot" ? (
+                    <Tabs
+                        value={activeTab}
+                        onValueChange={(v) => {
+                            setActiveTab(v as "login" | "register")
+                            setError(null)
+                            setSuccess(null)
+                        }}
+                    >
+                        <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="login" className="flex items-center gap-2">
+                                <LogIn className="h-4 w-4" />
+                                Connexion
+                            </TabsTrigger>
+                            <TabsTrigger value="register" className="flex items-center gap-2">
+                                <UserPlus className="h-4 w-4" />
+                                Inscription
+                            </TabsTrigger>
+                        </TabsList>
 
-                    <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+                        <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+                            <AnimatePresence mode="wait">
+                                {error ? (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        className="flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-400"
+                                    >
+                                        <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                                        {error}
+                                    </motion.div>
+                                ) : null}
+                            </AnimatePresence>
+
+                            <TabsContent value="login" className="mt-0 space-y-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="login-email">Email</Label>
+                                    <div className="relative">
+                                        <Mail className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                                        <Input
+                                            id="login-email"
+                                            type="email"
+                                            placeholder="votre@email.com"
+                                            value={email}
+                                            onChange={(e) => {
+                                                setEmail(e.target.value)
+                                                setError(null)
+                                            }}
+                                            disabled={loading}
+                                            className="border-white/10 bg-white/5 pl-10"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="login-password">Mot de passe</Label>
+                                    <div className="relative">
+                                        <Lock className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                                        <Input
+                                            id="login-password"
+                                            type={showPassword ? "text" : "password"}
+                                            placeholder="••••••••"
+                                            value={password}
+                                            onChange={(e) => {
+                                                setPassword(e.target.value)
+                                                setError(null)
+                                            }}
+                                            disabled={loading}
+                                            className="border-white/10 bg-white/5 pr-10 pl-10"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="text-muted-foreground absolute top-1/2 right-3 -translate-y-1/2 hover:text-white"
+                                        >
+                                            {showPassword ? (
+                                                <EyeOff className="h-4 w-4" />
+                                            ) : (
+                                                <Eye className="h-4 w-4" />
+                                            )}
+                                        </button>
+                                    </div>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setActiveTab("forgot")
+                                        setError(null)
+                                    }}
+                                    className="text-sm text-violet-400 hover:text-violet-300 hover:underline"
+                                >
+                                    Mot de passe oublié ?
+                                </button>
+                            </TabsContent>
+
+                            <TabsContent value="register" className="mt-0 space-y-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="register-username">Nom d&apos;utilisateur</Label>
+                                    <div className="relative">
+                                        <User className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                                        <Input
+                                            id="register-username"
+                                            placeholder="VotreNom"
+                                            value={username}
+                                            onChange={(e) => {
+                                                setUsername(e.target.value)
+                                                setError(null)
+                                            }}
+                                            disabled={loading}
+                                            className="border-white/10 bg-white/5 pl-10"
+                                        />
+                                    </div>
+                                    <p className="text-muted-foreground text-xs">
+                                        3-20 caractères, visible par les autres
+                                    </p>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="register-email">Email</Label>
+                                    <div className="relative">
+                                        <Mail className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                                        <Input
+                                            id="register-email"
+                                            type="email"
+                                            placeholder="votre@email.com"
+                                            value={email}
+                                            onChange={(e) => {
+                                                setEmail(e.target.value)
+                                                setError(null)
+                                            }}
+                                            disabled={loading}
+                                            className="border-white/10 bg-white/5 pl-10"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="register-password">Mot de passe</Label>
+                                    <div className="relative">
+                                        <Lock className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                                        <Input
+                                            id="register-password"
+                                            type={showPassword ? "text" : "password"}
+                                            placeholder="••••••••"
+                                            value={password}
+                                            onChange={(e) => {
+                                                setPassword(e.target.value)
+                                                setError(null)
+                                            }}
+                                            disabled={loading}
+                                            className="border-white/10 bg-white/5 pr-10 pl-10"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="text-muted-foreground absolute top-1/2 right-3 -translate-y-1/2 hover:text-white"
+                                        >
+                                            {showPassword ? (
+                                                <EyeOff className="h-4 w-4" />
+                                            ) : (
+                                                <Eye className="h-4 w-4" />
+                                            )}
+                                        </button>
+                                    </div>
+                                    <p className="text-muted-foreground text-xs">Minimum 6 caractères</p>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="register-confirm">Confirmer le mot de passe</Label>
+                                    <div className="relative">
+                                        <Lock className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                                        <Input
+                                            id="register-confirm"
+                                            type={showPassword ? "text" : "password"}
+                                            placeholder="••••••••"
+                                            value={confirmPassword}
+                                            onChange={(e) => {
+                                                setConfirmPassword(e.target.value)
+                                                setError(null)
+                                            }}
+                                            disabled={loading}
+                                            className="border-white/10 bg-white/5 pl-10"
+                                        />
+                                    </div>
+                                </div>
+                            </TabsContent>
+
+                            <Button
+                                type="submit"
+                                className="w-full bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-400 hover:to-purple-500"
+                                disabled={loading}
+                            >
+                                {loading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        {activeTab === "register" ? "Création..." : "Connexion..."}
+                                    </>
+                                ) : activeTab === "register" ? (
+                                    <>
+                                        <UserPlus className="mr-2 h-4 w-4" />
+                                        Créer mon compte
+                                    </>
+                                ) : (
+                                    <>
+                                        <LogIn className="mr-2 h-4 w-4" />
+                                        Se connecter
+                                    </>
+                                )}
+                            </Button>
+                        </form>
+                    </Tabs>
+                ) : (
+                    <form onSubmit={handleSubmit} className="space-y-4">
                         <AnimatePresence mode="wait">
                             {error ? (
                                 <motion.div
@@ -168,72 +438,70 @@ export function AuthModal({ open, onOpenChange, onAuthenticated }: AuthModalProp
                                     {error}
                                 </motion.div>
                             ) : null}
+                            {success ? (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    className="flex items-center gap-2 rounded-lg border border-green-500/30 bg-green-500/10 p-3 text-sm text-green-400"
+                                >
+                                    <Mail className="h-4 w-4 flex-shrink-0" />
+                                    {success}
+                                </motion.div>
+                            ) : null}
                         </AnimatePresence>
 
-                        <TabsContent value="register" className="mt-0 space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="register-username">Nom d'utilisateur</Label>
+                        <div className="space-y-2">
+                            <Label htmlFor="forgot-email">Email</Label>
+                            <div className="relative">
+                                <Mail className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                                 <Input
-                                    id="register-username"
-                                    placeholder="Entrez un nom unique"
-                                    value={username}
+                                    id="forgot-email"
+                                    type="email"
+                                    placeholder="votre@email.com"
+                                    value={email}
                                     onChange={(e) => {
-                                        setUsername(e.target.value)
+                                        setEmail(e.target.value)
                                         setError(null)
+                                        setSuccess(null)
                                     }}
                                     disabled={loading}
-                                    className="border-white/10 bg-white/5"
-                                />
-                                <p className="text-muted-foreground text-xs">
-                                    3-20 caractères. Ce nom sera visible par les autres joueurs.
-                                </p>
-                            </div>
-                        </TabsContent>
-
-                        <TabsContent value="login" className="mt-0 space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="login-username">Nom d'utilisateur</Label>
-                                <Input
-                                    id="login-username"
-                                    placeholder="Votre nom d'utilisateur"
-                                    value={username}
-                                    onChange={(e) => {
-                                        setUsername(e.target.value)
-                                        setError(null)
-                                    }}
-                                    disabled={loading}
-                                    className="border-white/10 bg-white/5"
+                                    className="border-white/10 bg-white/5 pl-10"
                                 />
                             </div>
-                        </TabsContent>
+                        </div>
 
-                        <Button
-                            type="submit"
-                            className="w-full bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-400 hover:to-purple-500"
-                            disabled={loading}
-                        >
-                            {loading ? (
-                                <>
+                        <div className="flex gap-2">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => {
+                                    setActiveTab("login")
+                                    setError(null)
+                                    setSuccess(null)
+                                }}
+                                className="flex-1"
+                            >
+                                Retour
+                            </Button>
+                            <Button
+                                type="submit"
+                                className="flex-1 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-400 hover:to-purple-500"
+                                disabled={loading}
+                            >
+                                {loading ? (
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    {activeTab === "register" ? "Création..." : "Connexion..."}
-                                </>
-                            ) : activeTab === "register" ? (
-                                <>
-                                    <UserPlus className="mr-2 h-4 w-4" />
-                                    Créer mon compte
-                                </>
-                            ) : (
-                                <>
-                                    <LogIn className="mr-2 h-4 w-4" />
-                                    Se connecter
-                                </>
-                            )}
-                        </Button>
+                                ) : (
+                                    <Mail className="mr-2 h-4 w-4" />
+                                )}
+                                Envoyer
+                            </Button>
+                        </div>
                     </form>
-                </Tabs>
+                )}
 
-                <p className="text-muted-foreground mt-4 text-center text-xs">
-                    En créant un compte, vos statistiques et parties seront sauvegardées.
+                <p className="text-muted-foreground mt-2 text-center text-xs">
+                    Vos données sont sécurisées et ne seront jamais partagées.
                 </p>
             </DialogContent>
         </Dialog>

@@ -15,9 +15,13 @@ datasource db {
 model User {
   id            String    @id @default(uuid())
   username      String    @unique
+  email         String?   @unique
+  passwordHash  String?
+  emailVerified Boolean   @default(false)
   avatarUrl     String?
   avatarPreset  String?
   createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   profile           UserProfile?
   friends           Friendship[]      @relation("UserFriends")
@@ -25,8 +29,24 @@ model User {
   gameHistories     GameHistory[]
   savedGames        SavedGame[]
   pushSubscriptions PushSubscription[]
+  passwordResets    PasswordReset[]
 
   @@index([username])
+  @@index([email])
+}
+
+// Token de réinitialisation de mot de passe
+model PasswordReset {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([userId])
 }
 
 // Profil & Statistiques

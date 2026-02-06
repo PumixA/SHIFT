@@ -22,6 +22,7 @@ import { chatService } from "./services/ChatService"
 import { saveGameService } from "./services/SaveGameService"
 import { gameHistoryService } from "./services/GameHistoryService"
 import { pushNotificationService } from "./services/PushNotificationService"
+import { authService } from "./services/AuthService"
 import { getDefaultPacks, getDefaultPackById } from "./data/default-rule-packs"
 import { allTemplates, getTemplatesByCategory, searchTemplates } from "./data/rule-templates"
 
@@ -199,6 +200,58 @@ io.on("connection", (socket) => {
     }
     socket.emit("user_found", { user })
   })
+
+  // ================================
+  // AUTH EVENTS (Email/Password)
+  // ================================
+
+  socket.on(
+    "auth_register",
+    async (data: { username: string; email: string; password: string; avatarPreset?: string }) => {
+      const result = await authService.register(data)
+      if (result.success && result.user) {
+        userSockets.set(socket.id, result.user.id)
+        friendService.setUserOnline(result.user.id, socket.id)
+      }
+      socket.emit("auth_result", result)
+    }
+  )
+
+  socket.on("auth_login", async (data: { email: string; password: string }) => {
+    const result = await authService.login(data)
+    if (result.success && result.user) {
+      userSockets.set(socket.id, result.user.id)
+      friendService.setUserOnline(result.user.id, socket.id)
+    }
+    socket.emit("auth_result", result)
+  })
+
+  socket.on("auth_forgot_password", async (data: { email: string }) => {
+    const result = await authService.forgotPassword(data.email)
+    socket.emit("forgot_password_result", result)
+  })
+
+  socket.on("auth_reset_password", async (data: { token: string; password: string }) => {
+    const result = await authService.resetPassword(data.token, data.password)
+    socket.emit("reset_password_result", result)
+  })
+
+  socket.on("auth_validate_reset_token", async (data: { token: string }) => {
+    const result = await authService.validateResetToken(data.token)
+    socket.emit("validate_token_result", result)
+  })
+
+  socket.on(
+    "auth_change_password",
+    async (data: { userId: string; currentPassword: string; newPassword: string }) => {
+      const result = await authService.changePassword(
+        data.userId,
+        data.currentPassword,
+        data.newPassword
+      )
+      socket.emit("change_password_result", result)
+    }
+  )
 
   // ================================
   // FRIEND EVENTS
