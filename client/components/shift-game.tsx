@@ -256,9 +256,11 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
         canModify,
         canModifyRulesNow,
         canModifyTilesNow,
+        hasModifiedThisTurn,
         advanceToNextPlayer,
         handleEndTurn,
         markModificationDone,
+        confirmEndTurn,
     } = turnManagement
 
     // ===========================================
@@ -342,6 +344,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
         selectedTileIndex,
         handleAddTile,
         handleRemoveTile,
+        handleChangeDirections,
         openTileSelectionModal,
         handleTileDetails,
     } = tileManagement
@@ -395,6 +398,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
             y: t.y,
             type: t.type,
             connections: t.connections || [],
+            directions: t.directions || ["right"],
         }))
         return buildTileGraph(tileNodes)
     }, [tiles])
@@ -406,6 +410,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
             y: t.y,
             type: t.type,
             connections: t.connections || [],
+            directions: t.directions || ["right"],
         }))
     }, [tiles])
 
@@ -661,8 +666,12 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
                 localTurnNumberRef.current += 1
             }
         }
-        handleEndTurn()
-    }, [isLocalMode, players, localTurnIndex, addLocalAction, handleEndTurn])
+        if (hasModifiedThisTurn) {
+            confirmEndTurn()
+        } else {
+            handleEndTurn()
+        }
+    }, [isLocalMode, players, localTurnIndex, addLocalAction, handleEndTurn, confirmEndTurn, hasModifiedThisTurn])
 
     // ===========================================
     // SAVE/LOAD
@@ -679,7 +688,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
                 name,
                 mode: isLocalMode ? "local" : "online",
                 players: currentPlayerPositions,
-                tiles: tiles.map((t) => ({ id: t.id, x: t.x, y: t.y, type: t.type })),
+                tiles: tiles.map((t) => ({ id: t.id, x: t.x, y: t.y, type: t.type, directions: t.directions })),
                 rules,
                 currentTurnIndex: localTurnIndex,
                 status: gameStatus === "finished" ? "finished" : "paused",
@@ -779,12 +788,13 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
                         setCurrentSaveName(savedGame.name)
 
                         // Load the saved game state
-                        const loadedTiles: Tile[] = savedGame.tiles.map((t) => ({
+                        const loadedTiles: Tile[] = savedGame.tiles.map((t: any) => ({
                             id: t.id,
                             x: t.x,
                             y: t.y,
                             type: t.type,
                             connections: [],
+                            directions: t.directions || ["right"],
                         }))
                         setTiles(loadedTiles)
 
@@ -831,13 +841,15 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
             }
 
             // Normal new game initialization
+            const startTile = tiles[0]
+            const startPos = startTile ? { x: startTile.x, y: startTile.y } : { x: -10, y: 0 }
             const localPlayers: Player[] = gameConfig.players.map((p, idx) => ({
                 id: `local-${idx}`,
                 name: p.name,
                 avatar: `/cyberpunk-avatar-${idx + 1}.png`,
                 score: 0,
                 color: PLAYER_COLORS[idx] || "cyan",
-                position: getCoordinatesFromIndex(0),
+                position: startPos,
                 isBot: p.isBot,
                 botDifficulty: p.botDifficulty as BotDifficulty,
             }))
@@ -871,7 +883,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
                         position: 0,
                         score: 0,
                     })),
-                    tiles: tiles.map((t) => ({ id: t.id, x: t.x, y: t.y, type: t.type })),
+                    tiles: tiles.map((t) => ({ id: t.id, x: t.x, y: t.y, type: t.type, directions: t.directions })),
                     rules: [],
                     currentTurnIndex: 0,
                     status: "playing",
@@ -897,7 +909,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
             socket.connect()
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [gameConfig, isLocalMode, getCoordinatesFromIndex, setPlayers, setCurrentTurnId, setGameStatus, setTurnPhase])
+    }, [gameConfig, isLocalMode, setPlayers, setCurrentTurnId, setGameStatus, setTurnPhase])
 
     // ===========================================
     // EFFECTS - Socket Events (Online Mode)
@@ -1295,7 +1307,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
                     canModify={canModify}
                     canModifyRules={canModifyRulesNow}
                     canModifyTiles={canModifyTilesNow}
-                    hasModifiedThisTurn={false}
+                    hasModifiedThisTurn={hasModifiedThisTurn}
                     hasPlayedThisTurn={turnPhase !== "ROLL"}
                     isCurrentTurn={isMyTurn}
                     onAddRule={handleAddRule}
@@ -1356,7 +1368,11 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
                 onOpenChange={setTileDetailOpen}
                 tileIndex={selectedTileIndex}
                 tileType={tiles[selectedTileIndex]?.type || "normal"}
+                tileId={tiles[selectedTileIndex]?.id}
+                tileDirections={tiles[selectedTileIndex]?.directions || ["right"]}
                 rules={rulesForSelectedTile}
+                canModifyDirections={canModifyTilesNow}
+                onChangeDirections={handleChangeDirections}
             />
 
             <TileSelectionModal

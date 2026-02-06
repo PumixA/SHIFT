@@ -547,6 +547,22 @@ function GameTile({
                 {/* Icône info */}
                 {hasRules ? <Info className="absolute right-1 bottom-1 h-3 w-3 opacity-60" /> : null}
 
+                {/* Direction indicators */}
+                {tile.directions?.map((dir) => (
+                    <div
+                        key={dir}
+                        className={`absolute h-0 w-0 opacity-60 ${
+                            dir === "up"
+                                ? "-top-1.5 left-1/2 -translate-x-1/2 border-r-[4px] border-b-[5px] border-l-[4px] border-r-transparent border-b-cyan-400 border-l-transparent"
+                                : dir === "down"
+                                  ? "-bottom-1.5 left-1/2 -translate-x-1/2 border-t-[5px] border-r-[4px] border-l-[4px] border-t-cyan-400 border-r-transparent border-l-transparent"
+                                  : dir === "left"
+                                    ? "top-1/2 -left-1.5 -translate-y-1/2 border-t-[4px] border-r-[5px] border-b-[4px] border-t-transparent border-r-cyan-400 border-b-transparent"
+                                    : "top-1/2 -right-1.5 -translate-y-1/2 border-t-[4px] border-b-[4px] border-l-[5px] border-t-transparent border-b-transparent border-l-cyan-400"
+                        }`}
+                    />
+                ))}
+
                 {/* Index */}
                 <span className="absolute bottom-0.5 left-1 font-mono text-[9px] font-bold opacity-50">{index}</span>
 

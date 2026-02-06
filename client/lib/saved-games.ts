@@ -19,6 +19,7 @@ export interface SavedGame {
         x: number
         y: number
         type: "normal" | "special" | "start" | "end"
+        directions?: ("up" | "down" | "left" | "right")[]
     }[]
     rules: Rule[]
     currentTurnIndex: number

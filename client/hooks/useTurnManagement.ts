@@ -27,6 +27,7 @@ export interface UseTurnManagementReturn {
     setDiceValue: React.Dispatch<React.SetStateAction<number | null>>
     isRolling: boolean
     setIsRolling: React.Dispatch<React.SetStateAction<boolean>>
+    hasModifiedThisTurn: boolean
 
     // Computed
     currentPlayer: Player | undefined
@@ -40,6 +41,7 @@ export interface UseTurnManagementReturn {
     advanceToNextPlayer: () => void
     handleEndTurn: () => void
     markModificationDone: () => void
+    confirmEndTurn: () => void
 }
 
 export function useTurnManagement({
@@ -56,6 +58,7 @@ export function useTurnManagement({
     const [turnPhase, setTurnPhase] = useState<TurnPhase>("ROLL")
     const [diceValue, setDiceValue] = useState<number | null>(null)
     const [isRolling, setIsRolling] = useState(false)
+    const [hasModifiedThisTurn, setHasModifiedThisTurn] = useState(false)
 
     // Computed
     const currentPlayer = useMemo(() => {
@@ -108,6 +111,7 @@ export function useTurnManagement({
         }
         setTurnPhase("ROLL")
         setDiceValue(null)
+        setHasModifiedThisTurn(false)
     }, [isLocalMode, localTurnIndex, players])
 
     const handleEndTurn = useCallback(() => {
@@ -115,6 +119,11 @@ export function useTurnManagement({
     }, [advanceToNextPlayer])
 
     const markModificationDone = useCallback(() => {
+        setHasModifiedThisTurn(true)
+        setTurnPhase("END")
+    }, [])
+
+    const confirmEndTurn = useCallback(() => {
         advanceToNextPlayer()
     }, [advanceToNextPlayer])
 
@@ -129,6 +138,7 @@ export function useTurnManagement({
         setDiceValue,
         isRolling,
         setIsRolling,
+        hasModifiedThisTurn,
         currentPlayer,
         isMyTurn,
         canRollDice,
@@ -138,5 +148,6 @@ export function useTurnManagement({
         advanceToNextPlayer,
         handleEndTurn,
         markModificationDone,
+        confirmEndTurn,
     }
 }

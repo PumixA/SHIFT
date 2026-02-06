@@ -4,12 +4,15 @@ import { useState, useCallback, useMemo } from "react"
 import { Rule } from "@/src/types/rules"
 
 // --- Interfaces ---
+export type TileDirection = "up" | "down" | "left" | "right"
+
 export interface Tile {
     id: string
     x: number
     y: number
     type: "normal" | "special" | "start" | "end"
     connections?: string[]
+    directions: TileDirection[]
 }
 
 export interface Player {
@@ -61,6 +64,7 @@ const createInitialTiles = (): Tile[] =>
         y: 0,
         type: i === 0 ? "start" : ("normal" as const),
         connections: [...(i > 0 ? [`tile-${i - 1}`] : []), ...(i < 19 ? [`tile-${i + 1}`] : [])],
+        directions: ["right"] as TileDirection[],
     }))
 
 export interface UseGameStateReturn {
