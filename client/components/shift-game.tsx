@@ -191,6 +191,8 @@ const GameOverModal = memo(function GameOverModal({
 export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
     const router = useRouter()
     const viewportRef = useRef<GameViewportRef>(null)
+    const [currentSaveId, setCurrentSaveId] = useState<string | null>(null)
+    const hasAutoSavedRef = useRef(false)
 
     // ===========================================
     // HOOKS - Game State
@@ -592,7 +594,8 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
                 return { name: p.name, color: p.color, position: tileIndex >= 0 ? tileIndex : 0, score: p.score }
             })
 
-            saveGame({
+            const saved = saveGame({
+                id: currentSaveId || undefined,
                 name,
                 mode: isLocalMode ? "local" : "online",
                 players: currentPlayerPositions,
@@ -602,6 +605,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
                 status: gameStatus === "finished" ? "finished" : "paused",
                 settings: { allowRuleEdit, allowTileEdit, maxModificationsPerTurn: 1 },
             })
+            setCurrentSaveId(saved.id)
         },
         [
             players,
@@ -613,6 +617,7 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
             allowRuleEdit,
             allowTileEdit,
             getTileIndexFromCoords,
+            currentSaveId,
         ]
     )
 
@@ -646,6 +651,8 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
             setTurnPhase("ROLL")
             setAllowRuleEdit(savedGame.settings.allowRuleEdit)
             setAllowTileEdit(savedGame.settings.allowTileEdit)
+            setCurrentSaveId(savedGame.id)
+            hasAutoSavedRef.current = true // Prevent auto-save since we loaded an existing game
             setSavedGamesModalOpen(false)
             toast.success(`Partie "${savedGame.name}" chargée !`)
         },
@@ -711,6 +718,69 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
         if (!gameConfig) return
 
         if (isLocalMode && gameConfig.players) {
+            // Check if loading from an existing save
+            if (gameConfig.loadFromSave && gameConfig.savedGameId) {
+                const savedGameData = sessionStorage.getItem("savedGame")
+                if (savedGameData) {
+                    try {
+                        const savedGame: SavedGame = JSON.parse(savedGameData)
+                        // Mark as already saved to prevent auto-save
+                        hasAutoSavedRef.current = true
+                        setCurrentSaveId(savedGame.id)
+
+                        // Load the saved game state
+                        const loadedTiles: Tile[] = savedGame.tiles.map((t) => ({
+                            id: t.id,
+                            x: t.x,
+                            y: t.y,
+                            type: t.type,
+                            connections: [],
+                        }))
+                        setTiles(loadedTiles)
+
+                        const loadedPlayers: Player[] = savedGame.players.map((p, idx) => {
+                            const tile = loadedTiles[p.position] || loadedTiles[0]
+                            return {
+                                id: `local-${idx}`,
+                                name: p.name,
+                                avatar: `/cyberpunk-avatar-${idx + 1}.png`,
+                                score: p.score,
+                                color: p.color,
+                                position: { x: tile.x, y: tile.y },
+                                isBot: gameConfig.players?.[idx]?.isBot,
+                                botDifficulty: gameConfig.players?.[idx]?.botDifficulty as BotDifficulty,
+                            }
+                        })
+                        setPlayers(loadedPlayers)
+                        setRules(savedGame.rules)
+                        setLocalTurnIndex(savedGame.currentTurnIndex)
+                        setCurrentTurnId(String(loadedPlayers[savedGame.currentTurnIndex]?.id))
+                        setGameStatus(savedGame.status === "finished" ? "finished" : "playing")
+                        setTurnPhase("ROLL")
+                        setAllowRuleEdit(savedGame.settings.allowRuleEdit)
+                        setAllowTileEdit(savedGame.settings.allowTileEdit)
+                        setIsHost(true)
+                        setActiveRoom(`local-${Date.now()}`)
+
+                        // Setup bot AIs
+                        const newBotAIs: Record<string, BotAI> = {}
+                        loadedPlayers.forEach((p) => {
+                            if (p.isBot && p.botDifficulty) {
+                                newBotAIs[String(p.id)] = createBotAI(p.botDifficulty)
+                            }
+                        })
+                        setBotAIs(newBotAIs)
+
+                        // Clean up sessionStorage
+                        sessionStorage.removeItem("savedGame")
+                        return
+                    } catch {
+                        // If parsing fails, continue with normal initialization
+                    }
+                }
+            }
+
+            // Normal new game initialization
             const localPlayers: Player[] = gameConfig.players.map((p, idx) => ({
                 id: `local-${idx}`,
                 name: p.name,
@@ -735,6 +805,33 @@ export default function ShiftGame({ gameConfig }: { gameConfig?: GameConfig }) {
                 }
             })
             setBotAIs(newBotAIs)
+
+            setActiveRoom(`local-${Date.now()}`)
+
+            // Auto-save new game on creation (only once, only for new games)
+            if (!hasAutoSavedRef.current) {
+                hasAutoSavedRef.current = true
+                const saved = saveGame({
+                    name: gameConfig.roomName || `Partie du ${new Date().toLocaleDateString("fr-FR")}`,
+                    mode: "local",
+                    players: localPlayers.map((p) => ({
+                        name: p.name,
+                        color: p.color,
+                        position: 0,
+                        score: 0,
+                    })),
+                    tiles: tiles.map((t) => ({ id: t.id, x: t.x, y: t.y, type: t.type })),
+                    rules: [],
+                    currentTurnIndex: 0,
+                    status: "playing",
+                    settings: {
+                        allowRuleEdit: gameConfig.allowRuleEdit ?? true,
+                        allowTileEdit: gameConfig.allowTileEdit ?? true,
+                        maxModificationsPerTurn: 1,
+                    },
+                })
+                setCurrentSaveId(saved.id)
+            }
 
             // Show welcome modal for first-time users instead of auto-starting tutorial
             const shouldShow =

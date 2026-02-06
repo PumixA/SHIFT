@@ -3,19 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import ShiftGame from "@/components/shift-game"
-
-interface GameConfig {
-    mode: "local" | "online"
-    action?: "create" | "join"
-    players?: { name: string; color: string }[]
-    roomName?: string
-    roomCode?: string
-    password?: string
-    maxPlayers?: number
-    playerName?: string
-    allowRuleEdit?: boolean
-    rulePackId?: string
-}
+import { type GameConfig } from "@/hooks/useGameState"
 
 export default function GamePage() {
     const router = useRouter()

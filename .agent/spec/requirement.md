@@ -80,7 +80,9 @@ SHIFT est un jeu de plateau stratégique où les règles évoluent dynamiquement
 | Score     | MODIFY_SCORE, STEAL_POINTS                                                         |
 | Power-ups | APPLY_DOUBLE_DICE, APPLY_SHIELD, APPLY_SPEED_BOOST, APPLY_SLOW, APPLY_INVISIBILITY |
 
-#### F2.4: Packs de Règles
+#### F2.4: Packs de Règles (Temporairement désactivé)
+
+> La sélection de templates/packs de règles lors de la création de partie est temporairement désactivée.
 
 - 10+ packs prédéfinis (Vanilla, Classic, Challenge, etc.)
 - Création de packs personnalisés
@@ -89,23 +91,38 @@ SHIFT est un jeu de plateau stratégique où les règles évoluent dynamiquement
 
 ### F3: Modes de Jeu
 
-#### F3.1: Multijoueur en Ligne
+#### F3.1: Page Jouer - Organisation
+
+- **Onglet "Parties"** : Liste des parties sauvegardées
+- **Onglet "Rejoindre"** : Liste des invitations reçues
+- **Onglet "Créer"** : Formulaire de création de partie
+
+#### F3.2: Création de Partie
+
+- Mode Local ou En Ligne (toggle)
+- Nombre de joueurs illimité (minimum 2)
+- Configuration des joueurs (nom, IA, difficulté)
+- Options d'édition de règles et de plateau
+
+#### F3.3: Multijoueur en Ligne
 
 - Création de salons avec code d'accès
-- Matchmaking par invitation
+- Matchmaking par invitation d'amis
 - Chat en temps réel
 - Synchronisation WebSocket
 
-#### F3.2: Mode Local/Hors Ligne
+#### F3.4: Mode Local/Hors Ligne
 
 - Partie sur un seul appareil
 - Support hors connexion (PWA)
 - Bots IA (facile, moyen, difficile)
 
-#### F3.3: Sauvegarde et Reprise
+#### F3.5: Sauvegarde et Reprise
 
-- Sauvegarde automatique de l'état
-- Reprise de partie interrompue
+- Sauvegarde automatique à la création (nouvelles parties uniquement)
+- Sauvegarde manuelle via le menu en jeu (met à jour la sauvegarde existante)
+- Chargement d'une partie ne crée pas de nouvelle sauvegarde
+- Import/Export de sauvegardes (JSON)
 - Historique des parties terminées
 
 ### F4: Social et Communauté

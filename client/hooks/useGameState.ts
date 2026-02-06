@@ -36,6 +36,8 @@ export interface GameConfig {
     allowRuleEdit?: boolean
     allowTileEdit?: boolean
     rulePackId?: string
+    loadFromSave?: boolean
+    savedGameId?: string
 }
 
 export interface ServerPlayer {
