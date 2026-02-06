@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { ArrowLeft, Trophy, Target, Flame, Clock, Edit2, Save, User, X, Star, Gamepad2 } from "lucide-react"
+import { ArrowLeft, Trophy, Target, Flame, Clock, Edit2, Save, User, X, Star, Gamepad2, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -14,6 +14,7 @@ import { Progress } from "@/components/ui/progress"
 import { socket } from "@/services/socket"
 import { toast } from "sonner"
 import { PageHeader, GameCard } from "@/components/ui/design-system"
+import { AuthModal } from "@/components/auth/auth-modal"
 
 interface UserStats {
     gamesPlayed: number
@@ -60,22 +61,59 @@ export default function ProfilePage() {
     const [editUsername, setEditUsername] = useState("")
     const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null)
     const [loading, setLoading] = useState(true)
+    const [authModalOpen, setAuthModalOpen] = useState(false)
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
+
+    const loadProfile = useCallback((userId: string) => {
+        socket.connect()
+        socket.emit("get_user_profile", { userId })
+    }, [])
+
+    const handleAuthenticated = useCallback(
+        (userId: string, username: string) => {
+            setIsAuthenticated(true)
+            loadProfile(userId)
+            toast.success(`Bienvenue, ${username} !`)
+        },
+        [loadProfile]
+    )
+
+    const handleLogout = useCallback(() => {
+        localStorage.removeItem("userId")
+        localStorage.removeItem("username")
+        setUser(null)
+        setStats(null)
+        setIsAuthenticated(false)
+        setAuthModalOpen(true)
+        toast.info("Vous avez été déconnecté")
+    }, [])
 
     useEffect(() => {
         const userId = localStorage.getItem("userId")
+
         if (!userId) {
-            router.push("/")
+            setIsAuthenticated(false)
+            setLoading(false)
+            setAuthModalOpen(true)
             return
         }
 
-        socket.connect()
-        socket.emit("get_user_profile", { userId })
+        setIsAuthenticated(true)
+        loadProfile(userId)
 
-        socket.on("user_profile", (data: { user: UserProfile; stats: UserStats }) => {
-            setUser(data.user)
-            setStats(data.stats)
-            setEditUsername(data.user.username)
-            setSelectedAvatar(data.user.avatarPreset || null)
+        socket.on("user_profile", (data: { user: UserProfile | null; stats: UserStats | null }) => {
+            if (data.user) {
+                setUser(data.user)
+                setStats(data.stats)
+                setEditUsername(data.user.username)
+                setSelectedAvatar(data.user.avatarPreset || null)
+            } else {
+                // User not found in DB, clear localStorage
+                localStorage.removeItem("userId")
+                localStorage.removeItem("username")
+                setIsAuthenticated(false)
+                setAuthModalOpen(true)
+            }
             setLoading(false)
         })
 
@@ -89,7 +127,7 @@ export default function ProfilePage() {
             socket.off("user_profile")
             socket.off("user_profile_updated")
         }
-    }, [router])
+    }, [loadProfile])
 
     const handleSave = () => {
         if (!user) return
@@ -98,6 +136,38 @@ export default function ProfilePage() {
             username: editUsername,
             avatarPreset: selectedAvatar,
         })
+    }
+
+    // Show auth modal when not authenticated
+    if (isAuthenticated === false) {
+        return (
+            <div className="bg-background flex min-h-screen flex-col items-center justify-center p-4">
+                <div className="pointer-events-none fixed inset-0">
+                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(139,92,246,0.1),transparent_50%)]" />
+                </div>
+                <div className="relative z-10 text-center">
+                    <User className="mx-auto mb-4 h-16 w-16 text-violet-500" />
+                    <h1 className="mb-2 text-3xl font-bold text-white">Accès au Profil</h1>
+                    <p className="text-muted-foreground mb-6">
+                        Connectez-vous pour accéder à votre profil et statistiques
+                    </p>
+                    <div className="flex justify-center gap-4">
+                        <Button variant="outline" onClick={() => router.push("/")}>
+                            <ArrowLeft className="mr-2 h-4 w-4" />
+                            Retour
+                        </Button>
+                        <Button
+                            onClick={() => setAuthModalOpen(true)}
+                            className="bg-gradient-to-r from-violet-500 to-purple-600"
+                        >
+                            <User className="mr-2 h-4 w-4" />
+                            Se connecter
+                        </Button>
+                    </div>
+                </div>
+                <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} onAuthenticated={handleAuthenticated} />
+            </div>
+        )
     }
 
     if (loading) {
@@ -184,24 +254,35 @@ export default function ProfilePage() {
                             gradient="from-violet-500 to-purple-600"
                         />
                     </div>
-                    {!isEditing ? (
-                        <Button
-                            onClick={() => setIsEditing(true)}
-                            variant="outline"
-                            className="border-white/20 hover:bg-white/10"
-                        >
-                            <Edit2 className="mr-2 h-4 w-4" /> Modifier
-                        </Button>
-                    ) : (
-                        <div className="flex gap-2">
-                            <Button onClick={() => setIsEditing(false)} variant="ghost">
-                                <X className="mr-2 h-4 w-4" /> Annuler
-                            </Button>
-                            <Button onClick={handleSave} className="bg-gradient-to-r from-violet-500 to-purple-600">
-                                <Save className="mr-2 h-4 w-4" /> Sauvegarder
-                            </Button>
-                        </div>
-                    )}
+                    <div className="flex items-center gap-2">
+                        {!isEditing ? (
+                            <>
+                                <Button
+                                    onClick={() => setIsEditing(true)}
+                                    variant="outline"
+                                    className="border-white/20 hover:bg-white/10"
+                                >
+                                    <Edit2 className="mr-2 h-4 w-4" /> Modifier
+                                </Button>
+                                <Button
+                                    onClick={handleLogout}
+                                    variant="ghost"
+                                    className="text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                                >
+                                    <LogOut className="mr-2 h-4 w-4" /> Déconnexion
+                                </Button>
+                            </>
+                        ) : (
+                            <>
+                                <Button onClick={() => setIsEditing(false)} variant="ghost">
+                                    <X className="mr-2 h-4 w-4" /> Annuler
+                                </Button>
+                                <Button onClick={handleSave} className="bg-gradient-to-r from-violet-500 to-purple-600">
+                                    <Save className="mr-2 h-4 w-4" /> Sauvegarder
+                                </Button>
+                            </>
+                        )}
+                    </div>
                 </div>
             </header>
 
