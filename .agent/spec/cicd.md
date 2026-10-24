@@ -181,50 +181,21 @@ npm install
 Configuration automatique des mises à jour :
 
 - **Branche cible** : `dev` (pas main)
-- Client: hebdomadaire (lundi 9h)
-- Server: hebdomadaire (lundi 9h)
-- GitHub Actions: hebdomadaire
+- npm (client + server, depuis la racine du workspace) : hebdomadaire (lundi 9h)
+- GitHub Actions : hebdomadaire
 
 Les PR sont groupées par catégorie (radix-ui, prisma, etc.).
 
 Les mises à jour passent d'abord par `dev` pour être testées avant d'atteindre `main`.
 
-### Limitation : npm Workspaces
+### npm Workspaces
 
-**Problème connu** : Dependabot ne supporte pas correctement npm workspaces.
+Le seul lockfile est `package-lock.json` à la racine, celui que lit `npm ci`. Dependabot est donc configuré sur `directory: "/"` :
+il met à jour le `package.json` du workspace (client ou server) et le lockfile racine. Avant, avec `/client` et `/server`,
+il ne touchait que les lockfiles des workspaces et la CI échouait (« Missing: <package>@<version> from lock file »).
 
-- Dependabot met à jour `client/package-lock.json` ou `server/package-lock.json`
-- Mais `npm ci` utilise le `package-lock.json` **racine**
-- Résultat : CI échoue avec "Missing: <package>@<version> from lock file"
-
-### Workflow de résolution
-
-Quand une PR Dependabot échoue :
-
-1. **Créer une branche manuelle** :
-
-   ```bash
-   git checkout dev && git pull origin dev
-   git checkout -b chore/update-<package>
-   ```
-
-2. **Mettre à jour avec npm workspaces** :
-
-   ```bash
-   npm install <package>@<version> -w client --legacy-peer-deps
-   # ou pour le server :
-   npm install <package>@<version> -w server
-   ```
-
-3. **Commiter les deux fichiers** :
-
-   ```bash
-   git add client/package.json package-lock.json
-   git commit -m "chore(deps): bump <package> from X to Y"
-   git push origin chore/update-<package>
-   ```
-
-4. **Créer une PR** vers `dev` et fermer la PR Dependabot
+Mise à jour manuelle si besoin : `npm install <package>@<version> -w client` (ou `-w server`), puis commiter
+le `package.json` du workspace et le `package-lock.json` racine.
 
 ### Exceptions de validation
 
