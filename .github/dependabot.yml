@@ -1,21 +1,22 @@
 version: 2
 
 updates:
-  # Client (Next.js) dependencies
+  # npm dependencies (client + server). npm workspaces: the lock file `npm ci` reads is the root
+  # one, so Dependabot must work from "/" (with "/client" and "/server" it only updated the
+  # workspace lock files and every PR failed in CI).
   - package-ecosystem: "npm"
-    directory: "/client"
+    directory: "/"
     target-branch: "dev"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "09:00"
       timezone: "Europe/Paris"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 10
     commit-message:
       prefix: "chore(deps)"
     labels:
       - "dependencies"
-      - "client"
     groups:
       radix-ui:
         patterns:
@@ -34,29 +35,6 @@ updates:
           - "tailwindcss*"
           - "@tailwindcss/*"
           - "postcss*"
-    ignore:
-      # Ignore major version updates that might break things
-      - dependency-name: "next"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "react"
-        update-types: ["version-update:semver-major"]
-
-  # Server (Express) dependencies
-  - package-ecosystem: "npm"
-    directory: "/server"
-    target-branch: "dev"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:00"
-      timezone: "Europe/Paris"
-    open-pull-requests-limit: 5
-    commit-message:
-      prefix: "chore(deps)"
-    labels:
-      - "dependencies"
-      - "server"
-    groups:
       prisma:
         patterns:
           - "@prisma/*"
@@ -65,6 +43,11 @@ updates:
         patterns:
           - "@types/*"
     ignore:
+      # Ignore major version updates that might break things
+      - dependency-name: "next"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
       - dependency-name: "express"
         update-types: ["version-update:semver-major"]
       - dependency-name: "prisma"

@@ -167,11 +167,8 @@ Le projet utilise **npm workspaces** pour gérer les dépendances de manière ce
 
 ### Fichiers de lock
 
-| Fichier                    | Emplacement | Usage                                      |
-| -------------------------- | ----------- | ------------------------------------------ |
-| `package-lock.json`        | Racine      | **Utilisé par npm ci** - fichier principal |
-| `client/package-lock.json` | client/     | Ignoré par npm ci (legacy)                 |
-| `server/package-lock.json` | server/     | Ignoré par npm ci (legacy)                 |
+Un seul fichier : `package-lock.json` à la racine (npm workspaces), utilisé par `npm ci`.
+Les anciens `client/package-lock.json`, `server/package-lock.json` et `client/pnpm-lock.yaml` ont été supprimés.
 
 ### Commandes importantes
 
@@ -187,17 +184,9 @@ npm install <package>@<version> -w server
 npm install <package>@<version> -w client --legacy-peer-deps
 ```
 
-### Point d'attention : Dependabot
+### Dependabot
 
-Dependabot met à jour uniquement les `package-lock.json` des workspaces individuels (client/, server/), mais **pas** le `package-lock.json` racine utilisé par `npm ci` en CI.
-
-**Solution** : Créer des branches manuelles avec :
-
-```bash
-npm install <package>@<version> -w client --legacy-peer-deps
-git add client/package.json package-lock.json
-git commit -m "chore(deps): bump <package> from X to Y"
-```
+Dependabot travaille depuis la racine (`directory: "/"`) : il met à jour le `package.json` du workspace concerné **et** le `package-lock.json` racine, donc ses PR passent la CI telles quelles.
 
 ---
 
